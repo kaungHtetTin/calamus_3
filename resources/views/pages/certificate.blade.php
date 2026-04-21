@@ -10,7 +10,7 @@
 		<title>Calamus | Certificate</title>
 		
 		<!-- Favicon Icon -->
-		<link rel="icon" type="image/png" href="{{ asset('assets/images/logo.png') }}">
+		<link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
 		
 		<!-- Stylesheets -->
 		<link href='http://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet'>
