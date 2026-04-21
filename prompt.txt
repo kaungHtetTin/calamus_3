@@ -1,0 +1,6 @@
+we need to migrate user_card_states and user_word_skips.
+the user_id in these table are learners.id 
+to compact with the new system
+i want to update these tables' user_id value to learners.user_id
+
+you can ask for your understanding
