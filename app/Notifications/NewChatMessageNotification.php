@@ -11,7 +11,7 @@ class NewChatMessageNotification extends Notification
     use Queueable;
 
     public function __construct(
-        public int $senderId,
+        public string $senderId,
         public string $senderName,
         public string $senderImage,
         public string $messageText,

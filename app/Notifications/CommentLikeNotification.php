@@ -13,7 +13,7 @@ class CommentLikeNotification extends Notification
     use Queueable;
 
     public function __construct(
-        public int $writerId,
+        public string $writerId,
         public string $writerName,
         public string $writerImage,
         public string $targetType,

@@ -100,7 +100,7 @@ class AdminUserController extends Controller
 
         $row = $rows->first();
         $data = [
-            'userId' => (int) ($row->user_id ?? 0),
+            'userId' => (string) ($row->user_id ?? ''),
             'username' => trim((string) ($row->{$nameColumn} ?? '')),
             'email' => $emailColumn ? trim((string) ($row->{$emailColumn} ?? '')) : '',
             'phone' => $phoneColumn ? (int) ($row->{$phoneColumn} ?? 0) : 0,
@@ -111,7 +111,7 @@ class AdminUserController extends Controller
         return $this->successResponse($data);
     }
 
-    public function show(Request $request, int $userId)
+    public function show(Request $request, string $userId)
     {
         $admin = $request->user();
         if (! $admin instanceof Admin) {
@@ -124,6 +124,11 @@ class AdminUserController extends Controller
 
         if (! Schema::hasTable('learners') || ! Schema::hasColumn('learners', 'user_id')) {
             return $this->errorResponse('Learners table not found.', 422);
+        }
+
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return $this->errorResponse('Invalid userId.', 422);
         }
 
         $nameColumn = Schema::hasColumn('learners', 'learner_name')
@@ -147,7 +152,7 @@ class AdminUserController extends Controller
         if (Schema::hasColumn('learners', 'email_verified_at')) $select[] = 'email_verified_at';
 
         $row = DB::table('learners')
-            ->where('user_id', (int) $userId)
+            ->where('user_id', $userId)
             ->first($select);
 
         if (! $row) {
@@ -155,7 +160,7 @@ class AdminUserController extends Controller
         }
 
         $data = [
-            'userId' => (int) ($row->user_id ?? 0),
+            'userId' => (string) ($row->user_id ?? ''),
             'username' => trim((string) ($row->{$nameColumn} ?? '')),
             'email' => $emailColumn ? trim((string) ($row->{$emailColumn} ?? '')) : '',
             'phone' => $phoneColumn ? (int) ($row->{$phoneColumn} ?? 0) : 0,
@@ -208,11 +213,11 @@ class AdminUserController extends Controller
 
         $revoked = PersonalAccessToken::query()
             ->where('tokenable_type', 'App\\Models\\Learner')
-            ->where('tokenable_id', (int) $userId)
+            ->where('tokenable_id', $userId)
             ->delete();
 
         return $this->successResponse([
-            'userId' => (int) $userId,
+            'userId' => (string) $userId,
             'passwordReset' => true,
             'tokensRevoked' => (int) $revoked,
         ]);

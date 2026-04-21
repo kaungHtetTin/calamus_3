@@ -118,23 +118,23 @@ class DashboardService
 
                 $recentConversations = $supportConversations
                     ->map(function ($c) use ($learnersById, $unreadCounts, $lastMessages) {
-                        $u1 = (int) ($c->user1_id ?? 0);
-                        $u2 = (int) ($c->user2_id ?? 0);
-                        $friendId = $u1 === self::SUPPORT_ADMIN_USER_ID ? $u2 : $u1;
+                        $u1 = trim((string) ($c->user1_id ?? ''));
+                        $u2 = trim((string) ($c->user2_id ?? ''));
+                        $friendId = $u1 === (string) self::SUPPORT_ADMIN_USER_ID ? $u2 : $u1;
                         $learner = $learnersById[$friendId] ?? null;
                         $last = $lastMessages[(int) $c->id] ?? null;
 
                         return [
                             'id' => (int) ($c->id ?? 0),
                             'major' => (string) ($c->major ?? ''),
-                            'other_user_id' => (int) $friendId,
+                            'other_user_id' => (string) $friendId,
                             'unread_count' => (int) ($unreadCounts[(int) $c->id] ?? 0),
                             'last_message_text' => $last ? (string) ($last->message_text ?? '') : '',
                             'last_message_type' => $last ? (string) ($last->message_type ?? '') : '',
                             'last_message_file_path' => $last ? (string) ($last->file_path ?? '') : '',
                             'last_message_at' => $c->last_message_at,
                             'friend' => $learner ? [
-                                'id' => (int) ($learner->user_id ?? 0),
+                                'id' => (string) ($learner->user_id ?? ''),
                                 'name' => (string) ($learner->learner_name ?? ''),
                                 'image' => (string) ($learner->learner_image ?? ''),
                                 'phone' => (string) ($learner->learner_phone ?? ''),

@@ -54,7 +54,8 @@ class SupportChatController extends Controller
             return response()->json(['message' => 'Conversation not found.'], 404);
         }
 
-        $isSupportConversation = ((int) $conversation->user1_id === self::SUPPORT_ADMIN_USER_ID) || ((int) $conversation->user2_id === self::SUPPORT_ADMIN_USER_ID);
+        $isSupportConversation = (trim((string) ($conversation->user1_id ?? '')) === (string) self::SUPPORT_ADMIN_USER_ID)
+            || (trim((string) ($conversation->user2_id ?? '')) === (string) self::SUPPORT_ADMIN_USER_ID);
         if (!$isSupportConversation) {
             return response()->json(['message' => 'Not a support conversation.'], 403);
         }
@@ -84,11 +85,11 @@ class SupportChatController extends Controller
         $conversation->last_message_at = now();
         $conversation->save();
 
-        $receiverId = (int) $conversation->user1_id === self::SUPPORT_ADMIN_USER_ID
-            ? (int) $conversation->user2_id
-            : (int) $conversation->user1_id;
+        $receiverId = trim((string) ($conversation->user1_id ?? '')) === (string) self::SUPPORT_ADMIN_USER_ID
+            ? trim((string) ($conversation->user2_id ?? ''))
+            : trim((string) ($conversation->user1_id ?? ''));
 
-        if ($receiverId > 0) {
+        if ($receiverId !== '' && $receiverId !== '0' && ctype_digit($receiverId)) {
             $pushBody = $messageText !== '' ? $messageText : ($messageType === 'image' ? 'Sent an image' : '');
             $payload = [
                 'type' => 'chat.message',
@@ -162,11 +163,11 @@ class SupportChatController extends Controller
         $conversationIds = $conversations->pluck('id')->map(fn ($v) => (int) $v)->all();
         $otherUserIds = $conversations
             ->map(function ($c) {
-                $user1 = (int) $c->user1_id;
-                $user2 = (int) $c->user2_id;
-                return $user1 === self::SUPPORT_ADMIN_USER_ID ? $user2 : $user1;
+                $user1 = trim((string) ($c->user1_id ?? ''));
+                $user2 = trim((string) ($c->user2_id ?? ''));
+                return $user1 === (string) self::SUPPORT_ADMIN_USER_ID ? $user2 : $user1;
             })
-            ->filter(fn ($id) => (int) $id > 0)
+            ->filter(fn ($id) => $id !== '' && $id !== '0' && ctype_digit($id))
             ->unique()
             ->values()
             ->all();
@@ -210,16 +211,16 @@ class SupportChatController extends Controller
         }
 
         $conversationsForUi = $conversations->map(function ($c) use ($learnersById, $unreadCounts, $lastMessages) {
-            $user1 = (int) $c->user1_id;
-            $user2 = (int) $c->user2_id;
-            $otherUserId = $user1 === self::SUPPORT_ADMIN_USER_ID ? $user2 : $user1;
+            $user1 = trim((string) ($c->user1_id ?? ''));
+            $user2 = trim((string) ($c->user2_id ?? ''));
+            $otherUserId = $user1 === (string) self::SUPPORT_ADMIN_USER_ID ? $user2 : $user1;
             $learner = $learnersById[$otherUserId] ?? null;
             $last = $lastMessages[(int) $c->id] ?? null;
 
             $data = [
                 'id' => (int) $c->id,
                 'major' => (string) ($c->major ?? ''),
-                'other_user_id' => (int) $otherUserId,
+                'other_user_id' => (string) $otherUserId,
                 'unread_count' => (int) ($unreadCounts[(int) $c->id] ?? 0),
                 'last_message_text' => $last ? (string) ($last->message_text ?? '') : '',
                 'last_message_type' => $last ? (string) ($last->message_type ?? '') : '',
@@ -228,7 +229,7 @@ class SupportChatController extends Controller
                 'created_at' => $c->created_at,
                 'updated_at' => $c->updated_at,
                 'friend' => $learner ? [
-                    'id' => (int) $learner->user_id,
+                    'id' => (string) ($learner->user_id ?? ''),
                     'name' => (string) ($learner->learner_name ?? ''),
                     'image' => (string) ($learner->learner_image ?? ''),
                     'phone' => (string) ($learner->learner_phone ?? ''),
@@ -264,10 +265,10 @@ class SupportChatController extends Controller
 
     public function conversation(Request $request): JsonResponse
     {
-        $otherUserId = (int) $request->query('otherUserId', 0);
+        $otherUserId = trim((string) $request->query('otherUserId', ''));
         $major = strtolower(trim((string) $request->query('major', '')));
 
-        if ($otherUserId <= 0) {
+        if ($otherUserId === '' || $otherUserId === '0' || !ctype_digit($otherUserId)) {
             return response()->json(['message' => 'otherUserId is required'], 422);
         }
 
@@ -325,7 +326,7 @@ class SupportChatController extends Controller
         $payload = [
             'id' => $conversationId,
             'major' => (string) ($conversation->major ?? ''),
-            'other_user_id' => (int) $otherUserId,
+            'other_user_id' => (string) $otherUserId,
             'unread_count' => $unread,
             'last_message_text' => $last ? (string) ($last->message_text ?? '') : '',
             'last_message_type' => $last ? (string) ($last->message_type ?? '') : '',
@@ -334,7 +335,7 @@ class SupportChatController extends Controller
             'created_at' => $conversation->created_at,
             'updated_at' => $conversation->updated_at,
             'friend' => $learner ? [
-                'id' => (int) $learner->user_id,
+                'id' => (string) ($learner->user_id ?? ''),
                 'name' => (string) ($learner->learner_name ?? ''),
                 'image' => (string) ($learner->learner_image ?? ''),
                 'phone' => (string) ($learner->learner_phone ?? ''),
@@ -367,7 +368,8 @@ class SupportChatController extends Controller
             return response()->json(['message' => 'Conversation not found.'], 404);
         }
 
-        $isSupportConversation = ((int) $conversation->user1_id === self::SUPPORT_ADMIN_USER_ID) || ((int) $conversation->user2_id === self::SUPPORT_ADMIN_USER_ID);
+        $isSupportConversation = (trim((string) ($conversation->user1_id ?? '')) === (string) self::SUPPORT_ADMIN_USER_ID)
+            || (trim((string) ($conversation->user2_id ?? '')) === (string) self::SUPPORT_ADMIN_USER_ID);
         if (!$isSupportConversation) {
             return response()->json(['message' => 'Not a support conversation.'], 403);
         }

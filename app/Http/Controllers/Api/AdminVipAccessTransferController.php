@@ -35,7 +35,7 @@ class AdminVipAccessTransferController extends Controller
 
         $preview = null;
         if ($source && $target) {
-            $preview = $this->buildPreview((int) $source['user_id'], (int) $target['user_id']);
+            $preview = $this->buildPreview((string) $source['user_id'], (string) $target['user_id']);
         }
 
         return $this->successResponse([
@@ -55,14 +55,20 @@ class AdminVipAccessTransferController extends Controller
         }
 
         $data = $request->validate([
-            'sourceUserId' => ['required', 'integer', 'min:1'],
-            'targetUserId' => ['required', 'integer', 'min:1'],
+            'sourceUserId' => ['required', 'string', 'regex:/^\d+$/'],
+            'targetUserId' => ['required', 'string', 'regex:/^\d+$/'],
             'mode' => ['required', 'string', 'in:move,copy'],
         ]);
 
-        $sourceUserId = (int) $data['sourceUserId'];
-        $targetUserId = (int) $data['targetUserId'];
+        $sourceUserId = trim((string) $data['sourceUserId']);
+        $targetUserId = trim((string) $data['targetUserId']);
         $mode = (string) $data['mode'];
+
+        if ($sourceUserId === '0' || $targetUserId === '0') {
+            throw ValidationException::withMessages([
+                'sourceUserId' => 'Source/Target user not found.',
+            ]);
+        }
 
         if ($sourceUserId === $targetUserId) {
             throw ValidationException::withMessages([
@@ -123,7 +129,7 @@ class AdminVipAccessTransferController extends Controller
 
         if (ctype_digit($q)) {
             $row = DB::table('learners')
-                ->where('user_id', (int) $q)
+                ->where('user_id', $q)
                 ->orderByDesc('user_id')
                 ->first([
                     'user_id',
@@ -134,7 +140,7 @@ class AdminVipAccessTransferController extends Controller
 
             if ($row) {
                 return [
-                    'user_id' => (int) ($row->user_id ?? 0),
+                    'user_id' => (string) ($row->user_id ?? ''),
                     'name' => (string) ($row->name ?? ''),
                     'email' => (string) ($row->email ?? ''),
                     'phone' => (string) ($row->phone ?? ''),
@@ -171,14 +177,14 @@ class AdminVipAccessTransferController extends Controller
         }
 
         return [
-            'user_id' => (int) ($row->user_id ?? 0),
+            'user_id' => (string) ($row->user_id ?? ''),
             'name' => (string) ($row->name ?? ''),
             'email' => (string) ($row->email ?? ''),
             'phone' => (string) ($row->phone ?? ''),
         ];
     }
 
-    private function buildPreview(int $sourceUserId, int $targetUserId): array
+    private function buildPreview(string $sourceUserId, string $targetUserId): array
     {
         $sourceVipMajors = [];
         $sourceDiamondMajors = [];
@@ -226,7 +232,7 @@ class AdminVipAccessTransferController extends Controller
         ];
     }
 
-    private function transferUserDataVip(int $sourceUserId, int $targetUserId, string $mode): void
+    private function transferUserDataVip(string $sourceUserId, string $targetUserId, string $mode): void
     {
         if (!Schema::hasTable('user_data')) {
             return;
@@ -273,7 +279,7 @@ class AdminVipAccessTransferController extends Controller
         }
     }
 
-    private function transferVipUsersCourses(int $sourceUserId, int $targetUserId, string $mode): void
+    private function transferVipUsersCourses(string $sourceUserId, string $targetUserId, string $mode): void
     {
         if (!Schema::hasTable('vipusers')) {
             return;

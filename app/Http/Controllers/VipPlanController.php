@@ -19,7 +19,7 @@ class VipPlanController extends Controller
     public function index()
     {
         $authUser = auth('sanctum')->user();
-        $purchasedCoursesByMajor = $authUser ? $this->getPurchasedCourseIdsByMajor((int) $authUser->user_id) : [];
+        $purchasedCoursesByMajor = $authUser ? $this->getPurchasedCourseIdsByMajor((string) ($authUser->user_id ?? '')) : [];
 
         $languages = Language::where('is_active', 1)->orderBy('sort_order')->get();
         $packagePlans = PackagePlan::where('active', 1)->orderBy('sort_order')->get();
@@ -123,9 +123,10 @@ class VipPlanController extends Controller
         return $this->successResponse($data);
     }
 
-    private function getPurchasedCourseIdsByMajor(int $userId): array
+    private function getPurchasedCourseIdsByMajor(string $userId): array
     {
-        if ($userId <= 0) {
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
             return [];
         }
 

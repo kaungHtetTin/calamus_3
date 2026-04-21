@@ -56,11 +56,11 @@ class SendCommentCreatedNotification
                 return;
             }
 
-            if ((int) $parentWriterId === self::ADMIN_USER_ID) {
+            if (trim((string) $parentWriterId) === (string) self::ADMIN_USER_ID) {
                 $this->dispatch->notifyAdminDatabase([
                     'type' => 'comment.reply',
                     'actor' => [
-                        'userId' => (int) $writerId,
+                        'userId' => (string) $writerId,
                         'name' => (string) $writerName,
                         'image' => (string) $writerImage,
                     ],
@@ -94,7 +94,7 @@ class SendCommentCreatedNotification
                 $parentOwner = Learner::where('user_id', $parentWriterId)->first();
                 if ($parentOwner) {
                     $parentOwner->notify(new PostCommentReplyNotification(
-                        writerId: (int) $writerId,
+                        writerId: (string) $writerId,
                         writerName: $writerName,
                         writerImage: $writerImage,
                         postId: (int) $post->post_id,
@@ -107,11 +107,11 @@ class SendCommentCreatedNotification
                 }
             }
 
-            if ($ownerUserId && (int) $ownerUserId === self::ADMIN_USER_ID && (int) $parentWriterId !== self::ADMIN_USER_ID) {
+            if ($ownerUserId && trim((string) $ownerUserId) === (string) self::ADMIN_USER_ID && trim((string) $parentWriterId) !== (string) self::ADMIN_USER_ID) {
                 $this->dispatch->notifyAdminDatabase([
                     'type' => 'comment.reply',
                     'actor' => [
-                        'userId' => (int) $writerId,
+                        'userId' => (string) $writerId,
                         'name' => (string) $writerName,
                         'image' => (string) $writerImage,
                     ],
@@ -150,11 +150,11 @@ class SendCommentCreatedNotification
             return;
         }
 
-        if ((int) $ownerUserId === self::ADMIN_USER_ID) {
+        if (trim((string) $ownerUserId) === (string) self::ADMIN_USER_ID) {
             $this->dispatch->notifyAdminDatabase([
                 'type' => 'comment.created',
                 'actor' => [
-                    'userId' => (int) $writerId,
+                    'userId' => (string) $writerId,
                     'name' => (string) $writerName,
                     'image' => (string) $writerImage,
                 ],
@@ -193,7 +193,7 @@ class SendCommentCreatedNotification
         }
 
         $owner->notify(new PostCommentNotification(
-            writerId: (int) $writerId,
+            writerId: (string) $writerId,
             writerName: $writerName,
             writerImage: $writerImage,
             postId: (int) $post->post_id,
@@ -234,7 +234,7 @@ class SendCommentCreatedNotification
             $this->dispatch->notifyAdminDatabase([
                 'type' => 'lesson.comment',
                 'actor' => [
-                    'userId' => (int) $writerId,
+                    'userId' => (string) $writerId,
                     'name' => (string) $writerName,
                     'image' => (string) $writerImage,
                 ],
@@ -275,11 +275,11 @@ class SendCommentCreatedNotification
             return;
         }
 
-        if ((int) $parentWriterId === self::ADMIN_USER_ID) {
+        if (trim((string) $parentWriterId) === (string) self::ADMIN_USER_ID) {
             $this->dispatch->notifyAdminDatabase([
                 'type' => 'comment.reply',
                 'actor' => [
-                    'userId' => (int) $writerId,
+                    'userId' => (string) $writerId,
                     'name' => (string) $writerName,
                     'image' => (string) $writerImage,
                 ],
@@ -321,7 +321,7 @@ class SendCommentCreatedNotification
         }
 
         $parentOwner->notify(new LessonCommentReplyNotification(
-            writerId: (int) $writerId,
+            writerId: (string) $writerId,
             writerName: $writerName,
             writerImage: $writerImage,
             lessonId: (int) $lesson->id,

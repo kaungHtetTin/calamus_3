@@ -21,15 +21,9 @@ class AccountDeletionService
             $user->user_id,
             (string) $user->user_id,
         ];
-        if (is_numeric($user->user_id)) {
-            $keys[] = (int) $user->user_id;
-        }
         if ($user->learner_phone !== null && $user->learner_phone !== '') {
             $keys[] = $user->learner_phone;
             $keys[] = (string) $user->learner_phone;
-            if (is_numeric($user->learner_phone)) {
-                $keys[] = (int) $user->learner_phone;
-            }
         }
 
         $out = [];

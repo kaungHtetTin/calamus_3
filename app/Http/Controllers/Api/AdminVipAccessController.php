@@ -138,7 +138,7 @@ class AdminVipAccessController extends Controller
         return null;
     }
 
-    public function status(Request $request, int $userId)
+    public function status(Request $request, string $userId)
     {
         $admin = $request->user();
         if (! $admin instanceof Admin) {
@@ -160,6 +160,11 @@ class AdminVipAccessController extends Controller
 
         if (!Schema::hasTable('vipusers') || !Schema::hasColumn('vipusers', 'user_id') || !Schema::hasColumn('vipusers', 'course_id')) {
             return $this->errorResponse('Vipusers table not found.', 422);
+        }
+
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return $this->errorResponse('Invalid userId.', 422);
         }
 
         $courses = Course::query()
@@ -211,7 +216,7 @@ class AdminVipAccessController extends Controller
         $packagePlan = $isDiamond === 1 ? 'diamond' : ($isVip === 1 ? 'vip' : '');
 
         $data = [
-            'userId' => (int) $userId,
+            'userId' => (string) $userId,
             'major' => $major,
             'isVip' => $isVip,
             'isDiamond' => $isDiamond,
@@ -248,7 +253,7 @@ class AdminVipAccessController extends Controller
         return $this->successResponse($data);
     }
 
-    public function update(Request $request, int $userId)
+    public function update(Request $request, string $userId)
     {
         $admin = $request->user();
         if (! $admin instanceof Admin) {
@@ -257,6 +262,11 @@ class AdminVipAccessController extends Controller
 
         if (! $admin->hasPermission('user')) {
             return $this->errorResponse('Forbidden', 403);
+        }
+
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return $this->errorResponse('Invalid userId.', 422);
         }
 
         $major = strtolower(trim((string) $request->input('major', '')));

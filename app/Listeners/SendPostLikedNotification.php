@@ -30,13 +30,13 @@ class SendPostLikedNotification
             return;
         }
 
-        if ((int) $ownerUserId === self::ADMIN_USER_ID) {
+        if (trim((string) $ownerUserId) === (string) self::ADMIN_USER_ID) {
             $major = (string) ($post->major ?? 'english');
             $writerImage = $this->formatImageUrl($liker->learner_image ?? '', 'users');
             $this->dispatch->notifyAdminDatabase([
                 'type' => 'post.like',
                 'actor' => [
-                    'userId' => (int) $liker->user_id,
+                    'userId' => (string) ($liker->user_id ?? ''),
                     'name' => (string) ($liker->learner_name ?? 'Unknown'),
                     'image' => (string) $writerImage,
                 ],
@@ -74,7 +74,7 @@ class SendPostLikedNotification
         $writerImage = $this->formatImageUrl($liker->learner_image ?? '', 'users');
 
         $owner->notify(new PostLikeNotification(
-            writerId: (int) $liker->user_id,
+            writerId: (string) ($liker->user_id ?? ''),
             writerName: $liker->learner_name ?? 'Unknown',
             writerImage: $writerImage,
             postId: (int) $post->post_id,

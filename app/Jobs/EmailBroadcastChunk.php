@@ -35,7 +35,10 @@ class EmailBroadcastChunk implements ShouldQueue
         $this->broadcastId = $broadcastId;
         $this->subject = $subject;
         $this->body = $body;
-        $this->userIds = array_values($userIds);
+        $this->userIds = array_values(array_filter(array_map(function ($value) {
+            $id = trim((string) $value);
+            return ($id !== '' && $id !== '0' && ctype_digit($id)) ? $id : null;
+        }, $userIds)));
     }
 
     public function handle(PhpMailerMailService $mail): void
@@ -67,8 +70,8 @@ class EmailBroadcastChunk implements ShouldQueue
         $delayMs = (int) config('phpmailer.broadcast_delay_ms', 0);
 
         foreach ($learners as $learner) {
-            $lastUserId = (int) ($learner->user_id ?? 0);
-            if ($processedDelta === 0 && $lastUserId !== 0) {
+            $lastUserId = trim((string) ($learner->user_id ?? ''));
+            if ($processedDelta === 0 && $lastUserId !== '' && $lastUserId !== '0') {
                 Cache::put($prefix.'last_user_id', $lastUserId, $expiresAt);
             }
             $toEmail = trim((string) ($learner->learner_email ?? ''));
@@ -115,7 +118,7 @@ class EmailBroadcastChunk implements ShouldQueue
                     Cache::increment($prefix.'failed', $failedDelta);
                 }
                 Cache::increment($prefix.'processed', $sentDelta + $failedDelta);
-                if ($lastUserId !== null) {
+                if ($lastUserId !== null && $lastUserId !== '' && $lastUserId !== '0') {
                     Cache::put($prefix.'last_user_id', $lastUserId, $expiresAt);
                 }
                 Cache::put($prefix.'status', 'running', $expiresAt);
@@ -145,7 +148,7 @@ class EmailBroadcastChunk implements ShouldQueue
             Cache::increment($prefix.'failed', $failedDelta);
         }
         Cache::increment($prefix.'processed', $sentDelta + $failedDelta);
-        if ($lastUserId !== null) {
+        if ($lastUserId !== null && $lastUserId !== '' && $lastUserId !== '0') {
             Cache::put($prefix.'last_user_id', $lastUserId, $expiresAt);
         }
         Cache::put($prefix.'status', 'running', $expiresAt);

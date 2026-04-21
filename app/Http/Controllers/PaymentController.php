@@ -89,7 +89,7 @@ class PaymentController extends Controller
             $dispatch->notifyAdminDatabase([
                 'type' => 'payment.created',
                 'actor' => [
-                    'userId' => (int) ($user->user_id ?? 0),
+                    'userId' => (string) ($user->user_id ?? ''),
                     'name' => (string) ($user->learner_name ?? ''),
                     'image' => (string) ($user->learner_image ?? ''),
                 ],
@@ -114,7 +114,7 @@ class PaymentController extends Controller
                 ]
             );
 
-            $purchasedCoursesByMajor = $this->getPurchasedCourseIdsByMajor((int) $user->user_id);
+            $purchasedCoursesByMajor = $this->getPurchasedCourseIdsByMajor((string) ($user->user_id ?? ''));
 
             return $this->successResponse($payment, 201, [
                 'message' => 'Payment submitted successfully. Please wait for approval.',
@@ -234,9 +234,10 @@ class PaymentController extends Controller
         return $this->successResponse($data, 200, $this->paginate($total, $page, $limit));
     }
 
-    private function getPurchasedCourseIdsByMajor(int $userId): array
+    private function getPurchasedCourseIdsByMajor(string $userId): array
     {
-        if ($userId <= 0) {
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
             return [];
         }
 

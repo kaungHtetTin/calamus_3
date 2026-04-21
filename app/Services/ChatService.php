@@ -83,7 +83,7 @@ class ChatService
             $receiver = Learner::where('user_id', $receiverId)->first();
             $sender = Learner::where('user_id', $senderId)->first();
 
-            if ((int) $receiverId === self::SUPPORT_ADMIN_USER_ID && $sender) {
+            if (trim((string) $receiverId) === (string) self::SUPPORT_ADMIN_USER_ID && $sender) {
                 $senderName = $sender->learner_name ?? 'Someone';
                 $senderImage = $sender->learner_image ?? '';
                 $preview = $messageText ?: ($messageType === 'image' ? 'Sent an image' : 'Sent a file');
@@ -91,7 +91,7 @@ class ChatService
                 $this->dispatch->notifyAdminDatabase([
                     'type' => 'chat.message',
                     'actor' => [
-                        'userId' => (int) $senderId,
+                        'userId' => (string) $senderId,
                         'name' => (string) $senderName,
                         'image' => (string) $senderImage,
                     ],
@@ -119,7 +119,7 @@ class ChatService
                 );
             } elseif ($receiver && $sender) {
                 $receiver->notify(new NewChatMessageNotification(
-                    senderId: (int) $senderId,
+                    senderId: (string) $senderId,
                     senderName: $sender->learner_name ?? 'Someone',
                     senderImage: $sender->learner_image ?? '',
                     messageText: $messageText ?: ($messageType === 'image' ? 'Sent an image' : 'Sent a file'),

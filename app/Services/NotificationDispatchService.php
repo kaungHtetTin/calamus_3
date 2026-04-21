@@ -19,9 +19,10 @@ class NotificationDispatchService
         $this->fcm = $fcm;
     }
 
-    public function pushToUserTokens(int $userId, string $title, string $body, array $data = [], ?string $image = null): array
+    public function pushToUserTokens(string $userId, string $title, string $body, array $data = [], ?string $image = null): array
     {
-        if ($userId <= 0) {
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
             return ['sent' => 0, 'failed' => 0];
         }
 
@@ -79,10 +80,10 @@ class NotificationDispatchService
 
     public function notifyAdminDatabase(array $data, string $typeClass = 'App\\Notifications\\AdminEvent'): ?string
     {
-        return $this->insertDatabaseNotification(self::ADMIN_USER_ID, $data, $typeClass);
+        return $this->insertDatabaseNotification((string) self::ADMIN_USER_ID, $data, $typeClass);
     }
 
-    public function notifyUserDatabase(int $userId, array $data, string $typeClass = 'App\\Notifications\\UserEvent'): ?string
+    public function notifyUserDatabase(string $userId, array $data, string $typeClass = 'App\\Notifications\\UserEvent'): ?string
     {
         return $this->insertDatabaseNotification($userId, $data, $typeClass);
     }
@@ -104,9 +105,10 @@ class NotificationDispatchService
         return $topic;
     }
 
-    private function insertDatabaseNotification(int $userId, array $data, string $typeClass): ?string
+    private function insertDatabaseNotification(string $userId, array $data, string $typeClass): ?string
     {
-        if ($userId <= 0) {
+        $userId = trim($userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
             return null;
         }
         if (!Schema::hasTable('notifications')) {

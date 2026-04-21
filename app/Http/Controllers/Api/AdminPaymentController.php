@@ -81,8 +81,8 @@ class AdminPaymentController extends Controller
         $paymentRows = collect($payments->items());
         $userIds = $paymentRows
             ->pluck('user_id')
-            ->map(fn ($v) => (int) $v)
-            ->filter(fn ($v) => $v > 0)
+            ->map(fn ($v) => trim((string) $v))
+            ->filter(fn ($v) => $v !== '' && $v !== '0' && ctype_digit($v))
             ->unique()
             ->values()
             ->all();
@@ -112,8 +112,8 @@ class AdminPaymentController extends Controller
         }
 
         $data = $paymentRows->map(function (Payment $payment) use ($learnersByUserId) {
-            $userId = (int) ($payment->user_id ?? 0);
-            $learner = $userId > 0 ? ($learnersByUserId[$userId] ?? null) : null;
+            $userId = trim((string) ($payment->user_id ?? ''));
+            $learner = ($userId !== '' && $userId !== '0') ? ($learnersByUserId[$userId] ?? null) : null;
 
             $username = '';
             $email = '';
@@ -176,8 +176,8 @@ class AdminPaymentController extends Controller
         $paymentRows = collect($payments->items());
         $userIds = $paymentRows
             ->pluck('user_id')
-            ->map(fn ($v) => (int) $v)
-            ->filter(fn ($v) => $v > 0)
+            ->map(fn ($v) => trim((string) $v))
+            ->filter(fn ($v) => $v !== '' && $v !== '0' && ctype_digit($v))
             ->unique()
             ->values()
             ->all();
@@ -207,8 +207,8 @@ class AdminPaymentController extends Controller
         }
 
         $data = $paymentRows->map(function (Payment $payment) use ($learnersByUserId) {
-            $userId = (int) ($payment->user_id ?? 0);
-            $learner = $userId > 0 ? ($learnersByUserId[$userId] ?? null) : null;
+            $userId = trim((string) ($payment->user_id ?? ''));
+            $learner = ($userId !== '' && $userId !== '0') ? ($learnersByUserId[$userId] ?? null) : null;
 
             $username = '';
             $email = '';
@@ -267,10 +267,10 @@ class AdminPaymentController extends Controller
             return $this->errorResponse('Payment is already activated.', 422);
         }
 
-        $userId = (int) ($payment->user_id ?? 0);
+        $userId = trim((string) ($payment->user_id ?? ''));
 
         $learner = null;
-        if ($userId > 0 && Schema::hasTable('learners') && Schema::hasColumn('learners', 'user_id')) {
+        if ($userId !== '' && $userId !== '0' && Schema::hasTable('learners') && Schema::hasColumn('learners', 'user_id')) {
             $nameColumn = Schema::hasColumn('learners', 'learner_name')
                 ? 'learner_name'
                 : (Schema::hasColumn('learners', 'name') ? 'name' : null);
@@ -413,8 +413,8 @@ class AdminPaymentController extends Controller
             ]);
         }
 
-        $userId = (int) ($paymentRow->user_id ?? 0);
-        if ($userId <= 0) {
+        $userId = trim((string) ($paymentRow->user_id ?? ''));
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
             return $this->errorResponse('Payment user_id is missing.', 422);
         }
 

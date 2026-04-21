@@ -52,7 +52,7 @@ class SendCommentLikedNotification
 
         $writerImage = $this->formatImageUrl($liker->learner_image ?? '', 'users');
 
-        if ((int) $ownerUserId === self::ADMIN_USER_ID) {
+        if (trim((string) $ownerUserId) === (string) self::ADMIN_USER_ID) {
             $courseId = 0;
             if ($targetType === 'lesson' && isset($lesson) && $lesson) {
                 $categoryId = (int) ($lesson->category_id ?? 0);
@@ -65,7 +65,7 @@ class SendCommentLikedNotification
             $this->dispatch->notifyAdminDatabase([
                 'type' => 'comment.like',
                 'actor' => [
-                    'userId' => (int) $liker->user_id,
+                    'userId' => (string) ($liker->user_id ?? ''),
                     'name' => (string) ($liker->learner_name ?? 'Unknown'),
                     'image' => (string) $writerImage,
                 ],
@@ -106,7 +106,7 @@ class SendCommentLikedNotification
         }
 
         $owner->notify(new CommentLikeNotification(
-            writerId: (int) $liker->user_id,
+            writerId: (string) ($liker->user_id ?? ''),
             writerName: $liker->learner_name ?? 'Unknown',
             writerImage: $writerImage,
             targetType: $targetType,

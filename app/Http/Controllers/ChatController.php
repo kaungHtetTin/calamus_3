@@ -65,7 +65,7 @@ class ChatController extends Controller
             return $this->errorResponse('Not authenticated', 401);
         }
         $conversationId = (int)$request->input('conversationId');
-        $senderId = (int)$user->user_id;
+        $senderId = trim((string) ($user->user_id ?? ''));
         $major = $request->input('major', 'english');
         $messageType = $request->input('messageType', 'text');
         $messageText = $request->input('messageText', '');
@@ -74,6 +74,9 @@ class ChatController extends Controller
 
         if ($conversationId <= 0) {
             return $this->errorResponse('conversationId is required', 400);
+        }
+        if ($senderId === '' || $senderId === '0' || !ctype_digit($senderId)) {
+            return $this->errorResponse('Invalid user id', 400);
         }
 
         try {
@@ -131,13 +134,13 @@ class ChatController extends Controller
             }
             $messageId = (int)$request->input('messageId');
             $conversationId = (int)$request->input('conversationId');
-            $userId = (int)$user->user_id;
+            $userId = trim((string) ($user->user_id ?? ''));
             $major = $request->input('major'); // Optional
 
             if ($messageId > 0) {
                 $data = $this->chatService->markMessageRead($messageId);
                 return $this->successResponse($data);
-            } elseif ($conversationId > 0 && $userId > 0) {
+            } elseif ($conversationId > 0 && $userId !== '' && $userId !== '0' && ctype_digit($userId)) {
                 $data = $this->chatService->markConversationRead($conversationId, $userId);
                 return $this->successResponse($data);
             } else {
@@ -155,8 +158,11 @@ class ChatController extends Controller
             return $this->errorResponse('Not authenticated', 401);
         }
         $conversationId = (int)$request->query('id');
-        $userId = (int)$user->user_id;
+        $userId = trim((string) ($user->user_id ?? ''));
         $major = $request->query('major'); // Optional
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return $this->errorResponse('Invalid user id', 400);
+        }
 
         try {
             if ($conversationId > 0) {
@@ -184,11 +190,14 @@ class ChatController extends Controller
         if (!$user) {
             return $this->errorResponse('Not authenticated', 401);
         }
-        $user1Id = (int)$user->user_id;
-        $user2Id = (int)$request->input('user2Id');
+        $user1Id = trim((string) ($user->user_id ?? ''));
+        $user2Id = trim((string) $request->input('user2Id'));
         $major = $request->input('major', 'english');
 
-        if ($user2Id <= 0) {
+        if ($user1Id === '' || $user1Id === '0' || !ctype_digit($user1Id)) {
+            return $this->errorResponse('Invalid user id', 400);
+        }
+        if ($user2Id === '' || $user2Id === '0' || !ctype_digit($user2Id)) {
             return $this->errorResponse('user2Id is required', 400);
         }
         if ($user1Id === $user2Id) {

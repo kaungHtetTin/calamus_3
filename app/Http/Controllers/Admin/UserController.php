@@ -301,8 +301,8 @@ class UserController extends Controller
         $paymentRows = collect($payments->items());
         $userIds = $paymentRows
             ->pluck('user_id')
-            ->map(fn ($value) => (int) $value)
-            ->filter(fn ($value) => $value > 0)
+            ->map(fn ($value) => trim((string) $value))
+            ->filter(fn ($value) => $value !== '' && $value !== '0' && ctype_digit($value))
             ->unique()
             ->values();
 
@@ -346,7 +346,7 @@ class UserController extends Controller
 
         $payments->setCollection(
             $payments->getCollection()->map(function ($paymentRow) use ($learnerNameByUserId, $courseTitleById) {
-                $userId = (int) ($paymentRow->user_id ?? 0);
+                $userId = trim((string) ($paymentRow->user_id ?? ''));
                 $name = trim((string) ($learnerNameByUserId[$userId] ?? ''));
                 $courseIds = collect($paymentRow->courses ?? [])
                     ->map(fn ($value) => (int) $value)
@@ -399,8 +399,8 @@ class UserController extends Controller
         }
 
         $paymentRow = Payment::query()->findOrFail($payment);
-        $userId = (int) ($paymentRow->user_id ?? 0);
-        if ($userId <= 0) {
+        $userId = trim((string) ($paymentRow->user_id ?? ''));
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
             throw ValidationException::withMessages([
                 'activate' => 'Payment user_id is missing.',
             ]);
@@ -566,7 +566,7 @@ class UserController extends Controller
         return redirect()->back(303);
     }
 
-    public function edit(int $id)
+    public function edit(string $id)
     {
         $admin = auth('admin')->user();
         $canManageVipAccess = $admin && method_exists($admin, 'hasPermission')
@@ -1258,7 +1258,10 @@ class UserController extends Controller
                 ->chunkById(1000, function ($rows) use ($broadcastId, $subject, $body, $prefix, $expiresAt) {
                     $ids = [];
                     foreach ($rows as $row) {
-                        $ids[] = (int) $row->user_id;
+                        $userId = trim((string) ($row->user_id ?? ''));
+                        if ($userId !== '' && $userId !== '0' && ctype_digit($userId)) {
+                            $ids[] = $userId;
+                        }
                     }
                     if (count($ids) === 0) {
                         return;
