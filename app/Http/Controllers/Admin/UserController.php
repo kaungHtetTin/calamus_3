@@ -1738,7 +1738,7 @@ class UserController extends Controller
             'shareCount' => (int) ($post->shareCount ?? 0),
             'viewCount' => (int) ($post->viewCount ?? 0),
             'isLiked' => $isLiked ? 1 : 0,
-            'userId' => (int) ($post->userId ?? 0),
+            'userId' => (string) ($post->userId ?? ''),
             'userName' => (string) ($post->userName ?? 'Anonymous'),
             'userImage' => (string) ($post->userImage ?? 'https://www.calamuseducation.com/uploads/placeholder.png'),
         ];
@@ -1889,7 +1889,7 @@ class UserController extends Controller
             'success' => true,
             'comment' => [
                 'id' => $comment->id,
-                'writerId' => (int) $comment->writer_id,
+                'writerId' => (string) ($comment->writer_id ?? ''),
                 'writerName' => 'Admin',
                 'writerImage' => 'https://www.calamuseducation.com/uploads/placeholder.png',
                 'time' => (int) $comment->time,

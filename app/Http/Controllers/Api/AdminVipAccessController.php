@@ -422,7 +422,7 @@ class AdminVipAccessController extends Controller
                 if ($toInsert->isNotEmpty()) {
                     $insertRows = $toInsert->map(function ($courseId) use ($userId, $major, $now) {
                         $row = [
-                            'user_id' => (int) $userId,
+                            'user_id' => $userId,
                             'course_id' => (int) $courseId,
                         ];
 
@@ -541,7 +541,7 @@ class AdminVipAccessController extends Controller
         }
 
         return $this->successResponse([
-            'userId' => (int) $userId,
+            'userId' => (string) $userId,
             'major' => $major,
             'isVip' => $isVipInt,
             'isDiamond' => $isDiamondInt,
