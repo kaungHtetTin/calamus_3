@@ -31,7 +31,7 @@ class InstructorController extends Controller
                 LEFT JOIN courses c ON c.teacher_id = t.id AND c.background_color != ''
                 LEFT JOIN (
                     SELECT course_id, COUNT(*) as student_count
-                    FROM VipUsers
+                    FROM vipusers
                     WHERE deleted_account = 0
                     GROUP BY course_id
                 ) student_counts ON student_counts.course_id = c.course_id
@@ -77,7 +77,7 @@ class InstructorController extends Controller
             // Get total students
             $totalStudentsQuery = "
                 SELECT count(*) as total_student 
-                FROM VipUsers 
+                FROM vipusers 
                 JOIN courses USING (course_id) 
                 JOIN teachers ON teachers.id = courses.teacher_id 
                 WHERE teachers.id = ?
@@ -115,7 +115,7 @@ class InstructorController extends Controller
 
             $formattedCourses = array_map(function ($course) {
                 // Get enrolled students for this course
-                $enrolled = DB::table('VipUsers')
+                    $enrolled = DB::table('vipusers')
                     ->where('course_id', $course->course_id)
                     ->where('deleted_account', 0)
                     ->count();

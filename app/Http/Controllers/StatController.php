@@ -36,7 +36,7 @@ class StatController extends Controller
                 ->count('teacher_id');
 
             // Total enrolled students
-            $totalStudents = DB::table('VipUsers')->distinct('phone')->count('phone');
+            $totalStudents = DB::table('vipusers')->distinct('phone')->count('phone');
 
             // Average rating
             $avgRating = DB::table('courses')
