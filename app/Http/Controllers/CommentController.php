@@ -215,7 +215,7 @@ class CommentController extends Controller
         }
 
         $comment = new Comment();
-        $comment->post_id = $target['type'] === 'post' ? $target['id'] : 0; // backward compatibility
+        $comment->post_id = $target['type'] === 'post' ? $target['id'] : null; // backward compatibility
         $comment->target_type = $target['type'];
         $comment->target_id = $target['id'];
         $comment->writer_id = $user->user_id;

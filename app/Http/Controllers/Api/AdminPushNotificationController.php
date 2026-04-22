@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendFcmToTopic;
 use App\Models\Language;
-use App\Services\FcmService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +13,16 @@ class AdminPushNotificationController extends Controller
 {
     use ApiResponse;
 
-    public function sendToUserTopics(Request $request, FcmService $fcm)
+    public function sendToUserTopics(Request $request)
     {
+        $queueConnection = (string) config('queue.default', 'sync');
+        if ($queueConnection === 'sync') {
+            return $this->errorResponse(
+                'Push requires an async queue (QUEUE_CONNECTION=database or redis). Current QUEUE_CONNECTION is sync.',
+                422
+            );
+        }
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:120'],
             'body' => ['required', 'string', 'max:500'],
@@ -88,8 +96,6 @@ class AdminPushNotificationController extends Controller
         $image = $image !== '' ? $image : null;
         $extraData = is_array($data['data'] ?? null) ? $data['data'] : [];
 
-        $sent = 0;
-        $failed = 0;
         $results = [];
 
         foreach ($topics as $row) {
@@ -101,23 +107,17 @@ class AdminPushNotificationController extends Controller
                 'topic' => $topic,
             ]);
 
-            $ok = $fcm->sendTopic($topic, $title, $body, $payload, $image);
-            if ($ok) {
-                $sent++;
-            } else {
-                $failed++;
-            }
+            dispatch(new SendFcmToTopic($topic, $title, $body, $payload, $image));
 
             $results[] = [
                 'topic' => $topic,
                 'major' => $major,
-                'ok' => (bool) $ok,
+                'queued' => true,
             ];
         }
 
         return $this->successResponse([
-            'sentTopics' => $sent,
-            'failedTopics' => $failed,
+            'queuedTopics' => $topics->count(),
             'results' => $results,
         ]);
     }

@@ -118,13 +118,26 @@ class ChatService
                     $senderImage !== '' ? $senderImage : null
                 );
             } elseif ($receiver && $sender) {
-                $receiver->notify(new NewChatMessageNotification(
-                    senderId: (string) $senderId,
-                    senderName: $sender->learner_name ?? 'Someone',
-                    senderImage: $sender->learner_image ?? '',
-                    messageText: $messageText ?: ($messageType === 'image' ? 'Sent an image' : 'Sent a file'),
-                    conversationId: (int) $conversationId
-                ));
+                $senderName = $sender->learner_name ?? 'Someone';
+                $senderImage = $sender->learner_image ?? '';
+                $preview = $messageText ?: ($messageType === 'image' ? 'Sent an image' : 'Sent a file');
+
+                $this->dispatch->pushChatToUserTokensPreferRecentMajor(
+                    userId: (string) $receiverId,
+                    title: (string) $senderName,
+                    body: (string) $preview,
+                    data: [
+                        'type' => 'chat.message',
+                        'navigation' => [
+                            'routeName' => 'ChatDetail',
+                            'params' => [
+                                'conversationId' => (string) $conversationId,
+                                'friendId' => (string) $senderId,
+                            ],
+                        ],
+                    ],
+                    image: $senderImage !== '' ? $senderImage : null
+                );
             }
 
             return $this->convertTimestamps($message->toArray());

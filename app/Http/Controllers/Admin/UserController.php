@@ -7,6 +7,8 @@ use App\Events\CommentCreated;
 use App\Events\CommentLiked;
 use App\Events\PostLiked;
 use App\Jobs\EmailBroadcastChunk;
+use App\Jobs\SendFcmToTokens;
+use App\Jobs\SendFcmToTopic;
 use App\Models\Language;
 use App\Models\Comment;
 use App\Models\Learner;
@@ -966,8 +968,10 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'VIP access updated successfully.');
     }
 
-    public function sendPush(Request $request, int $id, FcmService $fcm)
+    public function sendPush(Request $request, int $id)
     {
+        $queueConnection = (string) config('queue.default', 'sync');
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:120'],
             'body' => ['required', 'string', 'max:500'],
@@ -1047,37 +1051,26 @@ class UserController extends Controller
             ]);
         }
 
-        $successCount = 0;
-        $failCount = 0;
-
-        foreach ($tokens as $token) {
-            $ok = $fcm->sendPush(
-                $token,
-                $data['title'],
-                $data['body'],
-                [
-                    'user_id' => (string) $id,
-                    'major' => $data['major'],
-                    'platform' => $platform,
-                ]
+        if ($queueConnection === 'sync') {
+            return redirect()->back()->with(
+                'error',
+                'Push requires an async queue (QUEUE_CONNECTION=database or redis). Current QUEUE_CONNECTION is sync.'
             );
-
-            if ($ok) {
-                $successCount++;
-            } else {
-                $failCount++;
-            }
         }
 
-        if ($successCount === 0) {
-            return redirect()->back()->with('error', "Push failed for all devices ({$failCount}).");
-        }
+        dispatch(new SendFcmToTokens(
+            tokens: $tokens,
+            title: (string) $data['title'],
+            body: (string) $data['body'],
+            data: [
+                'source' => 'admin',
+                'user_id' => (string) $id,
+                'major' => (string) $data['major'],
+                'platform' => (string) $platform,
+            ]
+        ));
 
-        if ($failCount > 0) {
-            return redirect()->back()->with('success', "Push sent to {$successCount} devices. Failed: {$failCount}.");
-        }
-
-        return redirect()->back()->with('success', "Push sent to {$successCount} devices.");
+        return redirect()->back()->with('success', 'Push queued for delivery.');
     }
 
     public function pushTopicForm()
@@ -1092,8 +1085,10 @@ class UserController extends Controller
         ]);
     }
 
-    public function pushTopicSend(Request $request, FcmService $fcm)
+    public function pushTopicSend(Request $request)
     {
+        $queueConnection = (string) config('queue.default', 'sync');
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:120'],
             'body' => ['required', 'string', 'max:500'],
@@ -1130,39 +1125,30 @@ class UserController extends Controller
             ]);
         }
 
-        $successCount = 0;
-        $failCount = 0;
         $image = trim((string) ($data['image'] ?? ''));
         $image = $image !== '' ? $image : null;
 
+        if ($queueConnection === 'sync') {
+            return redirect()->back()->with(
+                'error',
+                'Push requires an async queue (QUEUE_CONNECTION=database or redis). Current QUEUE_CONNECTION is sync.'
+            );
+        }
+
         foreach ($topics as $topic) {
-            $ok = $fcm->sendTopic(
-                (string) $topic,
-                (string) $data['title'],
-                (string) $data['body'],
-                [
+            dispatch(new SendFcmToTopic(
+                topic: (string) $topic,
+                title: (string) $data['title'],
+                body: (string) $data['body'],
+                data: [
                     'source' => 'admin',
                     'topic' => (string) $topic,
                 ],
-                $image
-            );
-
-            if ($ok) {
-                $successCount++;
-            } else {
-                $failCount++;
-            }
+                image: $image
+            ));
         }
 
-        if ($successCount === 0) {
-            return redirect()->back()->with('error', "Push failed for all topics ({$failCount}).");
-        }
-
-        if ($failCount > 0) {
-            return redirect()->back()->with('success', "Push sent to {$successCount} topics. Failed: {$failCount}.");
-        }
-
-        return redirect()->back()->with('success', "Push sent to {$successCount} topics.");
+        return redirect()->back()->with('success', 'Push queued for delivery.');
     }
 
     public function emailBroadcastForm()

@@ -98,9 +98,9 @@ class SupportChatController extends Controller
             ];
 
             if ($fileUrl !== '') {
-                $dispatch->pushToUserTokens($receiverId, 'Support', $pushBody, $payload, $fileUrl);
+                $dispatch->queuePushToUserTokens($receiverId, 'Support', $pushBody, $payload, $fileUrl);
             } else {
-                $dispatch->pushToUserTokens($receiverId, 'Support', $pushBody, $payload);
+                $dispatch->queuePushToUserTokens($receiverId, 'Support', $pushBody, $payload);
             }
         }
 

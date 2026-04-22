@@ -486,7 +486,7 @@ class LessonController extends Controller
         }
 
         $comment = new Comment();
-        $comment->post_id = 0;
+        $comment->post_id = null;
         $comment->target_type = 'lesson';
         $comment->target_id = $lessonId;
         $comment->writer_id = $user->user_id;

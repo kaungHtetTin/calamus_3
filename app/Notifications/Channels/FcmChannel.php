@@ -2,17 +2,12 @@
 
 namespace App\Notifications\Channels;
 
+use App\Jobs\SendFcmToTokens;
 use App\Models\UserData;
-use App\Services\FcmService;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Log;
 
 class FcmChannel
 {
-    public function __construct(
-        protected FcmService $fcmService
-    ) {}
-
     public function send($notifiable, Notification $notification): void
     {
         if (!method_exists($notification, 'toFcm')) {
@@ -26,25 +21,28 @@ class FcmChannel
 
         $userId = $notifiable->user_id;
         $userDatas = UserData::where('user_id', $userId)->get();
+        $tokens = [];
         foreach ($userDatas as $userData) {
-            if (!empty($userData->token)) {
-                $this->sendToTokens($userData->token, $fcmData);
+            $rowTokens = is_array($userData->token) ? $userData->token : [];
+            foreach ($rowTokens as $platform => $token) {
+                $token = trim((string) $token);
+                if ($token !== '') {
+                    $tokens[] = $token;
+                }
             }
         }
-    }
 
-    protected function sendToTokens(array $tokens, array $fcmData): void
-    {
-        foreach ($tokens as $platform => $token) {
-            if (empty($token)) continue;
-
-            $this->fcmService->sendPush(
-                token: $token,
-                title: $fcmData['title'],
-                body: $fcmData['body'],
-                data: $fcmData['data'] ?? [],
-                image: $fcmData['image'] ?? null
-            );
+        $tokens = array_values(array_unique($tokens));
+        if ($tokens === []) {
+            return;
         }
+
+        dispatch(new SendFcmToTokens(
+            tokens: $tokens,
+            title: (string) ($fcmData['title'] ?? ''),
+            body: (string) ($fcmData['body'] ?? ''),
+            data: is_array($fcmData['data'] ?? null) ? $fcmData['data'] : [],
+            image: isset($fcmData['image']) && is_string($fcmData['image']) ? $fcmData['image'] : null
+        ));
     }
 }
