@@ -120,7 +120,7 @@ class MigrateLegacyData extends Command
 
         // We can do this with a single query, much faster than chunking
         try {
-            DB::statement('UPDATE learners SET user_id = learner_phone WHERE user_id IS NULL AND learner_phone IS NOT NULL');
+            DB::statement('UPDATE learners SET user_id = learner_phone WHERE (user_id IS NULL OR user_id = 0) AND learner_phone IS NOT NULL');
             $this->info('Learner IDs updated successfully.');
         } catch (\Exception $e) {
             $this->error('Failed to update learner IDs: '.$e->getMessage());
@@ -144,7 +144,7 @@ class MigrateLegacyData extends Command
         }
 
         try {
-            DB::statement('UPDATE posts SET user_id = learner_id WHERE user_id IS NULL AND learner_id IS NOT NULL');
+            DB::statement('UPDATE posts SET user_id = learner_id WHERE (user_id IS NULL OR user_id = 0) AND learner_id IS NOT NULL');
             $this->info('Post User IDs updated successfully.');
         } catch (\Exception $e) {
             $this->error('Failed to update post user IDs: '.$e->getMessage());
@@ -168,7 +168,7 @@ class MigrateLegacyData extends Command
         }
 
         try {
-            DB::statement('UPDATE studies SET user_id = learner_id WHERE user_id IS NULL AND learner_id IS NOT NULL');
+            DB::statement('UPDATE studies SET user_id = learner_id WHERE (user_id IS NULL OR user_id = 0) AND learner_id IS NOT NULL');
             $this->info('Study User IDs updated successfully.');
         } catch (\Exception $e) {
             $this->error('Failed to update study user IDs: '.$e->getMessage());
@@ -192,7 +192,7 @@ class MigrateLegacyData extends Command
         }
 
         try {
-            DB::statement('UPDATE vipusers SET user_id = phone WHERE user_id IS NULL AND phone IS NOT NULL');
+            DB::statement('UPDATE vipusers SET user_id = phone WHERE (user_id IS NULL OR user_id = 0) AND phone IS NOT NULL');
             $this->info('VIP User IDs updated successfully.');
         } catch (\Exception $e) {
             $this->error('Failed to update VIP user IDs: '.$e->getMessage());
