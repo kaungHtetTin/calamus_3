@@ -903,7 +903,6 @@ class UserController extends Controller
                     [
                         'is_vip' => $vipAccess,
                         'diamond_plan' => $diamondPlan,
-                        'is_registration'=>1,
                         'updated_at' => $now,
                         'created_at' => $now,
                     ]
