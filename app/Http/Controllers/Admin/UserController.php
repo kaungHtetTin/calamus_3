@@ -99,7 +99,8 @@ class UserController extends Controller
      */
     public function analysis(Request $request)
     {
-        $userDataQuery = UserData::query();
+        $userDataQuery = DB::table('user_data as ud')
+            ->join('learners as l', 'l.user_id', '=', 'ud.user_id');
         $selectedLanguageId = (string) $request->input('language_id', 'all');
         $languages = Language::where('is_active', 1)
             ->orderBy('sort_order')
@@ -109,7 +110,7 @@ class UserController extends Controller
         $today = Carbon::today();
 
         $appUsers = (clone $userDataQuery)
-            ->selectRaw("LOWER(COALESCE(NULLIF(major, ''), 'unknown')) as app_scope, COUNT(DISTINCT user_id) as count")
+            ->selectRaw("LOWER(COALESCE(NULLIF(ud.major, ''), 'unknown')) as app_scope, COUNT(DISTINCT l.user_id) as count")
             ->groupBy('app_scope')
             ->orderByDesc('count')
             ->get()
@@ -123,9 +124,9 @@ class UserController extends Controller
             });
 
         $todayRegistrations = (clone $userDataQuery)
-            ->whereNotNull('first_join')
-            ->whereDate('first_join', $today->toDateString())
-            ->selectRaw("LOWER(COALESCE(NULLIF(major, ''), 'unknown')) as app_scope, COUNT(DISTINCT user_id) as count")
+            ->whereNotNull('ud.first_join')
+            ->whereDate('ud.first_join', $today->toDateString())
+            ->selectRaw("LOWER(COALESCE(NULLIF(ud.major, ''), 'unknown')) as app_scope, COUNT(DISTINCT l.user_id) as count")
             ->groupBy('app_scope')
             ->orderByDesc('count')
             ->get()
@@ -145,10 +146,10 @@ class UserController extends Controller
             });
 
         $last7RegistrationsRows = (clone $userDataQuery)
-            ->whereNotNull('first_join')
-            ->whereDate('first_join', '>=', $weekStart->toDateString())
-            ->whereDate('first_join', '<=', $today->toDateString())
-            ->selectRaw("DATE(first_join) as join_date, LOWER(COALESCE(NULLIF(major, ''), 'unknown')) as app_scope, COUNT(DISTINCT user_id) as count")
+            ->whereNotNull('ud.first_join')
+            ->whereDate('ud.first_join', '>=', $weekStart->toDateString())
+            ->whereDate('ud.first_join', '<=', $today->toDateString())
+            ->selectRaw("DATE(ud.first_join) as join_date, LOWER(COALESCE(NULLIF(ud.major, ''), 'unknown')) as app_scope, COUNT(DISTINCT l.user_id) as count")
             ->groupBy('join_date', 'app_scope')
             ->orderBy('join_date')
             ->get();
@@ -211,9 +212,9 @@ class UserController extends Controller
                     $activityQuery->where(function ($query) use ($aliases) {
                         foreach ($aliases as $index => $alias) {
                             if ($index === 0) {
-                                $query->whereRaw('LOWER(major) = ?', [$alias]);
+                                $query->whereRaw('LOWER(ud.major) = ?', [$alias]);
                             } else {
-                                $query->orWhereRaw('LOWER(major) = ?', [$alias]);
+                                $query->orWhereRaw('LOWER(ud.major) = ?', [$alias]);
                             }
                         }
                     });
@@ -224,9 +225,9 @@ class UserController extends Controller
         }
 
         $activityLookup = $activityQuery
-            ->whereNotNull('last_active')
-            ->whereDate('last_active', '>=', $weekStart->toDateString())
-            ->selectRaw('DATE(last_active) as activity_date, COUNT(DISTINCT user_id) as count')
+            ->whereNotNull('ud.last_active')
+            ->whereDate('ud.last_active', '>=', $weekStart->toDateString())
+            ->selectRaw('DATE(ud.last_active) as activity_date, COUNT(DISTINCT l.user_id) as count')
             ->groupBy('activity_date')
             ->pluck('count', 'activity_date');
 
