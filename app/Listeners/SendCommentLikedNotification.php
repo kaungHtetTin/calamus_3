@@ -94,8 +94,7 @@ class SendCommentLikedNotification
                     'courseId' => (string) $courseId,
                     'commentId' => (string) ($comment->time ?? ''),
                     'major' => strtolower(trim($major)),
-                ],
-                $writerImage !== '' ? $writerImage : null
+                ]
             );
             return;
         }

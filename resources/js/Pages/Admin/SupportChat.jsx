@@ -436,13 +436,23 @@ export default function SupportChat() {
     <AdminLayout>
       <Head title="Support Chat" />
 
-      <Box sx={{ height: 'calc(100vh - 80px)', overflow: 'hidden' }}>
+      <Box
+        sx={{
+          height: 'calc(100vh - 80px)',
+          '@supports (height: 100dvh)': {
+            height: 'calc(100dvh - 80px)',
+          },
+          overflow: 'hidden',
+        }}
+      >
       <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden', height: '100%' }}>
         <Stack direction={{ xs: 'column', md: 'row' }} sx={{ height: '100%', minHeight: 0 }}>
             <Box
               sx={{
                 width: { xs: '100%', md: 320 },
+                flex: { xs: '0 0 40%', md: '0 0 320px' },
                 borderRight: { md: '1px solid' },
+                borderBottom: { xs: '1px solid', md: 'none' },
                 borderColor: 'divider',
                 display: 'flex',
                 flexDirection: 'column',

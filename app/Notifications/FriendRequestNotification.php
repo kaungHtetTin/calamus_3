@@ -50,7 +50,6 @@ class FriendRequestNotification extends Notification
         return [
             'title' => $title,
             'body' => $body,
-            'image' => $this->senderImage,
             'data' => [
                 'type' => 'friend.' . $this->type,
                 'navigation' => [

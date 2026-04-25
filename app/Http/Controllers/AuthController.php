@@ -29,6 +29,7 @@ class AuthController extends Controller
             'email' => 'required_without:phone|email|max:100',
             'password' => 'required|string',
             'fcmToken' => 'nullable|string|max:500',
+            'platform' => 'nullable|string|in:ios,android,andorid',
         ]);
 
         if ($validator->fails()) {
@@ -39,10 +40,11 @@ class AuthController extends Controller
         $password = $request->input('password');
         $major = $request->input('major');
         $deviceType = $request->input('deviceType', 'mobile');
+        $platform = $request->input('platform');
         $fcmToken = $request->input('fcmToken');
 
         try {
-            $data = $this->authService->login($identifier, $password, $major, $deviceType, $fcmToken);
+            $data = $this->authService->login($identifier, $password, $major, $deviceType, $fcmToken, $platform);
 
             return $this->successResponse($data);
         } catch (\Exception $e) {
@@ -63,6 +65,7 @@ class AuthController extends Controller
         $email = trim($input['email'] ?? '');
         $password = $input['password'] ?? '';
         $fcmToken = trim((string) ($input['fcmToken'] ?? ''));
+        $platform = strtolower(trim((string) ($input['platform'] ?? '')));
 
         $errors = [];
         if ($name === '') {
@@ -94,6 +97,9 @@ class AuthController extends Controller
         }
         if ($fcmToken !== '' && strlen($fcmToken) > 500) {
             $errors[] = 'FCM token is too long';
+        }
+        if ($platform !== '' && ! in_array($platform, ['ios', 'android', 'andorid'], true)) {
+            $errors[] = 'Invalid platform';
         }
 
         $major = strtolower(trim((string) ($input['major'] ?? '')));
@@ -153,9 +159,31 @@ class AuthController extends Controller
         }
 
         $major = $request->input('major');
+        $fcmToken = $request->input('fcmToken');
+        $platform = $request->input('platform');
+        $deviceType = $request->input('deviceType', 'mobile');
+
+        $platformNormalized = strtolower(trim((string) ($platform ?? '')));
+        if ($platformNormalized !== '' && ! in_array($platformNormalized, ['ios', 'android', 'andorid'], true)) {
+            return $this->errorResponse('Invalid platform', 400);
+        }
+
+        if (is_string($fcmToken) && trim($fcmToken) !== '' && strlen((string) $fcmToken) > 500) {
+            return $this->errorResponse('FCM token is too long', 400);
+        }
         
         if ($major) {
             $this->authService->ensureUserDataRows((string) $user->user_id, $major);
+        }
+
+        if (is_string($fcmToken) && trim($fcmToken) !== '' && is_string($major) && trim($major) !== '') {
+            $this->authService->syncFcmTokenForUser(
+                userId: (string) $user->user_id,
+                major: (string) $major,
+                fcmToken: (string) $fcmToken,
+                platform: $platformNormalized !== '' ? $platformNormalized : null,
+                deviceType: (string) $deviceType
+            );
         }
         
         $blueMarkAccess = $this->authService->resolveBlueMarkAccess((string) $user->user_id, $major);

@@ -82,6 +82,8 @@ class ChatService
             // Send Push Notification to receiver
             $receiver = Learner::where('user_id', $receiverId)->first();
             $sender = Learner::where('user_id', $senderId)->first();
+            $isImageMessage = trim((string) $messageType) === 'image' && trim((string) $filePath) !== '';
+            $pushImage = $isImageMessage ? $this->normalizePushImageUrl((string) $filePath) : null;
 
             if (trim((string) $receiverId) === (string) self::SUPPORT_ADMIN_USER_ID && $sender) {
                 $senderName = $sender->learner_name ?? 'Someone';
@@ -114,8 +116,10 @@ class ChatService
                         'type' => 'chat.support',
                         'conversationId' => (string) $conversationId,
                         'senderId' => (string) $senderId,
+                        'image' => $isImageMessage ? 'true' : 'false',
+                        'imageUrl' => $pushImage ? (string) $pushImage : '',
                     ],
-                    $senderImage !== '' ? $senderImage : null
+                    $pushImage
                 );
             } elseif ($receiver && $sender) {
                 $senderName = $sender->learner_name ?? 'Someone';
@@ -135,8 +139,10 @@ class ChatService
                                 'friendId' => (string) $senderId,
                             ],
                         ],
+                        'image' => $isImageMessage ? 'true' : 'false',
+                        'imageUrl' => $pushImage ? (string) $pushImage : '',
                     ],
-                    image: $senderImage !== '' ? $senderImage : null
+                    image: $pushImage
                 );
             }
 
@@ -144,6 +150,26 @@ class ChatService
         } else {
             throw new \Exception('Failed to send message');
         }
+    }
+
+    private function normalizePushImageUrl(string $filePath): ?string
+    {
+        $filePath = trim($filePath);
+        if ($filePath === '') {
+            return null;
+        }
+
+        if (Str::startsWith($filePath, ['http://', 'https://'])) {
+            return $filePath;
+        }
+
+        $appUrl = (string) (config('app.url') ?: env('APP_URL', ''));
+        $appUrl = rtrim($appUrl, '/');
+        if ($appUrl === '') {
+            return $filePath;
+        }
+
+        return $appUrl . '/' . ltrim($filePath, '/');
     }
 
     public function uploadImage($file)

@@ -766,8 +766,7 @@ class CourseController extends Controller
                 'major' => strtolower($major),
                 'lessonId' => (string) ($lesson->id ?? ''),
                 'courseId' => (string) ($course->course_id ?? ''),
-            ],
-            $thumbnailUrl !== '' ? $thumbnailUrl : null
+            ]
         );
 
         return redirect()->back()->with('success', 'Lesson created successfully.');

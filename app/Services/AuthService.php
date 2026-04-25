@@ -45,7 +45,7 @@ class AuthService
         ];
     }
 
-    public function login($identifier, $password, $major = null, $deviceType = 'mobile', $fcmToken = null)
+    public function login($identifier, $password, $major = null, $deviceType = 'mobile', $fcmToken = null, $platform = null)
     {
         $user = null;
 
@@ -85,7 +85,8 @@ class AuthService
         $user->auth_token = $plainTextToken;
         $user->save();
         $this->ensureUserDataRows((string) $user->user_id, $major);
-        $this->syncFcmToken((string) $user->user_id, $major, $fcmToken, $deviceType);
+        $fcmDevice = trim((string) ($platform ?? '')) !== '' ? (string) $platform : (string) $deviceType;
+        $this->syncFcmToken((string) $user->user_id, $major, $fcmToken, $fcmDevice);
 
         return [
             'token' => $plainTextToken,
@@ -101,6 +102,7 @@ class AuthService
         $password = $data['password'] ?? '';
         $fcmToken = trim((string) ($data['fcmToken'] ?? ''));
         $deviceType = trim((string) ($data['deviceType'] ?? 'mobile'));
+        $platform = trim((string) ($data['platform'] ?? ''));
         $major = strtolower(trim((string) ($data['major'] ?? '')));
 
         // Validations (Service level validations could be more robust, but kept simple here)
@@ -160,7 +162,8 @@ class AuthService
 
             $this->ensureUserDataRows($userId, $major);
 
-            $this->syncFcmToken($userId, $major !== '' ? $major : null, $fcmToken, $deviceType);
+            $fcmDevice = $platform !== '' ? $platform : $deviceType;
+            $this->syncFcmToken($userId, $major !== '' ? $major : null, $fcmToken, $fcmDevice);
 
             DB::commit();
 
@@ -198,6 +201,12 @@ class AuthService
             $user->auth_token = '';
             $user->save();
         }
+    }
+
+    public function syncFcmTokenForUser(string $userId, ?string $major, ?string $fcmToken, ?string $platform = null, ?string $deviceType = null): void
+    {
+        $fcmDevice = trim((string) ($platform ?? '')) !== '' ? (string) $platform : (string) ($deviceType ?? 'mobile');
+        $this->syncFcmToken($userId, $major, $fcmToken, $fcmDevice);
     }
 
     public function formatUser($user, ?bool $blueMarkAccess = null, ?bool $diamondPlan = null)

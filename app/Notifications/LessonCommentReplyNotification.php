@@ -35,7 +35,6 @@ class LessonCommentReplyNotification extends Notification
             'major' => $this->major,
             'title' => 'New Reply',
             'body' => "{$this->writerName} replied to your comment on: " . \Illuminate\Support\Str::limit($this->lessonTitle, 50),
-            'image' => $this->writerImage,
             'data' => [
                 'type' => 'lesson.comment_reply',
                 'navigation' => [

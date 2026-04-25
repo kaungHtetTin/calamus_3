@@ -715,7 +715,21 @@ export default function AdminLayout({ children }) {
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 2, mt: 6, bgcolor: 'background.default', minHeight: '100vh' }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          px: 2,
+          pb: 2,
+          pt: 8,
+          boxSizing: 'border-box',
+          bgcolor: 'background.default',
+          minHeight: '100vh',
+          '@supports (min-height: 100dvh)': {
+            minHeight: '100dvh',
+          },
+        }}
+      >
         {children}
       </Box>
       </Box>

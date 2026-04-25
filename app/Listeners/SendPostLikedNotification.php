@@ -59,8 +59,7 @@ class SendPostLikedNotification
                     'type' => 'post.like',
                     'postId' => (string) ($post->post_id ?? ''),
                     'major' => strtolower(trim($major)),
-                ],
-                $writerImage !== '' ? $writerImage : null
+                ]
             );
             return;
         }

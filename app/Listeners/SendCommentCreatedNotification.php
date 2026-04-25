@@ -87,8 +87,7 @@ class SendCommentCreatedNotification
                         'postId' => (string) ($post->post_id ?? ''),
                         'commentId' => (string) ($comment->time ?? ''),
                         'major' => strtolower(trim($major)),
-                    ],
-                    $writerImage !== '' ? $writerImage : null
+                    ]
                 );
             } else {
                 $parentOwner = Learner::where('user_id', $parentWriterId)->first();
@@ -138,8 +137,7 @@ class SendCommentCreatedNotification
                         'postId' => (string) ($post->post_id ?? ''),
                         'commentId' => (string) ($comment->time ?? ''),
                         'major' => strtolower(trim($major)),
-                    ],
-                    $writerImage !== '' ? $writerImage : null
+                    ]
                 );
             }
 
@@ -181,8 +179,7 @@ class SendCommentCreatedNotification
                     'postId' => (string) ($post->post_id ?? ''),
                     'commentId' => (string) ($comment->time ?? ''),
                     'major' => strtolower(trim($major)),
-                ],
-                $writerImage !== '' ? $writerImage : null
+                ]
             );
             return;
         }
@@ -263,8 +260,7 @@ class SendCommentCreatedNotification
                     'courseId' => (string) $courseId,
                     'commentId' => (string) ($comment->time ?? ''),
                     'major' => strtolower(trim($major)),
-                ],
-                $writerImage !== '' ? $writerImage : null
+                ]
             );
             return;
         }
@@ -309,8 +305,7 @@ class SendCommentCreatedNotification
                     'courseId' => (string) $courseId,
                     'commentId' => (string) ($comment->time ?? ''),
                     'major' => strtolower(trim($major)),
-                ],
-                $writerImage !== '' ? $writerImage : null
+                ]
             );
             return;
         }

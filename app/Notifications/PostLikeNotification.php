@@ -31,7 +31,6 @@ class PostLikeNotification extends Notification
             'major' => $this->major,
             'title' => 'Post Liked',
             'body' => "{$this->writerName} liked your post: " . \Illuminate\Support\Str::limit($this->postBody, 50),
-            'image' => $this->writerImage,
             'data' => [
                 'type' => 'post.like',
                 'navigation' => [

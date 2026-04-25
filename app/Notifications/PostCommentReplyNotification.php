@@ -33,7 +33,6 @@ class PostCommentReplyNotification extends Notification
             'major' => $this->major,
             'title' => 'New Reply',
             'body' => "{$this->writerName} replied to your comment on: " . \Illuminate\Support\Str::limit($this->postBody, 50),
-            'image' => $this->writerImage,
             'data' => [
                 'type' => 'post.comment_reply',
                 'navigation' => [

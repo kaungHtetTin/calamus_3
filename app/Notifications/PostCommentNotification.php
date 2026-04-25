@@ -33,7 +33,6 @@ class PostCommentNotification extends Notification
             'major' => $this->major,
             'title' => 'New Comment',
             'body' => "{$this->writerName} commented on your post: " . \Illuminate\Support\Str::limit($this->postBody, 50),
-            'image' => $this->writerImage,
             'data' => [
                 'type' => 'post.comment',
                 'navigation' => [

@@ -42,7 +42,6 @@ class CommentLikeNotification extends Notification
             'major' => $this->major,
             'title' => 'Comment Liked',
             'body' => "{$this->writerName} liked your comment on " . ($this->targetType === 'post' ? 'a post' : 'a lesson'),
-            'image' => $this->writerImage,
             'data' => [
                 'type' => 'comment.like',
                 'navigation' => [

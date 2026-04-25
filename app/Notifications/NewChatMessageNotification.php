@@ -28,7 +28,6 @@ class NewChatMessageNotification extends Notification
         return [
             'title' => $this->senderName,
             'body' => $this->messageText ?: 'Sent a file',
-            'image' => $this->senderImage,
             'data' => [
                 'type' => 'chat.message',
                 'navigation' => [
