@@ -1,416 +1,416 @@
 {
-  "_Add-c34d0180.js": {
-    "file": "assets/Add-c34d0180.js",
+  "_Add-d874e1ee.js": {
+    "file": "assets/Add-d874e1ee.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_AdminLayout-0aa3c0a9.js": {
-    "file": "assets/AdminLayout-0aa3c0a9.js",
+  "_AdminLayout-f584730c.js": {
+    "file": "assets/AdminLayout-f584730c.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_IconButton-18beae98.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js"
+      "_Stack-f3c6362a.js",
+      "_IconButton-d91c78a1.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js"
     ]
   },
-  "_Alert-f3836353.js": {
-    "file": "assets/Alert-f3836353.js",
+  "_Alert-db6ac059.js": {
+    "file": "assets/Alert-db6ac059.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_IconButton-18beae98.js"
+      "_Stack-f3c6362a.js",
+      "_IconButton-d91c78a1.js"
     ]
   },
-  "_Audiotrack-1b76348f.js": {
-    "file": "assets/Audiotrack-1b76348f.js",
+  "_Audiotrack-8750ea45.js": {
+    "file": "assets/Audiotrack-8750ea45.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Select-18a804a8.js",
-      "_Alert-f3836353.js",
-      "_IconButton-18beae98.js",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Chip-3d92267c.js"
+      "_Stack-f3c6362a.js",
+      "_Select-9b690018.js",
+      "_Alert-db6ac059.js",
+      "_IconButton-d91c78a1.js",
+      "_AdminLayout-f584730c.js",
+      "_Chip-62a06b69.js"
     ]
   },
-  "_Avatar-be48db2a.js": {
-    "file": "assets/Avatar-be48db2a.js",
+  "_Avatar-03707842.js": {
+    "file": "assets/Avatar-03707842.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_BarChart-f18e7268.js": {
-    "file": "assets/BarChart-f18e7268.js",
+  "_BarChart-e7179e53.js": {
+    "file": "assets/BarChart-e7179e53.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_CardContent-9f530e4f.js": {
-    "file": "assets/CardContent-9f530e4f.js",
+  "_CardContent-0ba9311d.js": {
+    "file": "assets/CardContent-0ba9311d.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Checkbox-ab0c6784.js": {
-    "file": "assets/Checkbox-ab0c6784.js",
+  "_Checkbox-94546cff.js": {
+    "file": "assets/Checkbox-94546cff.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_SwitchBase-e7eaca51.js"
+      "_Stack-f3c6362a.js",
+      "_SwitchBase-735e09bd.js"
     ]
   },
-  "_Chip-3d92267c.js": {
-    "file": "assets/Chip-3d92267c.js",
+  "_Chip-62a06b69.js": {
+    "file": "assets/Chip-62a06b69.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Clear-e33466fc.js": {
-    "file": "assets/Clear-e33466fc.js",
+  "_Clear-c42cb8e5.js": {
+    "file": "assets/Clear-c42cb8e5.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Close-4c986540.js": {
-    "file": "assets/Close-4c986540.js",
+  "_Close-a31c2d13.js": {
+    "file": "assets/Close-a31c2d13.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_CommentItem-8461586e.js": {
-    "file": "assets/CommentItem-8461586e.js",
+  "_CommentItem-f6d8de4a.js": {
+    "file": "assets/CommentItem-f6d8de4a.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Avatar-be48db2a.js",
-      "_TextField-a1aab4aa.js",
-      "_IconButton-18beae98.js",
-      "_Close-4c986540.js",
-      "_Send-986e0e7c.js",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js"
+      "_Stack-f3c6362a.js",
+      "_Avatar-03707842.js",
+      "_TextField-ae218ccb.js",
+      "_IconButton-d91c78a1.js",
+      "_Close-a31c2d13.js",
+      "_Send-f09cd32f.js",
+      "_AdminLayout-f584730c.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js"
     ]
   },
-  "_Construction-1c5c1b31.js": {
-    "file": "assets/Construction-1c5c1b31.js",
+  "_Construction-fa8ef418.js": {
+    "file": "assets/Construction-fa8ef418.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Delete-744670c1.js": {
-    "file": "assets/Delete-744670c1.js",
+  "_Delete-5926ba68.js": {
+    "file": "assets/Delete-5926ba68.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_DialogContent-57e6620e.js": {
-    "file": "assets/DialogContent-57e6620e.js",
+  "_DialogContent-22041063.js": {
+    "file": "assets/DialogContent-22041063.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_DialogTitle-67363eb8.js": {
-    "file": "assets/DialogTitle-67363eb8.js",
+  "_DialogTitle-a004eec2.js": {
+    "file": "assets/DialogTitle-a004eec2.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_DialogContent-57e6620e.js"
+      "_Stack-f3c6362a.js",
+      "_DialogContent-22041063.js"
     ]
   },
-  "_Edit-13b9fa85.js": {
-    "file": "assets/Edit-13b9fa85.js",
+  "_Edit-edf39615.js": {
+    "file": "assets/Edit-edf39615.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Email-749efe67.js": {
-    "file": "assets/Email-749efe67.js",
+  "_Email-db370770.js": {
+    "file": "assets/Email-db370770.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_ExpandMore-6ef6c03e.js": {
-    "file": "assets/ExpandMore-6ef6c03e.js",
+  "_ExpandMore-f65a748e.js": {
+    "file": "assets/ExpandMore-f65a748e.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Favorite-8cc00517.js": {
-    "file": "assets/Favorite-8cc00517.js",
+  "_Favorite-3ddef257.js": {
+    "file": "assets/Favorite-3ddef257.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_FormControlLabel-8a8fd0ba.js": {
-    "file": "assets/FormControlLabel-8a8fd0ba.js",
+  "_FormControlLabel-0d30b790.js": {
+    "file": "assets/FormControlLabel-0d30b790.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Select-18a804a8.js"
+      "_Stack-f3c6362a.js",
+      "_Select-9b690018.js"
     ]
   },
-  "_FormatListNumbered-d3378a64.js": {
-    "file": "assets/FormatListNumbered-d3378a64.js",
+  "_FormatListNumbered-205def6f.js": {
+    "file": "assets/FormatListNumbered-205def6f.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Grid-c4183f95.js": {
-    "file": "assets/Grid-c4183f95.js",
+  "_Grid-8f30c58a.js": {
+    "file": "assets/Grid-8f30c58a.js",
     "imports": [
-      "_Stack-23e9970c.js",
+      "_Stack-f3c6362a.js",
       "resources/js/app.jsx"
     ]
   },
-  "_IconButton-18beae98.js": {
-    "file": "assets/IconButton-18beae98.js",
+  "_IconButton-d91c78a1.js": {
+    "file": "assets/IconButton-d91c78a1.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Image-7fa700de.js": {
-    "file": "assets/Image-7fa700de.js",
+  "_Image-2ddf2c33.js": {
+    "file": "assets/Image-2ddf2c33.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_ImageCropper-0e4057f0.js": {
-    "file": "assets/ImageCropper-0e4057f0.js",
+  "_ImageCropper-70189764.js": {
+    "file": "assets/ImageCropper-70189764.js",
     "imports": [
       "resources/js/app.jsx",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Stack-23e9970c.js"
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_InputAdornment-9104b45b.js": {
-    "file": "assets/InputAdornment-9104b45b.js",
+  "_InputAdornment-7fb5f739.js": {
+    "file": "assets/InputAdornment-7fb5f739.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Select-18a804a8.js"
+      "_Stack-f3c6362a.js",
+      "_Select-9b690018.js"
     ]
   },
-  "_LastPage-40af31a4.js": {
-    "file": "assets/LastPage-40af31a4.js",
+  "_LastPage-2b4975fb.js": {
+    "file": "assets/LastPage-2b4975fb.js",
     "imports": [
-      "_Stack-23e9970c.js",
+      "_Stack-f3c6362a.js",
       "resources/js/app.jsx"
     ]
   },
-  "_LinearProgress-f0b64d1a.js": {
-    "file": "assets/LinearProgress-f0b64d1a.js",
+  "_LinearProgress-25a15455.js": {
+    "file": "assets/LinearProgress-25a15455.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_ListItemAvatar-60a8a370.js": {
-    "file": "assets/ListItemAvatar-60a8a370.js",
+  "_ListItemAvatar-4f182cbd.js": {
+    "file": "assets/ListItemAvatar-4f182cbd.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Lock-ca28aa7e.js": {
-    "file": "assets/Lock-ca28aa7e.js",
+  "_Lock-daf4851b.js": {
+    "file": "assets/Lock-daf4851b.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_MoreVert-c8d79ec2.js": {
-    "file": "assets/MoreVert-c8d79ec2.js",
+  "_MoreVert-a5b47690.js": {
+    "file": "assets/MoreVert-a5b47690.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_NotificationsNone-392bfcf0.js": {
-    "file": "assets/NotificationsNone-392bfcf0.js",
+  "_NotificationsNone-3d748e13.js": {
+    "file": "assets/NotificationsNone-3d748e13.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_OpenInNew-cc3c313e.js": {
-    "file": "assets/OpenInNew-cc3c313e.js",
+  "_OpenInNew-d619a09a.js": {
+    "file": "assets/OpenInNew-d619a09a.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Pagination-495a654d.js": {
-    "file": "assets/Pagination-495a654d.js",
+  "_Pagination-66169ec3.js": {
+    "file": "assets/Pagination-66169ec3.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_LastPage-40af31a4.js"
+      "_Stack-f3c6362a.js",
+      "_LastPage-2b4975fb.js"
     ]
   },
-  "_Palette-6e4503c1.js": {
-    "file": "assets/Palette-6e4503c1.js",
+  "_Palette-761772aa.js": {
+    "file": "assets/Palette-761772aa.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_PieChart-14cbf58b.js": {
-    "file": "assets/PieChart-14cbf58b.js",
+  "_PieChart-ce9f42a7.js": {
+    "file": "assets/PieChart-ce9f42a7.js",
     "imports": [
       "resources/js/app.jsx",
-      "_BarChart-f18e7268.js",
-      "_Stack-23e9970c.js"
+      "_BarChart-e7179e53.js",
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Refresh-5dc1442c.js": {
-    "file": "assets/Refresh-5dc1442c.js",
+  "_Refresh-e0ee3a1f.js": {
+    "file": "assets/Refresh-e0ee3a1f.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Search-accbf141.js": {
-    "file": "assets/Search-accbf141.js",
+  "_Search-21627e0e.js": {
+    "file": "assets/Search-21627e0e.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Select-18a804a8.js": {
-    "file": "assets/Select-18a804a8.js",
+  "_Select-9b690018.js": {
+    "file": "assets/Select-9b690018.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Send-986e0e7c.js": {
-    "file": "assets/Send-986e0e7c.js",
+  "_Send-f09cd32f.js": {
+    "file": "assets/Send-f09cd32f.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Shield-eac727f5.js": {
-    "file": "assets/Shield-eac727f5.js",
+  "_Shield-827d2ece.js": {
+    "file": "assets/Shield-827d2ece.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Snackbar-18cbe702.js": {
-    "file": "assets/Snackbar-18cbe702.js",
+  "_Snackbar-63669755.js": {
+    "file": "assets/Snackbar-63669755.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Stack-23e9970c.js": {
-    "file": "assets/Stack-23e9970c.js",
+  "_Stack-f3c6362a.js": {
+    "file": "assets/Stack-f3c6362a.js",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_Switch-581ae37c.js": {
-    "file": "assets/Switch-581ae37c.js",
+  "_Switch-6cc60755.js": {
+    "file": "assets/Switch-6cc60755.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_SwitchBase-e7eaca51.js"
+      "_Stack-f3c6362a.js",
+      "_SwitchBase-735e09bd.js"
     ]
   },
-  "_SwitchBase-e7eaca51.js": {
-    "file": "assets/SwitchBase-e7eaca51.js",
+  "_SwitchBase-735e09bd.js": {
+    "file": "assets/SwitchBase-735e09bd.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Select-18a804a8.js"
+      "_Stack-f3c6362a.js",
+      "_Select-9b690018.js"
     ]
   },
-  "_TablePagination-9f0b5711.js": {
-    "file": "assets/TablePagination-9f0b5711.js",
+  "_TablePagination-f69701ff.js": {
+    "file": "assets/TablePagination-f69701ff.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_TableRow-476dd4f8.js",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Select-18a804a8.js",
-      "_LastPage-40af31a4.js",
-      "_IconButton-18beae98.js"
+      "_Stack-f3c6362a.js",
+      "_TableRow-7e212d96.js",
+      "_AdminLayout-f584730c.js",
+      "_Select-9b690018.js",
+      "_LastPage-2b4975fb.js",
+      "_IconButton-d91c78a1.js"
     ]
   },
-  "_TableRow-476dd4f8.js": {
-    "file": "assets/TableRow-476dd4f8.js",
+  "_TableRow-7e212d96.js": {
+    "file": "assets/TableRow-7e212d96.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_TextField-a1aab4aa.js": {
-    "file": "assets/TextField-a1aab4aa.js",
+  "_TextField-ae218ccb.js": {
+    "file": "assets/TextField-ae218ccb.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Select-18a804a8.js"
+      "_Stack-f3c6362a.js",
+      "_Select-9b690018.js"
     ]
   },
-  "_UploadFile-6c54dbe3.js": {
-    "file": "assets/UploadFile-6c54dbe3.js",
+  "_UploadFile-f1ccf974.js": {
+    "file": "assets/UploadFile-f1ccf974.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_Verified-5a37baf2.js": {
-    "file": "assets/Verified-5a37baf2.js",
+  "_Verified-d216a909.js": {
+    "file": "assets/Verified-d216a909.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_VisibilityOff-c4c67d1a.js": {
-    "file": "assets/VisibilityOff-c4c67d1a.js",
+  "_VisibilityOff-32e1aed3.js": {
+    "file": "assets/VisibilityOff-32e1aed3.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_WorkspacePremium-0cafad7a.js": {
-    "file": "assets/WorkspacePremium-0cafad7a.js",
+  "_WorkspacePremium-55ab892e.js": {
+    "file": "assets/WorkspacePremium-55ab892e.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js"
+      "_Stack-f3c6362a.js"
     ]
   },
-  "_index-2baf62c9.js": {
-    "file": "assets/index-2baf62c9.js",
+  "_index-8e82e84c.js": {
+    "file": "assets/index-8e82e84c.js",
     "imports": [
-      "_Stack-23e9970c.js",
+      "_Stack-f3c6362a.js",
       "resources/js/app.jsx"
     ]
   },
@@ -419,1127 +419,1127 @@
     "src": "resources/js/app.css"
   },
   "resources/js/Pages/Admin/ActivityLogs.jsx": {
-    "file": "assets/ActivityLogs-aa2b81fe.js",
+    "file": "assets/ActivityLogs-66a71256.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Grid-c4183f95.js",
-      "_TextField-a1aab4aa.js",
-      "_Clear-e33466fc.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_ExpandMore-6ef6c03e.js",
-      "_Pagination-495a654d.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_LastPage-40af31a4.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Grid-8f30c58a.js",
+      "_TextField-ae218ccb.js",
+      "_Clear-c42cb8e5.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_ExpandMore-f65a748e.js",
+      "_Pagination-66169ec3.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/ActivityLogs.jsx"
   },
   "resources/js/Pages/Admin/AdditionalCourses.jsx": {
-    "file": "assets/AdditionalCourses-e6159de7.js",
+    "file": "assets/AdditionalCourses-fff68d6d.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_MoreVert-c8d79ec2.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Snackbar-18cbe702.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_MoreVert-a5b47690.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Snackbar-63669755.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/AdditionalCourses.jsx"
   },
   "resources/js/Pages/Admin/AdditionalLessons.jsx": {
-    "file": "assets/AdditionalLessons-3c6c26a9.js",
+    "file": "assets/AdditionalLessons-287b61b9.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/AdditionalLessons.jsx"
   },
   "resources/js/Pages/Admin/AdditionalLessonsManage.jsx": {
-    "file": "assets/AdditionalLessonsManage-6523b4a1.js",
+    "file": "assets/AdditionalLessonsManage-5257aa98.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Chip-3d92267c.js",
-      "_Add-c34d0180.js",
-      "_Grid-c4183f95.js",
-      "_Avatar-be48db2a.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_UploadFile-6c54dbe3.js",
-      "_IconButton-18beae98.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Chip-62a06b69.js",
+      "_Add-d874e1ee.js",
+      "_Grid-8f30c58a.js",
+      "_Avatar-03707842.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_UploadFile-f1ccf974.js",
+      "_IconButton-d91c78a1.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/AdditionalLessonsManage.jsx"
   },
   "resources/js/Pages/Admin/AdditionalLessonsWorkspace.jsx": {
-    "file": "assets/AdditionalLessonsWorkspace-b6597a73.js",
+    "file": "assets/AdditionalLessonsWorkspace-d103b651.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
+      "_AdminLayout-f584730c.js",
       "resources/js/Pages/Admin/CourseEdit/VideoLessonCreateForm.jsx",
       "resources/js/Pages/Admin/CourseEdit/DocumentLessonCreateForm.jsx",
       "resources/js/Pages/Admin/CourseEdit/BulkDocumentLessonCreateForm.jsx",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Alert-f3836353.js",
-      "_Add-c34d0180.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_Avatar-be48db2a.js",
-      "_TextField-a1aab4aa.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Snackbar-18cbe702.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Construction-1c5c1b31.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Email-749efe67.js",
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Alert-db6ac059.js",
+      "_Add-d874e1ee.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_Avatar-03707842.js",
+      "_TextField-ae218ccb.js",
+      "_OpenInNew-d619a09a.js",
+      "_Snackbar-63669755.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Construction-fa8ef418.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Email-db370770.js",
       "resources/js/Pages/Admin/CourseEdit/LectureNotesSection.jsx",
-      "_UploadFile-6c54dbe3.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Select-18a804a8.js",
-      "_Checkbox-ab0c6784.js",
-      "_SwitchBase-e7eaca51.js"
+      "_UploadFile-f1ccf974.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Select-9b690018.js",
+      "_Checkbox-94546cff.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/AdditionalLessonsWorkspace.jsx"
   },
   "resources/js/Pages/Admin/Administration.jsx": {
-    "file": "assets/Administration-bf58a017.js",
+    "file": "assets/Administration-9874a1a5.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_Shield-eac727f5.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Grid-c4183f95.js",
-      "_TextField-a1aab4aa.js",
-      "_Select-18a804a8.js",
-      "_Checkbox-ab0c6784.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_Shield-827d2ece.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Grid-8f30c58a.js",
+      "_TextField-ae218ccb.js",
+      "_Select-9b690018.js",
+      "_Checkbox-94546cff.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Administration.jsx"
   },
   "resources/js/Pages/Admin/Announcements.jsx": {
-    "file": "assets/Announcements-8fa75b78.js",
+    "file": "assets/Announcements-23c2b1c7.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Announcements.jsx"
   },
   "resources/js/Pages/Admin/Applications.jsx": {
-    "file": "assets/Applications-eb8d4b00.js",
+    "file": "assets/Applications-82a70085.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Chip-3d92267c.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_Chip-62a06b69.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Applications.jsx"
   },
   "resources/js/Pages/Admin/Certificate.jsx": {
-    "file": "assets/Certificate-a147202a.js",
+    "file": "assets/Certificate-940042d7.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Alert-f3836353.js",
-      "_IconButton-18beae98.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Alert-db6ac059.js",
+      "_IconButton-d91c78a1.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Certificate.jsx"
   },
   "resources/js/Pages/Admin/Communities.jsx": {
-    "file": "assets/Communities-928aee44.js",
+    "file": "assets/Communities-019b0237.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Switch-581ae37c.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Switch-6cc60755.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Communities.jsx"
   },
   "resources/js/Pages/Admin/CourseCreate.jsx": {
-    "file": "assets/CourseCreate-eb8e25ee.js",
+    "file": "assets/CourseCreate-b2dc161e.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_IconButton-18beae98.js",
-      "_FormatListNumbered-d3378a64.js",
-      "_Chip-3d92267c.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_IconButton-d91c78a1.js",
+      "_FormatListNumbered-205def6f.js",
+      "_Chip-62a06b69.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/CourseCreate.jsx"
   },
   "resources/js/Pages/Admin/CourseEdit.jsx": {
-    "file": "assets/CourseEdit-48efe43a.js",
+    "file": "assets/CourseEdit-2d128b36.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
       "resources/js/Pages/Admin/CourseEdit/VideoLessonCreateForm.jsx",
       "resources/js/Pages/Admin/CourseEdit/DocumentLessonCreateForm.jsx",
       "resources/js/Pages/Admin/CourseEdit/BulkDocumentLessonCreateForm.jsx",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Add-c34d0180.js",
-      "_Grid-c4183f95.js",
-      "_Chip-3d92267c.js",
-      "_LinearProgress-f0b64d1a.js",
-      "_Alert-f3836353.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_TableRow-476dd4f8.js",
-      "_TextField-a1aab4aa.js",
-      "_Avatar-be48db2a.js",
-      "_Delete-744670c1.js",
-      "_WorkspacePremium-0cafad7a.js",
-      "_TablePagination-9f0b5711.js",
-      "_FormatListNumbered-d3378a64.js",
-      "_Construction-1c5c1b31.js",
-      "_Edit-13b9fa85.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Email-749efe67.js",
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Add-d874e1ee.js",
+      "_Grid-8f30c58a.js",
+      "_Chip-62a06b69.js",
+      "_LinearProgress-25a15455.js",
+      "_Alert-db6ac059.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_TableRow-7e212d96.js",
+      "_TextField-ae218ccb.js",
+      "_Avatar-03707842.js",
+      "_Delete-5926ba68.js",
+      "_WorkspacePremium-55ab892e.js",
+      "_TablePagination-f69701ff.js",
+      "_FormatListNumbered-205def6f.js",
+      "_Construction-fa8ef418.js",
+      "_Edit-edf39615.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Email-db370770.js",
       "resources/js/Pages/Admin/CourseEdit/LectureNotesSection.jsx",
-      "_UploadFile-6c54dbe3.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Select-18a804a8.js",
-      "_Checkbox-ab0c6784.js",
-      "_SwitchBase-e7eaca51.js",
-      "_LastPage-40af31a4.js"
+      "_UploadFile-f1ccf974.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Select-9b690018.js",
+      "_Checkbox-94546cff.js",
+      "_SwitchBase-735e09bd.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/CourseEdit.jsx"
   },
   "resources/js/Pages/Admin/CourseEdit/BulkDocumentLessonCreateForm.jsx": {
-    "file": "assets/BulkDocumentLessonCreateForm-4d2df7cb.js",
+    "file": "assets/BulkDocumentLessonCreateForm-ab6f289b.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_TextField-a1aab4aa.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_UploadFile-6c54dbe3.js",
-      "_Chip-3d92267c.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_Stack-f3c6362a.js",
+      "_TextField-ae218ccb.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_UploadFile-f1ccf974.js",
+      "_Chip-62a06b69.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/CourseEdit/BulkDocumentLessonCreateForm.jsx"
   },
   "resources/js/Pages/Admin/CourseEdit/DocumentLessonCreateForm.jsx": {
-    "file": "assets/DocumentLessonCreateForm-5fbe42ce.js",
+    "file": "assets/DocumentLessonCreateForm-e549de72.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_TextField-a1aab4aa.js",
-      "_UploadFile-6c54dbe3.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_Stack-f3c6362a.js",
+      "_TextField-ae218ccb.js",
+      "_UploadFile-f1ccf974.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/CourseEdit/DocumentLessonCreateForm.jsx"
   },
   "resources/js/Pages/Admin/CourseEdit/LectureNotesSection.jsx": {
-    "file": "assets/LectureNotesSection-c63de615.js",
+    "file": "assets/LectureNotesSection-3e1f03ea.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TextField-a1aab4aa.js",
-      "_IconButton-18beae98.js",
-      "_Delete-744670c1.js",
-      "_Select-18a804a8.js"
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TextField-ae218ccb.js",
+      "_IconButton-d91c78a1.js",
+      "_Delete-5926ba68.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/CourseEdit/LectureNotesSection.jsx"
   },
   "resources/js/Pages/Admin/CourseEdit/VideoLessonCreateForm.jsx": {
-    "file": "assets/VideoLessonCreateForm-40047eb9.js",
+    "file": "assets/VideoLessonCreateForm-58b6e1ca.js",
     "imports": [
       "resources/js/app.jsx",
       "resources/js/Pages/Admin/CourseEdit/LectureNotesSection.jsx",
-      "_Stack-23e9970c.js",
-      "_TextField-a1aab4aa.js",
-      "_UploadFile-6c54dbe3.js",
-      "_Avatar-be48db2a.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Add-c34d0180.js",
-      "_IconButton-18beae98.js",
-      "_Delete-744670c1.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_Stack-f3c6362a.js",
+      "_TextField-ae218ccb.js",
+      "_UploadFile-f1ccf974.js",
+      "_Avatar-03707842.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Add-d874e1ee.js",
+      "_IconButton-d91c78a1.js",
+      "_Delete-5926ba68.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/CourseEdit/VideoLessonCreateForm.jsx"
   },
   "resources/js/Pages/Admin/Courses.jsx": {
-    "file": "assets/Courses-bc8771c2.js",
+    "file": "assets/Courses-9095b5bc.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_TextField-a1aab4aa.js",
-      "_InputAdornment-9104b45b.js",
-      "_Search-accbf141.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_TextField-ae218ccb.js",
+      "_InputAdornment-7fb5f739.js",
+      "_Search-21627e0e.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Courses.jsx"
   },
   "resources/js/Pages/Admin/Dashboard.jsx": {
-    "file": "assets/Dashboard-9fc3a0ff.js",
+    "file": "assets/Dashboard-2636f032.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_NotificationsNone-392bfcf0.js",
-      "_Stack-23e9970c.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_TableRow-476dd4f8.js",
-      "_ListItemAvatar-60a8a370.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_NotificationsNone-3d748e13.js",
+      "_Stack-f3c6362a.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_TableRow-7e212d96.js",
+      "_ListItemAvatar-4f182cbd.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Dashboard.jsx"
   },
   "resources/js/Pages/Admin/DiscussionDetail.jsx": {
-    "file": "assets/DiscussionDetail-6a3ed629.js",
+    "file": "assets/DiscussionDetail-020800da.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_CommentItem-8461586e.js",
-      "_Stack-23e9970c.js",
-      "_IconButton-18beae98.js",
-      "_Refresh-5dc1442c.js",
-      "_Alert-f3836353.js",
-      "_Favorite-8cc00517.js",
-      "_VisibilityOff-c4c67d1a.js",
-      "_Delete-744670c1.js",
-      "_Chip-3d92267c.js",
-      "_TextField-a1aab4aa.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Close-4c986540.js",
-      "_Send-986e0e7c.js",
-      "_Edit-13b9fa85.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Snackbar-18cbe702.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_CommentItem-f6d8de4a.js",
+      "_Stack-f3c6362a.js",
+      "_IconButton-d91c78a1.js",
+      "_Refresh-e0ee3a1f.js",
+      "_Alert-db6ac059.js",
+      "_Favorite-3ddef257.js",
+      "_VisibilityOff-32e1aed3.js",
+      "_Delete-5926ba68.js",
+      "_Chip-62a06b69.js",
+      "_TextField-ae218ccb.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Close-a31c2d13.js",
+      "_Send-f09cd32f.js",
+      "_Edit-edf39615.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Snackbar-63669755.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/DiscussionDetail.jsx"
   },
   "resources/js/Pages/Admin/Discussions.jsx": {
-    "file": "assets/Discussions-48f06bd6.js",
+    "file": "assets/Discussions-9b36a835.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Refresh-5dc1442c.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_Favorite-8cc00517.js",
-      "_VisibilityOff-c4c67d1a.js",
-      "_Delete-744670c1.js",
-      "_Pagination-495a654d.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_LastPage-40af31a4.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Refresh-e0ee3a1f.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_Favorite-3ddef257.js",
+      "_VisibilityOff-32e1aed3.js",
+      "_Delete-5926ba68.js",
+      "_Pagination-66169ec3.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Discussions.jsx"
   },
   "resources/js/Pages/Admin/EmailBroadcast.jsx": {
-    "file": "assets/EmailBroadcast-eca29950.js",
+    "file": "assets/EmailBroadcast-97358166.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Chip-3d92267c.js",
-      "_Verified-5a37baf2.js",
-      "_Alert-f3836353.js",
-      "_Refresh-5dc1442c.js",
-      "_LinearProgress-f0b64d1a.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_TextField-a1aab4aa.js",
-      "_Email-749efe67.js",
-      "_Snackbar-18cbe702.js",
-      "_Avatar-be48db2a.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Chip-62a06b69.js",
+      "_Verified-d216a909.js",
+      "_Alert-db6ac059.js",
+      "_Refresh-e0ee3a1f.js",
+      "_LinearProgress-25a15455.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_TextField-ae218ccb.js",
+      "_Email-db370770.js",
+      "_Snackbar-63669755.js",
+      "_Avatar-03707842.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/EmailBroadcast.jsx"
   },
   "resources/js/Pages/Admin/EnrollCourse.jsx": {
-    "file": "assets/EnrollCourse-17ae9373.js",
+    "file": "assets/EnrollCourse-d2131f8a.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_TablePagination-9f0b5711.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_DialogContent-57e6620e.js",
-      "_IconButton-18beae98.js",
-      "_Close-4c986540.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_LastPage-40af31a4.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_TablePagination-f69701ff.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_DialogContent-22041063.js",
+      "_IconButton-d91c78a1.js",
+      "_Close-a31c2d13.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/EnrollCourse.jsx"
   },
   "resources/js/Pages/Admin/Faqs.jsx": {
-    "file": "assets/Faqs-8e6d7b8a.js",
+    "file": "assets/Faqs-a36a3cf7.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Switch-581ae37c.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Switch-6cc60755.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Faqs.jsx"
   },
   "resources/js/Pages/Admin/Financial.jsx": {
-    "file": "assets/Financial-315ea829.js",
+    "file": "assets/Financial-dfe0142d.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Financial.jsx"
   },
   "resources/js/Pages/Admin/FinancialWorkspace.jsx": {
-    "file": "assets/FinancialWorkspace-77861ae2.js",
+    "file": "assets/FinancialWorkspace-ed29dc98.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Chip-3d92267c.js",
-      "_TextField-a1aab4aa.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_BarChart-f18e7268.js",
-      "_TableRow-476dd4f8.js",
-      "_PieChart-14cbf58b.js",
-      "_TablePagination-9f0b5711.js",
-      "_Avatar-be48db2a.js",
-      "_IconButton-18beae98.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_LastPage-40af31a4.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Chip-62a06b69.js",
+      "_TextField-ae218ccb.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_BarChart-e7179e53.js",
+      "_TableRow-7e212d96.js",
+      "_PieChart-ce9f42a7.js",
+      "_TablePagination-f69701ff.js",
+      "_Avatar-03707842.js",
+      "_IconButton-d91c78a1.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/FinancialWorkspace.jsx"
   },
   "resources/js/Pages/Admin/Languages.jsx": {
-    "file": "assets/Languages-2d460472.js",
+    "file": "assets/Languages-790b628d.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_InputAdornment-9104b45b.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Switch-581ae37c.js",
-      "_Palette-6e4503c1.js",
-      "_UploadFile-6c54dbe3.js",
-      "_Image-7fa700de.js",
-      "_Close-4c986540.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_InputAdornment-7fb5f739.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Switch-6cc60755.js",
+      "_Palette-761772aa.js",
+      "_UploadFile-f1ccf974.js",
+      "_Image-2ddf2c33.js",
+      "_Close-a31c2d13.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Languages.jsx"
   },
   "resources/js/Pages/Admin/LessonHtmlEdit.jsx": {
-    "file": "assets/LessonHtmlEdit-853763a6.js",
+    "file": "assets/LessonHtmlEdit-f06c80b3.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Alert-f3836353.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Alert-db6ac059.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/LessonHtmlEdit.jsx"
   },
   "resources/js/Pages/Admin/Login.jsx": {
-    "file": "assets/Login-9b24cc6d.js",
+    "file": "assets/Login-25e139d6.js",
     "imports": [
       "resources/js/app.jsx",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Grid-c4183f95.js",
-      "_Email-749efe67.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_InputAdornment-9104b45b.js",
-      "_Lock-ca28aa7e.js",
-      "_IconButton-18beae98.js",
-      "_VisibilityOff-c4c67d1a.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Grid-8f30c58a.js",
+      "_Email-db370770.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_InputAdornment-7fb5f739.js",
+      "_Lock-daf4851b.js",
+      "_IconButton-d91c78a1.js",
+      "_VisibilityOff-32e1aed3.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Login.jsx"
   },
   "resources/js/Pages/Admin/MiniPrograms.jsx": {
-    "file": "assets/MiniPrograms-b8dc396c.js",
+    "file": "assets/MiniPrograms-35fc5898.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/MiniPrograms.jsx"
   },
   "resources/js/Pages/Admin/Notifications.jsx": {
-    "file": "assets/Notifications-0d5279dd.js",
+    "file": "assets/Notifications-32f1d9a0.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_NotificationsNone-392bfcf0.js",
-      "_Chip-3d92267c.js",
-      "_Alert-f3836353.js",
-      "_ListItemAvatar-60a8a370.js",
-      "_Avatar-be48db2a.js",
-      "_IconButton-18beae98.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_NotificationsNone-3d748e13.js",
+      "_Chip-62a06b69.js",
+      "_Alert-db6ac059.js",
+      "_ListItemAvatar-4f182cbd.js",
+      "_Avatar-03707842.js",
+      "_IconButton-d91c78a1.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Notifications.jsx"
   },
   "resources/js/Pages/Admin/PackagePlans.jsx": {
-    "file": "assets/PackagePlans-bb3e208a.js",
+    "file": "assets/PackagePlans-878f4669.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TextField-a1aab4aa.js",
-      "_Avatar-be48db2a.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Select-18a804a8.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Email-749efe67.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TextField-ae218ccb.js",
+      "_Avatar-03707842.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Select-9b690018.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Email-db370770.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/PackagePlans.jsx"
   },
   "resources/js/Pages/Admin/PaymentMethods.jsx": {
-    "file": "assets/PaymentMethods-e4df8cfa.js",
+    "file": "assets/PaymentMethods-b9e55e40.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/PaymentMethods.jsx"
   },
   "resources/js/Pages/Admin/Profile.jsx": {
-    "file": "assets/Profile-060f6776.js",
+    "file": "assets/Profile-40e78a10.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
-      "_Stack-23e9970c.js",
-      "_Grid-c4183f95.js",
-      "_Avatar-be48db2a.js",
-      "_IconButton-18beae98.js",
-      "_TextField-a1aab4aa.js",
-      "_Lock-ca28aa7e.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
+      "_Stack-f3c6362a.js",
+      "_Grid-8f30c58a.js",
+      "_Avatar-03707842.js",
+      "_IconButton-d91c78a1.js",
+      "_TextField-ae218ccb.js",
+      "_Lock-daf4851b.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Profile.jsx"
   },
   "resources/js/Pages/Admin/PushTopic.jsx": {
-    "file": "assets/PushTopic-37fa0e61.js",
+    "file": "assets/PushTopic-4280ebbc.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Chip-3d92267c.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_CardContent-9f530e4f.js",
-      "_Avatar-be48db2a.js",
-      "_Snackbar-18cbe702.js",
-      "_IconButton-18beae98.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Chip-62a06b69.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_CardContent-0ba9311d.js",
+      "_Avatar-03707842.js",
+      "_Snackbar-63669755.js",
+      "_IconButton-d91c78a1.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/PushTopic.jsx"
   },
   "resources/js/Pages/Admin/ResourceManagement.jsx": {
-    "file": "assets/ResourceManagement-e402d743.js",
+    "file": "assets/ResourceManagement-2f923f4e.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/ResourceManagement.jsx"
   },
   "resources/js/Pages/Admin/ResourceManagementWorkspace.jsx": {
-    "file": "assets/ResourceManagementWorkspace-f16bca4d.js",
+    "file": "assets/ResourceManagementWorkspace-6fb8229d.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Image-7fa700de.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_TextField-a1aab4aa.js",
-      "_Chip-3d92267c.js",
-      "_Audiotrack-1b76348f.js",
-      "_TablePagination-9f0b5711.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Clear-e33466fc.js",
-      "_Alert-f3836353.js",
-      "_Snackbar-18cbe702.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_LastPage-40af31a4.js"
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Image-2ddf2c33.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_TextField-ae218ccb.js",
+      "_Chip-62a06b69.js",
+      "_Audiotrack-8750ea45.js",
+      "_TablePagination-f69701ff.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Clear-c42cb8e5.js",
+      "_Alert-db6ac059.js",
+      "_Snackbar-63669755.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/ResourceManagementWorkspace.jsx"
   },
   "resources/js/Pages/Admin/SaveReplies.jsx": {
-    "file": "assets/SaveReplies-fb8100b0.js",
+    "file": "assets/SaveReplies-d879c995.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_TableRow-476dd4f8.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TextField-a1aab4aa.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_TableRow-7e212d96.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TextField-ae218ccb.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/SaveReplies.jsx"
   },
   "resources/js/Pages/Admin/SongLyricEdit.jsx": {
-    "file": "assets/SongLyricEdit-f3ac0a12.js",
+    "file": "assets/SongLyricEdit-7370b6b9.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_IconButton-18beae98.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_IconButton-d91c78a1.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/SongLyricEdit.jsx"
   },
   "resources/js/Pages/Admin/SongManagement.jsx": {
-    "file": "assets/SongManagement-492570e1.js",
+    "file": "assets/SongManagement-52467f5f.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_OpenInNew-d619a09a.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/SongManagement.jsx"
   },
   "resources/js/Pages/Admin/SongManagementWorkspace.jsx": {
-    "file": "assets/SongManagementWorkspace-3e8b2846.js",
+    "file": "assets/SongManagementWorkspace-9d0c4008.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Add-c34d0180.js",
-      "_Alert-f3836353.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_BarChart-f18e7268.js",
-      "_Audiotrack-1b76348f.js",
-      "_TextField-a1aab4aa.js",
-      "_Delete-744670c1.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Clear-e33466fc.js",
-      "_Snackbar-18cbe702.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Add-d874e1ee.js",
+      "_Alert-db6ac059.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_BarChart-e7179e53.js",
+      "_Audiotrack-8750ea45.js",
+      "_TextField-ae218ccb.js",
+      "_Delete-5926ba68.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Clear-c42cb8e5.js",
+      "_Snackbar-63669755.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/SongManagementWorkspace.jsx"
   },
   "resources/js/Pages/Admin/SupportChat.jsx": {
-    "file": "assets/SupportChat-32bce11a.js",
+    "file": "assets/SupportChat-adc13efb.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_ListItemAvatar-60a8a370.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_Close-4c986540.js",
-      "_IconButton-18beae98.js",
-      "_Image-7fa700de.js",
-      "_TextField-a1aab4aa.js",
-      "_Send-986e0e7c.js",
-      "_Refresh-5dc1442c.js",
-      "_InputAdornment-9104b45b.js",
-      "_Search-accbf141.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_ListItemAvatar-4f182cbd.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_Close-a31c2d13.js",
+      "_IconButton-d91c78a1.js",
+      "_Image-2ddf2c33.js",
+      "_TextField-ae218ccb.js",
+      "_Send-f09cd32f.js",
+      "_Refresh-e0ee3a1f.js",
+      "_InputAdornment-7fb5f739.js",
+      "_Search-21627e0e.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/SupportChat.jsx"
   },
   "resources/js/Pages/Admin/Teachers.jsx": {
-    "file": "assets/Teachers-0069e579.js",
+    "file": "assets/Teachers-45c75755.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_ImageCropper-0e4057f0.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_UploadFile-6c54dbe3.js",
-      "_TextField-a1aab4aa.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_ImageCropper-70189764.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_UploadFile-f1ccf974.js",
+      "_TextField-ae218ccb.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Teachers.jsx"
   },
   "resources/js/Pages/Admin/UiShowcase.jsx": {
-    "file": "assets/UiShowcase-54cfa8be.js",
+    "file": "assets/UiShowcase-dd29ad86.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Palette-6e4503c1.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_MoreVert-c8d79ec2.js",
-      "_TextField-a1aab4aa.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Switch-581ae37c.js",
-      "_Select-18a804a8.js",
-      "_Checkbox-ab0c6784.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_TableRow-476dd4f8.js",
-      "_LinearProgress-f0b64d1a.js",
-      "_ListItemAvatar-60a8a370.js",
-      "_Avatar-be48db2a.js",
-      "_Shield-eac727f5.js",
-      "_Email-749efe67.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Palette-761772aa.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_MoreVert-a5b47690.js",
+      "_TextField-ae218ccb.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Switch-6cc60755.js",
+      "_Select-9b690018.js",
+      "_Checkbox-94546cff.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_TableRow-7e212d96.js",
+      "_LinearProgress-25a15455.js",
+      "_ListItemAvatar-4f182cbd.js",
+      "_Avatar-03707842.js",
+      "_Shield-827d2ece.js",
+      "_Email-db370770.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/UiShowcase.jsx"
   },
   "resources/js/Pages/Admin/UserAnalysis.jsx": {
-    "file": "assets/UserAnalysis-3d1e8c16.js",
+    "file": "assets/UserAnalysis-cf47b88b.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_IconButton-18beae98.js",
-      "_Refresh-5dc1442c.js",
-      "_TextField-a1aab4aa.js",
-      "_Grid-c4183f95.js",
-      "_CardContent-9f530e4f.js",
-      "_Chip-3d92267c.js",
-      "_MoreVert-c8d79ec2.js",
-      "_BarChart-f18e7268.js",
-      "_PieChart-14cbf58b.js",
-      "_Verified-5a37baf2.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_IconButton-d91c78a1.js",
+      "_Refresh-e0ee3a1f.js",
+      "_TextField-ae218ccb.js",
+      "_Grid-8f30c58a.js",
+      "_CardContent-0ba9311d.js",
+      "_Chip-62a06b69.js",
+      "_MoreVert-a5b47690.js",
+      "_BarChart-e7179e53.js",
+      "_PieChart-ce9f42a7.js",
+      "_Verified-d216a909.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/UserAnalysis.jsx"
   },
   "resources/js/Pages/Admin/UserEdit.jsx": {
-    "file": "assets/UserEdit-22556b90.js",
+    "file": "assets/UserEdit-289416ec.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_index-2baf62c9.js",
-      "_Delete-744670c1.js",
-      "_Chip-3d92267c.js",
-      "_Grid-c4183f95.js",
-      "_TableRow-476dd4f8.js",
-      "_IconButton-18beae98.js",
-      "_WorkspacePremium-0cafad7a.js",
-      "_Avatar-be48db2a.js",
-      "_ExpandMore-6ef6c03e.js",
-      "_FormControlLabel-8a8fd0ba.js",
-      "_Checkbox-ab0c6784.js",
-      "_TextField-a1aab4aa.js",
-      "_Alert-f3836353.js",
-      "_Snackbar-18cbe702.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js",
-      "_SwitchBase-e7eaca51.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_index-8e82e84c.js",
+      "_Delete-5926ba68.js",
+      "_Chip-62a06b69.js",
+      "_Grid-8f30c58a.js",
+      "_TableRow-7e212d96.js",
+      "_IconButton-d91c78a1.js",
+      "_WorkspacePremium-55ab892e.js",
+      "_Avatar-03707842.js",
+      "_ExpandMore-f65a748e.js",
+      "_FormControlLabel-0d30b790.js",
+      "_Checkbox-94546cff.js",
+      "_TextField-ae218ccb.js",
+      "_Alert-db6ac059.js",
+      "_Snackbar-63669755.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js",
+      "_SwitchBase-735e09bd.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/UserEdit.jsx"
   },
   "resources/js/Pages/Admin/Users.jsx": {
-    "file": "assets/Users-e5bae4da.js",
+    "file": "assets/Users-4a90ce8e.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Add-c34d0180.js",
-      "_Grid-c4183f95.js",
-      "_TextField-a1aab4aa.js",
-      "_InputAdornment-9104b45b.js",
-      "_Search-accbf141.js",
-      "_IconButton-18beae98.js",
-      "_Clear-e33466fc.js",
-      "_Select-18a804a8.js",
-      "_Verified-5a37baf2.js",
-      "_TableRow-476dd4f8.js",
-      "_Avatar-be48db2a.js",
-      "_OpenInNew-cc3c313e.js",
-      "_Pagination-495a654d.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Snackbar-18cbe702.js",
-      "_Alert-f3836353.js",
-      "_Chip-3d92267c.js",
-      "_Email-749efe67.js",
-      "_LastPage-40af31a4.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Add-d874e1ee.js",
+      "_Grid-8f30c58a.js",
+      "_TextField-ae218ccb.js",
+      "_InputAdornment-7fb5f739.js",
+      "_Search-21627e0e.js",
+      "_IconButton-d91c78a1.js",
+      "_Clear-c42cb8e5.js",
+      "_Select-9b690018.js",
+      "_Verified-d216a909.js",
+      "_TableRow-7e212d96.js",
+      "_Avatar-03707842.js",
+      "_OpenInNew-d619a09a.js",
+      "_Pagination-66169ec3.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Snackbar-63669755.js",
+      "_Alert-db6ac059.js",
+      "_Chip-62a06b69.js",
+      "_Email-db370770.js",
+      "_LastPage-2b4975fb.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/Users.jsx"
   },
   "resources/js/Pages/Admin/VideoLessonDetail.jsx": {
-    "file": "assets/VideoLessonDetail-c70259c3.js",
+    "file": "assets/VideoLessonDetail-2c84f766.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_CommentItem-8461586e.js",
-      "_Stack-23e9970c.js",
-      "_Alert-f3836353.js",
-      "_Chip-3d92267c.js",
-      "_TextField-a1aab4aa.js",
-      "_IconButton-18beae98.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Close-4c986540.js",
-      "_Send-986e0e7c.js",
-      "_Edit-13b9fa85.js",
-      "_Delete-744670c1.js",
-      "_DialogContent-57e6620e.js",
-      "_DialogTitle-67363eb8.js",
-      "_Snackbar-18cbe702.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_CommentItem-f6d8de4a.js",
+      "_Stack-f3c6362a.js",
+      "_Alert-db6ac059.js",
+      "_Chip-62a06b69.js",
+      "_TextField-ae218ccb.js",
+      "_IconButton-d91c78a1.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Close-a31c2d13.js",
+      "_Send-f09cd32f.js",
+      "_Edit-edf39615.js",
+      "_Delete-5926ba68.js",
+      "_DialogContent-22041063.js",
+      "_DialogTitle-a004eec2.js",
+      "_Snackbar-63669755.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/VideoLessonDetail.jsx"
   },
   "resources/js/Pages/Admin/VipAccessTransfer.jsx": {
-    "file": "assets/VipAccessTransfer-01c11fd9.js",
+    "file": "assets/VipAccessTransfer-bb4c61f4.js",
     "imports": [
       "resources/js/app.jsx",
-      "_AdminLayout-0aa3c0a9.js",
-      "_Stack-23e9970c.js",
-      "_Alert-f3836353.js",
-      "_TextField-a1aab4aa.js",
-      "_Chip-3d92267c.js",
-      "_IconButton-18beae98.js",
-      "_Avatar-be48db2a.js",
-      "_Email-749efe67.js",
-      "_Select-18a804a8.js"
+      "_AdminLayout-f584730c.js",
+      "_Stack-f3c6362a.js",
+      "_Alert-db6ac059.js",
+      "_TextField-ae218ccb.js",
+      "_Chip-62a06b69.js",
+      "_IconButton-d91c78a1.js",
+      "_Avatar-03707842.js",
+      "_Email-db370770.js",
+      "_Select-9b690018.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/Pages/Admin/VipAccessTransfer.jsx"
@@ -1602,7 +1602,7 @@
       "resources/js/Pages/Admin/VideoLessonDetail.jsx",
       "resources/js/Pages/Admin/VipAccessTransfer.jsx"
     ],
-    "file": "assets/app-1fd96cae.js",
+    "file": "assets/app-06e6c349.js",
     "isEntry": true,
     "src": "resources/js/app.jsx"
   }

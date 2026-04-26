@@ -19,6 +19,7 @@ use App\Services\NotificationDispatchService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
@@ -56,158 +57,263 @@ class CourseController extends Controller
         ]);
     }
 
-    public function edit(Course $course)
+    public function edit(Request $request, Course $course)
     {
      
-        $this->ensureCourseScope(request(), $course);
-        $majorOptions = $this->resolveAdminMajorOptions(request());
-        $course->load('teacher:id,name');
-        $categories = LessonCategory::query()
-            ->where('course_id', $course->course_id)
-            ->with(['lessons' => function ($query) {
-                $query->orderBy('id');
-            }])
-            ->orderByDesc('sort_order')
-            ->orderBy('id')
-            ->get();
-        $dailyPlanRows = DB::table('study_plan as sp')
-            ->join('lessons as l', 'l.id', '=', 'sp.lesson_id')
-            ->join('lessons_categories as lc', 'lc.id', '=', 'l.category_id')
-            ->select(
-                'sp.id',
-                'sp.day',
-                'sp.lesson_id',
-                'l.title as lesson_title',
-                'l.duration',
-                'l.isVip',
-                'l.isVideo',
-                'lc.category_title'
-            )
-            ->where('sp.course_id', (int) $course->course_id)
-            ->orderBy('sp.day')
-            ->orderBy('sp.id')
-            ->get();
-        $dailyPlans = [];
-        foreach ($dailyPlanRows as $row) {
-            $day = (int) $row->day;
-            if (!isset($dailyPlans[$day])) {
-                $dailyPlans[$day] = [
-                    'day' => $day,
-                    'items' => [],
-                ];
-            }
-            $dailyPlans[$day]['items'][] = [
-                'id' => (int) $row->id,
-                'lesson_id' => (int) $row->lesson_id,
-                'lesson_title' => (string) $row->lesson_title,
-                'duration' => (int) $row->duration,
-                'isVip' => (int) $row->isVip,
-                'isVideo' => (int) $row->isVideo,
-                'category_title' => (string) $row->category_title,
-            ];
+        $this->ensureCourseScope($request, $course);
+        $majorOptions = $this->resolveAdminMajorOptions($request);
+        $partialData = trim((string) $request->header('X-Inertia-Partial-Data', ''));
+        $partialProps = $partialData === '' ? [] : array_values(array_filter(array_map('trim', explode(',', $partialData))));
+        $shouldSendCourse = $partialData === '' || in_array('course', $partialProps, true);
+
+        if ($shouldSendCourse) {
+            $course->load('teacher:id,name');
         }
-        $reviews = DB::table('ratings as r')
-            ->leftJoin('learners as l', function ($join) {
-                $join->on('l.learner_phone', '=', 'r.user_id')
-                    ->orOn('l.user_id', '=', 'r.user_id');
-            })
-            ->select(
-                'r.id',
-                'r.course_id',
-                'r.user_id',
-                'r.star',
-                'r.review',
-                'r.time',
-                'l.learner_name',
-                'l.learner_image'
-            )
-            ->where('r.course_id', (int) $course->course_id)
-            ->orderByDesc('r.time')
-            ->limit(300)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => (int) $item->id,
-                    'course_id' => (int) $item->course_id,
-                    'user_id' => (string) $item->user_id,
-                    'star' => (int) $item->star,
-                    'review' => (string) ($item->review ?? ''),
-                    'time' => (int) ($item->time ?? 0),
-                    'learner_name' => (string) ($item->learner_name ?? ''),
-                    'learner_image' => $item->learner_image,
-                ];
-            })
-            ->values();
-        $reviewCounts = DB::table('ratings')
+        $studentsPerPage = (int) $request->query('studentsPerPage', 25);
+        if ($studentsPerPage < 10) $studentsPerPage = 10;
+        if ($studentsPerPage > 200) $studentsPerPage = 200;
+
+        $studentsQ = trim((string) $request->query('studentsQ', ''));
+        $studentsPage = (int) $request->query('studentsPage', 1);
+        if ($studentsPage < 1) $studentsPage = 1;
+
+        $enrollmentTotals = DB::table('vipusers')
             ->where('course_id', (int) $course->course_id)
-            ->select('star', DB::raw('COUNT(*) as total'))
-            ->groupBy('star')
-            ->pluck('total', 'star');
-        $reviewTotal = (int) $reviewCounts->sum();
-        $reviewAverage = $reviewTotal > 0
-            ? round((float) DB::table('ratings')->where('course_id', (int) $course->course_id)->avg('star'), 1)
-            : 0;
-        $reviewBreakdown = collect([5, 4, 3, 2, 1])->map(function ($star) use ($reviewCounts, $reviewTotal) {
-            $count = (int) ($reviewCounts[$star] ?? 0);
+            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN deleted_account = 1 THEN 1 ELSE 0 END) as deleted')
+            ->first();
+
+        $enrolledTotal = (int) ($enrollmentTotals?->total ?? 0);
+        $enrolledDeleted = (int) ($enrollmentTotals?->deleted ?? 0);
+
+        $vipQuery = DB::table('vipusers as vu')
+            ->where('vu.course_id', (int) $course->course_id);
+
+        if ($studentsQ !== '') {
+            $needle = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $studentsQ) . '%';
+            $vipQuery->where(function ($q) use ($needle) {
+                $q->where('vu.user_id', 'like', $needle)
+                    ->orWhere('vu.phone', 'like', $needle)
+                    ->orWhereExists(function ($sub) use ($needle) {
+                        $sub->from('learners as l')
+                            ->selectRaw('1')
+                            ->where(function ($join) {
+                                $join->whereColumn('l.user_id', 'vu.user_id')
+                                    ->orWhereColumn('l.learner_phone', 'vu.phone');
+                            })
+                            ->where(function ($match) use ($needle) {
+                                $match->where('l.learner_name', 'like', $needle)
+                                    ->orWhere('l.learner_email', 'like', $needle);
+                            });
+                    });
+            });
+        }
+
+        $studentsFilteredTotal = $studentsQ === ''
+            ? $enrolledTotal
+            : (int) (clone $vipQuery)->reorder()->count();
+
+        $vipRows = (clone $vipQuery)
+            ->select('vu.id', 'vu.user_id', 'vu.phone', 'vu.date', 'vu.deleted_account')
+            ->orderByDesc('vu.id')
+            ->forPage($studentsPage, $studentsPerPage)
+            ->get();
+
+        $userIds = $vipRows
+            ->pluck('user_id')
+            ->map(fn ($value) => trim((string) $value))
+            ->filter(fn ($value) => $value !== '' && $value !== '0')
+            ->unique()
+            ->values();
+        $phones = $vipRows
+            ->pluck('phone')
+            ->map(fn ($value) => trim((string) $value))
+            ->filter(fn ($value) => $value !== '')
+            ->unique()
+            ->values();
+
+        $learners = collect();
+        if (Schema::hasTable('learners') && ($userIds->isNotEmpty() || $phones->isNotEmpty())) {
+            $learners = DB::table('learners')
+                ->select('user_id', 'learner_phone', 'learner_name', 'learner_email', 'learner_image')
+                ->where(function ($q) use ($userIds, $phones) {
+                    if ($userIds->isNotEmpty()) {
+                        $q->whereIn('user_id', $userIds->all());
+                    }
+                    if ($phones->isNotEmpty()) {
+                        $method = $userIds->isNotEmpty() ? 'orWhereIn' : 'whereIn';
+                        $q->{$method}('learner_phone', $phones->all());
+                    }
+                })
+                ->get();
+        }
+
+        $learnerByUserId = $learners
+            ->filter(fn ($row) => trim((string) ($row->user_id ?? '')) !== '')
+            ->keyBy(fn ($row) => trim((string) $row->user_id));
+        $learnerByPhone = $learners
+            ->filter(fn ($row) => trim((string) ($row->learner_phone ?? '')) !== '')
+            ->keyBy(fn ($row) => trim((string) $row->learner_phone));
+
+        $enrolledStudentsRows = $vipRows->map(function ($row) use ($learnerByUserId, $learnerByPhone) {
+            $userId = trim((string) ($row->user_id ?? ''));
+            $phone = trim((string) ($row->phone ?? ''));
+            $learner = null;
+
+            if ($userId !== '' && isset($learnerByUserId[$userId])) {
+                $learner = $learnerByUserId[$userId];
+            } elseif ($phone !== '' && isset($learnerByPhone[$phone])) {
+                $learner = $learnerByPhone[$phone];
+            }
+
             return [
-                'star' => $star,
-                'count' => $count,
-                'percentage' => $reviewTotal > 0 ? round(($count / $reviewTotal) * 100, 1) : 0,
+                'id' => (int) $row->id,
+                'user_id' => $userId,
+                'phone' => $phone,
+                'date' => (string) ($row->date ?? ''),
+                'deleted_account' => (int) ($row->deleted_account ?? 0),
+                'learner_name' => (string) ($learner?->learner_name ?? ''),
+                'learner_email' => (string) ($learner?->learner_email ?? ''),
+                'learner_image' => $learner?->learner_image,
             ];
         })->values();
-        $enrolledStudents = DB::table('vipusers as vu')
-            ->leftJoin('learners as l', function ($join) {
-                $join->on('l.user_id', '=', 'vu.user_id')
-                    ->orOn('l.learner_phone', '=', 'vu.phone');
-            })
-            ->select(
-                'vu.id',
-                'vu.user_id',
-                'vu.phone',
-                'vu.date',
-                'vu.deleted_account',
-                'l.learner_name',
-                'l.learner_email',
-                'l.learner_image'
-            )
-            ->where('vu.course_id', (int) $course->course_id)
-            ->orderByDesc('vu.id')
-            ->limit(1000)
-            ->get()
-            ->map(function ($row) {
-                return [
-                    'id' => (int) $row->id,
-                    'user_id' => $row->user_id ? (string) $row->user_id : '',
-                    'phone' => $row->phone ? (string) $row->phone : '',
-                    'date' => (string) ($row->date ?? ''),
-                    'deleted_account' => (int) ($row->deleted_account ?? 0),
-                    'learner_name' => (string) ($row->learner_name ?? ''),
-                    'learner_email' => (string) ($row->learner_email ?? ''),
-                    'learner_image' => $row->learner_image,
-                ];
-            })
-            ->values();
-        $enrolledTotal = (int) $enrolledStudents->count();
-        $enrolledDeleted = (int) $enrolledStudents->where('deleted_account', 1)->count();
+
+        $enrolledStudents = new LengthAwarePaginator(
+            $enrolledStudentsRows,
+            $studentsFilteredTotal,
+            $studentsPerPage,
+            $studentsPage,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
 
         return Inertia::render('Admin/CourseEdit', [
             'course' => $course,
-            'teachers' => Teacher::query()->select('id', 'name')->orderBy('name')->get(),
+            'teachers' => function () {
+                return Teacher::query()->select('id', 'name')->orderBy('name')->get();
+            },
             'majorOptions' => $majorOptions,
-            'categories' => $categories,
-            'dailyPlans' => array_values($dailyPlans),
-            'reviews' => $reviews,
+            'categories' => function () use ($course) {
+                return LessonCategory::query()
+                    ->where('course_id', $course->course_id)
+                    ->with(['lessons' => function ($query) {
+                        $query->orderBy('id');
+                    }])
+                    ->orderByDesc('sort_order')
+                    ->orderBy('id')
+                    ->get();
+            },
+            'dailyPlans' => function () use ($course) {
+                $dailyPlanRows = DB::table('study_plan as sp')
+                    ->join('lessons as l', 'l.id', '=', 'sp.lesson_id')
+                    ->join('lessons_categories as lc', 'lc.id', '=', 'l.category_id')
+                    ->select(
+                        'sp.id',
+                        'sp.day',
+                        'sp.lesson_id',
+                        'l.title as lesson_title',
+                        'l.duration',
+                        'l.isVip',
+                        'l.isVideo',
+                        'lc.category_title'
+                    )
+                    ->where('sp.course_id', (int) $course->course_id)
+                    ->orderBy('sp.day')
+                    ->orderBy('sp.id')
+                    ->get();
+
+                $dailyPlans = [];
+                foreach ($dailyPlanRows as $row) {
+                    $day = (int) $row->day;
+                    if (!isset($dailyPlans[$day])) {
+                        $dailyPlans[$day] = [
+                            'day' => $day,
+                            'items' => [],
+                        ];
+                    }
+                    $dailyPlans[$day]['items'][] = [
+                        'id' => (int) $row->id,
+                        'lesson_id' => (int) $row->lesson_id,
+                        'lesson_title' => (string) $row->lesson_title,
+                        'duration' => (int) $row->duration,
+                        'isVip' => (int) $row->isVip,
+                        'isVideo' => (int) $row->isVideo,
+                        'category_title' => (string) $row->category_title,
+                    ];
+                }
+
+                return array_values($dailyPlans);
+            },
+            'reviews' => function () use ($course) {
+                return DB::table('ratings as r')
+                    ->leftJoin('learners as l', function ($join) {
+                        $join->on('l.learner_phone', '=', 'r.user_id')
+                            ->orOn('l.user_id', '=', 'r.user_id');
+                    })
+                    ->select(
+                        'r.id',
+                        'r.course_id',
+                        'r.user_id',
+                        'r.star',
+                        'r.review',
+                        'r.time',
+                        'l.learner_name',
+                        'l.learner_image'
+                    )
+                    ->where('r.course_id', (int) $course->course_id)
+                    ->orderByDesc('r.time')
+                    ->limit(300)
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'id' => (int) $item->id,
+                            'course_id' => (int) $item->course_id,
+                            'user_id' => (string) $item->user_id,
+                            'star' => (int) $item->star,
+                            'review' => (string) ($item->review ?? ''),
+                            'time' => (int) ($item->time ?? 0),
+                            'learner_name' => (string) ($item->learner_name ?? ''),
+                            'learner_image' => $item->learner_image,
+                        ];
+                    })
+                    ->values();
+            },
             'enrolledStudents' => $enrolledStudents,
+            'enrolledStudentsFilters' => [
+                'q' => $studentsQ,
+                'perPage' => $studentsPerPage,
+            ],
             'enrollmentStats' => [
                 'total' => $enrolledTotal,
                 'active' => $enrolledTotal - $enrolledDeleted,
                 'deleted' => $enrolledDeleted,
             ],
-            'reviewStats' => [
-                'total' => $reviewTotal,
-                'average' => $reviewAverage,
-                'breakdown' => $reviewBreakdown,
-            ],
+            'reviewStats' => function () use ($course) {
+                $reviewCounts = DB::table('ratings')
+                    ->where('course_id', (int) $course->course_id)
+                    ->select('star', DB::raw('COUNT(*) as total'))
+                    ->groupBy('star')
+                    ->pluck('total', 'star');
+                $reviewTotal = (int) $reviewCounts->sum();
+                $reviewAverage = $reviewTotal > 0
+                    ? round((float) DB::table('ratings')->where('course_id', (int) $course->course_id)->avg('star'), 1)
+                    : 0;
+                $reviewBreakdown = collect([5, 4, 3, 2, 1])->map(function ($star) use ($reviewCounts, $reviewTotal) {
+                    $count = (int) ($reviewCounts[$star] ?? 0);
+                    return [
+                        'star' => $star,
+                        'count' => $count,
+                        'percentage' => $reviewTotal > 0 ? round(($count / $reviewTotal) * 100, 1) : 0,
+                    ];
+                })->values();
+
+                return [
+                    'total' => $reviewTotal,
+                    'average' => $reviewAverage,
+                    'breakdown' => $reviewBreakdown,
+                ];
+            },
         ]);
     }
 

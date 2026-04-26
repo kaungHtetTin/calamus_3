@@ -15,6 +15,8 @@ class CommunityController extends Controller
      */
     public function index(Request $request)
     {
+
+       
         $major = $request->query('major');
 
         $query = Community::where('active', 1);

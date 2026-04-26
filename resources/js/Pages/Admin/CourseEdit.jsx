@@ -115,7 +115,8 @@ export default function CourseEdit({
   dailyPlans = [],
   reviews = [],
   reviewStats = { total: 0, average: 0, breakdown: [] },
-  enrolledStudents = [],
+  enrolledStudents = { data: [], total: 0, per_page: 25, current_page: 1 },
+  enrolledStudentsFilters = { q: '', perPage: 25 },
   enrollmentStats = { total: 0, active: 0, deleted: 0 },
 }) {
   const { admin_app_url, flash } = usePage().props;
@@ -361,9 +362,7 @@ export default function CourseEdit({
   const [reviewStarFilter, setReviewStarFilter] = useState('all');
   const [editingReview, setEditingReview] = useState(null);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const [studentSearchKeyword, setStudentSearchKeyword] = useState('');
-  const [studentPage, setStudentPage] = useState(0);
-  const [studentRowsPerPage, setStudentRowsPerPage] = useState(10);
+  const [studentSearchKeyword, setStudentSearchKeyword] = useState(() => String(enrolledStudentsFilters?.q || ''));
 
   const flatDailyPlanItems = useMemo(
     () => dailyPlans.flatMap((plan) => (plan.items || []).map((item) => ({ ...item, day: plan.day }))),
@@ -497,26 +496,53 @@ export default function CourseEdit({
       return learner.includes(keyword) || reviewText.includes(keyword);
     });
   }, [reviews, reviewSearchKeyword, reviewStarFilter]);
-  const filteredStudents = useMemo(() => {
-    const keyword = String(studentSearchKeyword || '').trim().toLowerCase();
-    if (!keyword) {
+  const studentRows = useMemo(() => {
+    if (Array.isArray(enrolledStudents?.data)) {
+      return enrolledStudents.data;
+    }
+    if (Array.isArray(enrolledStudents)) {
       return enrolledStudents;
     }
-    return enrolledStudents.filter((item) => {
-      const name = String(item.learner_name || '').toLowerCase();
-      const userId = String(item.user_id || '').toLowerCase();
-      const phone = String(item.phone || '').toLowerCase();
-      const email = String(item.learner_email || '').toLowerCase();
-      return name.includes(keyword) || userId.includes(keyword) || phone.includes(keyword) || email.includes(keyword);
-    });
-  }, [enrolledStudents, studentSearchKeyword]);
-  const pagedStudents = useMemo(() => {
-    const start = studentPage * studentRowsPerPage;
-    return filteredStudents.slice(start, start + studentRowsPerPage);
-  }, [filteredStudents, studentPage, studentRowsPerPage]);
+    return [];
+  }, [enrolledStudents]);
+  const studentsTotal = Number(enrolledStudents?.total ?? studentRows.length);
+  const studentsPerPage = Number(enrolledStudents?.per_page ?? enrolledStudentsFilters?.perPage ?? 25);
+  const studentsPage = Number(enrolledStudents?.current_page ?? 1);
+
   useEffect(() => {
-    setStudentPage(0);
-  }, [studentSearchKeyword, studentRowsPerPage]);
+    setStudentSearchKeyword(String(enrolledStudentsFilters?.q || ''));
+  }, [enrolledStudentsFilters?.q]);
+
+  useEffect(() => {
+    if (!isStudents) {
+      return;
+    }
+    const nextQ = String(studentSearchKeyword || '').trim();
+    const currentQ = String(enrolledStudentsFilters?.q || '').trim();
+
+    if (nextQ === currentQ) {
+      return;
+    }
+
+    const handle = setTimeout(() => {
+      router.get(
+        `${admin_app_url}/courses/${course.course_id}/edit`,
+        {
+          studentsPage: 1,
+          studentsPerPage,
+          studentsQ: nextQ,
+        },
+        {
+          preserveState: true,
+          preserveScroll: true,
+          replace: true,
+          only: ['enrolledStudents', 'enrolledStudentsFilters', 'enrollmentStats'],
+        }
+      );
+    }, 450);
+
+    return () => clearTimeout(handle);
+  }, [admin_app_url, course?.course_id, enrolledStudentsFilters?.q, isStudents, studentSearchKeyword, studentsPerPage]);
   useEffect(() => {
     setCourseFormData({
       teacher_id: Number(course?.teacher_id || 0),
@@ -1973,7 +1999,7 @@ export default function CourseEdit({
                 <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
                   <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', md: 'center' }} spacing={1.25} sx={{ mb: 1.5 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                      Student List ({filteredStudents.length})
+                      Student List ({studentsTotal})
                     </Typography>
                     <TextField
                       size="small"
@@ -1983,7 +2009,7 @@ export default function CourseEdit({
                       sx={{ minWidth: 260 }}
                     />
                   </Stack>
-                  {filteredStudents.length ? (
+                  {studentRows.length ? (
                     <>
                       <TableContainer>
                         <Table size="small">
@@ -1998,7 +2024,7 @@ export default function CourseEdit({
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {pagedStudents.map((student) => (
+                            {studentRows.map((student) => (
                               <TableRow key={`enrolled-student-${student.id}`}>
                                 <TableCell sx={{ py: 0.65 }}>
                                   <Stack direction="row" spacing={1} alignItems="center">
@@ -2051,14 +2077,43 @@ export default function CourseEdit({
                       </TableContainer>
                       <TablePagination
                         component="div"
-                        count={filteredStudents.length}
-                        page={studentPage}
-                        onPageChange={(_, nextPage) => setStudentPage(nextPage)}
-                        rowsPerPage={studentRowsPerPage}
-                        onRowsPerPageChange={(event) => {
-                          setStudentRowsPerPage(Number(event.target.value || 10));
+                        count={studentsTotal}
+                        page={Math.max(0, studentsPage - 1)}
+                        onPageChange={(_, nextPage) => {
+                          router.get(
+                            `${admin_app_url}/courses/${course.course_id}/edit`,
+                            {
+                              studentsPage: nextPage + 1,
+                              studentsPerPage,
+                              studentsQ: String(enrolledStudentsFilters?.q || '').trim(),
+                            },
+                            {
+                              preserveState: true,
+                              preserveScroll: true,
+                              replace: true,
+                              only: ['enrolledStudents', 'enrolledStudentsFilters', 'enrollmentStats'],
+                            }
+                          );
                         }}
-                        rowsPerPageOptions={[10, 25, 50, 100]}
+                        rowsPerPage={studentsPerPage}
+                        onRowsPerPageChange={(event) => {
+                          const nextPerPage = Number(event.target.value || 25);
+                          router.get(
+                            `${admin_app_url}/courses/${course.course_id}/edit`,
+                            {
+                              studentsPage: 1,
+                              studentsPerPage: nextPerPage,
+                              studentsQ: String(studentSearchKeyword || '').trim(),
+                            },
+                            {
+                              preserveState: true,
+                              preserveScroll: true,
+                              replace: true,
+                              only: ['enrolledStudents', 'enrolledStudentsFilters', 'enrollmentStats'],
+                            }
+                          );
+                        }}
+                        rowsPerPageOptions={[10, 25, 50, 100, 200]}
                       />
                     </>
                   ) : (
