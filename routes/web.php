@@ -244,7 +244,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('manage');
         });
 
-        Route::prefix('financial')->name('financial.')->middleware('admin.permission:administration')->group(function () {
+        Route::prefix('financial')->name('financial.')->middleware('admin.permission:financial')->group(function () {
             Route::get('/', [AdminFinancialManagementController::class, 'index'])->name('index');
             Route::get('/workspace', [AdminFinancialManagementController::class, 'workspace'])->name('workspace');
         });

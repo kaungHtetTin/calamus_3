@@ -270,7 +270,7 @@ export default function AdminLayout({ children }) {
           return hasSectorAccess('administration');
         }
         if (item.href.endsWith('/financial')) {
-          return hasSectorAccess('administration');
+          return hasSectorAccess('financial');
         }
         return true;
       });
