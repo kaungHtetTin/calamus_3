@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -142,6 +143,122 @@ class AuthController extends Controller
         $data = $this->authService->checkAccountAvailability($email, $phone);
 
         return $this->successResponse($data);
+    }
+
+    public function socialRedirect(Request $request, string $provider)
+    {
+        try {
+            $normalizedProvider = $this->normalizeSocialProvider($provider);
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Unsupported provider.', 400);
+        }
+
+        try {
+            return $this->socialiteDriver($normalizedProvider)->stateless()->redirect();
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Social login is not configured for this provider.', 400);
+        }
+    }
+
+    public function socialCallback(Request $request, string $provider)
+    {
+        try {
+            $normalizedProvider = $this->normalizeSocialProvider($provider);
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Unsupported provider.', 400);
+        }
+
+        try {
+            $socialUser = $this->socialiteDriver($normalizedProvider)->stateless()->user();
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Unable to authenticate with provider.', 400);
+        }
+
+        $major = $request->query('major');
+        $deviceType = $request->query('deviceType', 'mobile');
+        $platform = $request->query('platform');
+        $fcmToken = $request->query('fcmToken');
+
+        try {
+            $data = $this->authService->socialLogin(
+                provider: $normalizedProvider,
+                providerUserId: (string) ($socialUser->getId() ?? ''),
+                email: $socialUser->getEmail(),
+                name: $socialUser->getName() ?: $socialUser->getNickname(),
+                avatarUrl: $socialUser->getAvatar(),
+                accessToken: property_exists($socialUser, 'token') ? (string) ($socialUser->token ?? '') : null,
+                refreshToken: property_exists($socialUser, 'refreshToken') ? (string) ($socialUser->refreshToken ?? '') : null,
+                expiresIn: property_exists($socialUser, 'expiresIn') ? (int) ($socialUser->expiresIn ?? 0) : null,
+                raw: (array) ($socialUser->user ?? []),
+                major: is_string($major) ? $major : null,
+                deviceType: is_string($deviceType) ? $deviceType : 'mobile',
+                fcmToken: is_string($fcmToken) ? $fcmToken : null,
+                platform: is_string($platform) ? $platform : null
+            );
+
+            return $this->successResponse($data);
+        } catch (\Exception $e) {
+            $code = (int) $e->getCode();
+            if ($code < 400 || $code > 500) {
+                $code = 400;
+            }
+
+            return $this->errorResponse($e->getMessage(), $code);
+        }
+    }
+
+    public function socialToken(Request $request, string $provider)
+    {
+        try {
+            $normalizedProvider = $this->normalizeSocialProvider($provider);
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Unsupported provider.', 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'accessToken' => 'required|string',
+            'major' => 'nullable|string|max:20',
+            'deviceType' => 'nullable|string|max:20',
+            'platform' => 'nullable|string|in:ios,android,andorid',
+            'fcmToken' => 'nullable|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors()->first(), 400);
+        }
+
+        try {
+            $socialUser = $this->socialiteDriver($normalizedProvider)->stateless()->userFromToken((string) $request->input('accessToken'));
+        } catch (\Throwable $e) {
+            return $this->errorResponse('Unable to authenticate with provider token.', 400);
+        }
+
+        try {
+            $data = $this->authService->socialLogin(
+                provider: $normalizedProvider,
+                providerUserId: (string) ($socialUser->getId() ?? ''),
+                email: $socialUser->getEmail(),
+                name: $socialUser->getName() ?: $socialUser->getNickname(),
+                avatarUrl: $socialUser->getAvatar(),
+                accessToken: (string) $request->input('accessToken'),
+                refreshToken: property_exists($socialUser, 'refreshToken') ? (string) ($socialUser->refreshToken ?? '') : null,
+                expiresIn: property_exists($socialUser, 'expiresIn') ? (int) ($socialUser->expiresIn ?? 0) : null,
+                raw: (array) ($socialUser->user ?? []),
+                major: $request->input('major'),
+                deviceType: (string) $request->input('deviceType', 'mobile'),
+                fcmToken: $request->input('fcmToken'),
+                platform: $request->input('platform')
+            );
+
+            return $this->successResponse($data);
+        } catch (\Exception $e) {
+            $code = (int) $e->getCode();
+            if ($code < 400 || $code > 500) {
+                $code = 400;
+            }
+
+            return $this->errorResponse($e->getMessage(), $code);
+        }
     }
 
     public function logout(Request $request)
@@ -374,5 +491,24 @@ class AuthController extends Controller
         }
 
         return $this->errorResponse('Unable to send email. Check mail settings or try again later.', 500);
+    }
+
+    private function normalizeSocialProvider(string $provider): string
+    {
+        $p = strtolower(trim($provider));
+        if (! in_array($p, ['google', 'facebook'], true)) {
+            throw new \InvalidArgumentException('Unsupported provider.');
+        }
+
+        return $p;
+    }
+
+    private function socialiteDriver(string $provider)
+    {
+        if ($provider === 'google') {
+            return Socialite::driver('google')->scopes(['openid', 'profile', 'email']);
+        }
+
+        return Socialite::driver('facebook')->scopes(['email'])->fields(['id', 'name', 'email']);
     }
 }

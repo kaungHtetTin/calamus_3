@@ -64,6 +64,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']); //ok
     Route::post('/register', [AuthController::class, 'register']); //ok
     Route::post('/check-account', [AuthController::class, 'checkAccount']);
+    Route::get('/social/{provider}/redirect', [AuthController::class, 'socialRedirect']);
+    Route::get('/social/{provider}/callback', [AuthController::class, 'socialCallback']);
+    Route::post('/social/{provider}/token', [AuthController::class, 'socialToken']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/confirm-forgot-password', [AuthController::class, 'confirmForgotPassword']);
     Route::post('/verify-email', [AuthController::class, 'verifyEmail']);

@@ -7,6 +7,7 @@ use App\Models\Learner;
 use App\Models\UserData;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class AuthService
 {
@@ -92,6 +93,135 @@ class AuthService
             'token' => $plainTextToken,
             'user' => $this->formatUser($user),
         ];
+    }
+
+    public function socialLogin(
+        string $provider,
+        string $providerUserId,
+        ?string $email,
+        ?string $name,
+        ?string $avatarUrl,
+        ?string $accessToken,
+        ?string $refreshToken,
+        ?int $expiresIn,
+        array $raw,
+        ?string $major = null,
+        string $deviceType = 'mobile',
+        ?string $fcmToken = null,
+        ?string $platform = null
+    ): array {
+        $normalizedProvider = strtolower(trim($provider));
+        if (! in_array($normalizedProvider, ['google', 'facebook'], true)) {
+            throw new \Exception('Unsupported provider.', 400);
+        }
+
+        $normalizedProviderUserId = trim($providerUserId);
+        if ($normalizedProviderUserId === '') {
+            throw new \Exception('Invalid provider user id.', 400);
+        }
+
+        if (! Schema::hasTable('social_accounts')) {
+            throw new \Exception('Social login is not available. Please run migrations.', 500);
+        }
+
+        $normalizedEmail = trim((string) ($email ?? ''));
+        $normalizedName = trim((string) ($name ?? ''));
+        $normalizedAvatar = trim((string) ($avatarUrl ?? ''));
+
+        $accessToken = $accessToken !== null && trim($accessToken) !== '' ? trim($accessToken) : null;
+        $refreshToken = $refreshToken !== null && trim($refreshToken) !== '' ? trim($refreshToken) : null;
+        $tokenExpiresAt = null;
+        if ($expiresIn !== null && $expiresIn > 0) {
+            $tokenExpiresAt = now()->addSeconds($expiresIn);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $social = DB::table('social_accounts')
+                ->where('provider', $normalizedProvider)
+                ->where('provider_user_id', $normalizedProviderUserId)
+                ->lockForUpdate()
+                ->first();
+
+            $learner = null;
+
+            if ($social) {
+                $learner = Learner::where('user_id', (string) $social->user_id)->lockForUpdate()->first();
+            }
+
+            if (! $learner && $normalizedEmail !== '') {
+                $emailKey = mb_strtolower($normalizedEmail);
+                $learner = Learner::whereRaw('LOWER(TRIM(learner_email)) = ?', [$emailKey])->lockForUpdate()->first();
+            }
+
+            if (! $learner) {
+                $displayName = $normalizedName;
+                if ($displayName === '' && $normalizedEmail !== '') {
+                    $displayName = explode('@', $normalizedEmail)[0] ?? 'User';
+                }
+                if ($displayName === '') {
+                    $displayName = 'User';
+                }
+
+                $placeholder = \Illuminate\Support\Facades\Storage::disk('uploads')->url('placeholder.png');
+                $learner = new Learner();
+                $learner->learner_phone = 0;
+                $learner->learner_email = $normalizedEmail !== '' ? $normalizedEmail : '';
+                $learner->learner_name = $displayName;
+                $learner->password = Hash::make(bin2hex(random_bytes(32)));
+                $learner->learner_image = $normalizedAvatar !== '' ? $normalizedAvatar : env('APP_URL').$placeholder;
+                $learner->cover_image = '';
+                $learner->save();
+            }
+
+            $payload = [
+                'user_id' => (string) $learner->user_id,
+                'provider' => $normalizedProvider,
+                'provider_user_id' => $normalizedProviderUserId,
+                'provider_email' => $normalizedEmail !== '' ? $normalizedEmail : null,
+                'avatar_url' => $normalizedAvatar !== '' ? $normalizedAvatar : null,
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+                'token_expires_at' => $tokenExpiresAt,
+                'raw' => empty($raw) ? null : json_encode($raw),
+                'updated_at' => now(),
+            ];
+
+            if (! $social) {
+                $payload['created_at'] = now();
+                DB::table('social_accounts')->insert($payload);
+            } else {
+                DB::table('social_accounts')->where('id', (int) $social->id)->update($payload);
+            }
+
+            $tokenName = $this->resolveTokenName($major, $deviceType);
+            $learner->tokens()->where('name', $tokenName)->delete();
+
+            $tokenResult = $learner->createToken($tokenName);
+            $plainTextToken = $tokenResult->plainTextToken;
+
+            $learner->auth_token = $plainTextToken;
+            $learner->save();
+
+            $this->ensureUserDataRows((string) $learner->user_id, $major);
+            $fcmDevice = trim((string) ($platform ?? '')) !== '' ? (string) $platform : (string) $deviceType;
+            $this->syncFcmToken((string) $learner->user_id, $major, $fcmToken, $fcmDevice);
+
+            DB::commit();
+
+            return [
+                'token' => $plainTextToken,
+                'user' => $this->formatUser($learner),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $code = is_numeric($e->getCode()) ? (int) $e->getCode() : 500;
+            if ($code >= 400 && $code < 600) {
+                throw new \Exception($e->getMessage(), $code);
+            }
+            throw new \Exception('Social login failed: '.$e->getMessage(), 500);
+        }
     }
 
     public function register($data)
@@ -319,6 +449,22 @@ class AuthService
 
         // We do not global update for all majors anymore because of lazy loading
         // We just do nothing if no major is provided, since FCM token requires a major context or it won't be saved
+    }
+
+    private function resolveTokenName(?string $major, string $deviceType): string
+    {
+        $tokenName = 'web';
+
+        $normalizedMajor = trim((string) ($major ?? ''));
+        if ($normalizedMajor === '') {
+            return $tokenName;
+        }
+
+        if (in_array(strtolower($deviceType), ['tablet', 'ipad'], true)) {
+            return $normalizedMajor.'|tablet';
+        }
+
+        return $normalizedMajor.'|mobile';
     }
 
     private function normalizeFcmToken(?string $fcmToken): ?string
