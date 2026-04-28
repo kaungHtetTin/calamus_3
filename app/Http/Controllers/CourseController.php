@@ -34,6 +34,8 @@ class CourseController extends Controller
             $query->where('major', '!=', 'not');
         }
 
+        $query->where('active', 1);
+
         $courses = $query->get();
 
         $formattedCourses = $courses->map(function ($course) {
