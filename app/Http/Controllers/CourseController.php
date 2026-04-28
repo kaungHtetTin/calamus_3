@@ -30,13 +30,14 @@ class CourseController extends Controller
         if ($request->has('major')) {
             $major = $request->input('major');
             $query->where('major', $major);
+        } else {
+            $query->where('major', '!=', 'not');
         }
 
         $courses = $query->get();
 
         $formattedCourses = $courses->map(function ($course) {
             $enrolledStudents = VipUser::where('course_id', $course->course_id)->count();
-
             return [
                 'id' => (int)$course->course_id,
                 'title' => $this->ensureUtf8($course->title),
