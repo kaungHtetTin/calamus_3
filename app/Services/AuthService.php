@@ -172,7 +172,29 @@ class AuthService
                 $learner->password = Hash::make(bin2hex(random_bytes(32)));
                 $learner->learner_image = $normalizedAvatar !== '' ? $normalizedAvatar : env('APP_URL').$placeholder;
                 $learner->cover_image = '';
+                if (
+                    $normalizedProvider === 'google'
+                    && $normalizedEmail !== ''
+                    && Schema::hasColumn('learners', 'email_verified_at')
+                ) {
+                    $learner->email_verified_at = now();
+                }
                 $learner->save();
+            }
+            
+            if ($normalizedEmail !== '' && trim((string) $learner->learner_email) === '') {
+                $learner->learner_email = $normalizedEmail;
+            }
+
+            if (
+                $normalizedProvider === 'google'
+                && $normalizedEmail !== ''
+                && Schema::hasColumn('learners', 'email_verified_at')
+            ) {
+                $currentEmail = mb_strtolower(trim((string) $learner->learner_email));
+                if ($currentEmail !== '' && $currentEmail === mb_strtolower($normalizedEmail) && $learner->email_verified_at === null) {
+                    $learner->email_verified_at = now();
+                }
             }
 
             $payload = [
