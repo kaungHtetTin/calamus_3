@@ -77,34 +77,76 @@ class CourseController extends Controller
         $studentsPage = (int) $request->query('studentsPage', 1);
         if ($studentsPage < 1) $studentsPage = 1;
 
-        $enrollmentTotals = DB::table('vipusers')
-            ->where('course_id', (int) $course->course_id)
-            ->selectRaw('COUNT(*) as total, SUM(CASE WHEN deleted_account = 1 THEN 1 ELSE 0 END) as deleted')
-            ->first();
+        $hasVipUsersTable = Schema::hasTable('vipusers');
+        $vipCourseColumn = Schema::hasColumn('vipusers', 'course_id') ? 'course_id' : (Schema::hasColumn('vipusers', 'course') ? 'course' : null);
+        $vipUserIdColumn = Schema::hasColumn('vipusers', 'user_id') ? 'user_id' : null;
+        $vipPhoneColumn = Schema::hasColumn('vipusers', 'phone') ? 'phone' : null;
+        $vipDateColumn = Schema::hasColumn('vipusers', 'date') ? 'date' : (Schema::hasColumn('vipusers', 'created_at') ? 'created_at' : null);
+        $vipDeletedColumn = Schema::hasColumn('vipusers', 'deleted_account') ? 'deleted_account' : null;
 
-        $enrolledTotal = (int) ($enrollmentTotals?->total ?? 0);
-        $enrolledDeleted = (int) ($enrollmentTotals?->deleted ?? 0);
+        $enrolledTotal = 0;
+        $enrolledDeleted = 0;
+        if ($hasVipUsersTable && $vipCourseColumn) {
+            $enrollmentTotals = DB::table('vipusers')
+                ->where($vipCourseColumn, (int) $course->course_id)
+                ->selectRaw(
+                    $vipDeletedColumn
+                        ? 'COUNT(*) as total, SUM(CASE WHEN ' . $vipDeletedColumn . ' = 1 THEN 1 ELSE 0 END) as deleted'
+                        : 'COUNT(*) as total, 0 as deleted'
+                )
+                ->first();
 
-        $vipQuery = DB::table('vipusers as vu')
-            ->where('vu.course_id', (int) $course->course_id);
+            $enrolledTotal = (int) ($enrollmentTotals?->total ?? 0);
+            $enrolledDeleted = (int) ($enrollmentTotals?->deleted ?? 0);
+        }
+
+        $vipQuery = $hasVipUsersTable && $vipCourseColumn
+            ? DB::table('vipusers as vu')->where('vu.' . $vipCourseColumn, (int) $course->course_id)
+            : DB::table(DB::raw('(select 1 as id) as vu'))->whereRaw('1 = 0');
 
         if ($studentsQ !== '') {
+            $hasLearnersTable = Schema::hasTable('learners');
+            $hasLearnerUserIdColumn = $hasLearnersTable && Schema::hasColumn('learners', 'user_id');
+            $hasLearnerNameColumn = $hasLearnersTable && Schema::hasColumn('learners', 'learner_name');
+            $hasLearnerEmailColumn = $hasLearnersTable && Schema::hasColumn('learners', 'learner_email');
+            $canJoinByUserId = $vipUserIdColumn !== null && $hasLearnerUserIdColumn;
+            $canSearchLearner = $canJoinByUserId && ($hasLearnerNameColumn || $hasLearnerEmailColumn);
+
             $needle = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $studentsQ) . '%';
-            $vipQuery->where(function ($q) use ($needle) {
-                $q->where('vu.user_id', 'like', $needle)
-                    ->orWhere('vu.phone', 'like', $needle)
-                    ->orWhereExists(function ($sub) use ($needle) {
+            $vipQuery->where(function ($q) use (
+                $needle,
+                $vipUserIdColumn,
+                $canSearchLearner,
+                $canJoinByUserId,
+                $hasLearnerNameColumn,
+                $hasLearnerEmailColumn
+            ) {
+                $hasAnyCondition = false;
+                if ($vipUserIdColumn) {
+                    $q->where('vu.' . $vipUserIdColumn, 'like', $needle);
+                    $hasAnyCondition = true;
+                }
+
+                if ($canSearchLearner) {
+                    $q->orWhereExists(function ($sub) use ($needle, $hasLearnerNameColumn, $hasLearnerEmailColumn) {
                         $sub->from('learners as l')
                             ->selectRaw('1')
                             ->where(function ($join) {
-                                $join->whereColumn('l.user_id', 'vu.user_id')
-                                    ->orWhereColumn('l.learner_phone', 'vu.phone');
+                                $join->whereColumn('l.user_id', 'vu.user_id');
                             })
-                            ->where(function ($match) use ($needle) {
-                                $match->where('l.learner_name', 'like', $needle)
-                                    ->orWhere('l.learner_email', 'like', $needle);
+                            ->where(function ($match) use ($needle, $hasLearnerNameColumn, $hasLearnerEmailColumn) {
+                                $hasMatch = false;
+                                if ($hasLearnerNameColumn) {
+                                    $match->where('l.learner_name', 'like', $needle);
+                                    $hasMatch = true;
+                                }
+                                if ($hasLearnerEmailColumn) {
+                                    $method = $hasMatch ? 'orWhere' : 'where';
+                                    $match->{$method}('l.learner_email', 'like', $needle);
+                                }
                             });
                     });
+                }
             });
         }
 
@@ -113,7 +155,13 @@ class CourseController extends Controller
             : (int) (clone $vipQuery)->reorder()->count();
 
         $vipRows = (clone $vipQuery)
-            ->select('vu.id', 'vu.user_id', 'vu.phone', 'vu.date', 'vu.deleted_account')
+            ->select(array_values(array_filter([
+                'vu.id',
+                $vipUserIdColumn ? 'vu.' . $vipUserIdColumn . ' as user_id' : null,
+                $vipPhoneColumn ? 'vu.' . $vipPhoneColumn . ' as phone' : null,
+                $vipDateColumn ? 'vu.' . $vipDateColumn . ' as date' : null,
+                $vipDeletedColumn ? 'vu.' . $vipDeletedColumn . ' as deleted_account' : null,
+            ])))
             ->orderByDesc('vu.id')
             ->forPage($studentsPage, $studentsPerPage)
             ->get();
@@ -124,51 +172,37 @@ class CourseController extends Controller
             ->filter(fn ($value) => $value !== '' && $value !== '0')
             ->unique()
             ->values();
-        $phones = $vipRows
-            ->pluck('phone')
-            ->map(fn ($value) => trim((string) $value))
-            ->filter(fn ($value) => $value !== '')
-            ->unique()
-            ->values();
 
         $learners = collect();
-        if (Schema::hasTable('learners') && ($userIds->isNotEmpty() || $phones->isNotEmpty())) {
+        if (Schema::hasTable('learners') && $userIds->isNotEmpty()) {
             $learners = DB::table('learners')
                 ->select('user_id', 'learner_phone', 'learner_name', 'learner_email', 'learner_image')
-                ->where(function ($q) use ($userIds, $phones) {
-                    if ($userIds->isNotEmpty()) {
-                        $q->whereIn('user_id', $userIds->all());
-                    }
-                    if ($phones->isNotEmpty()) {
-                        $method = $userIds->isNotEmpty() ? 'orWhereIn' : 'whereIn';
-                        $q->{$method}('learner_phone', $phones->all());
-                    }
-                })
+                ->whereIn('user_id', $userIds->all())
                 ->get();
         }
 
         $learnerByUserId = $learners
             ->filter(fn ($row) => trim((string) ($row->user_id ?? '')) !== '')
             ->keyBy(fn ($row) => trim((string) $row->user_id));
-        $learnerByPhone = $learners
-            ->filter(fn ($row) => trim((string) ($row->learner_phone ?? '')) !== '')
-            ->keyBy(fn ($row) => trim((string) $row->learner_phone));
 
-        $enrolledStudentsRows = $vipRows->map(function ($row) use ($learnerByUserId, $learnerByPhone) {
+        $enrolledStudentsRows = $vipRows->map(function ($row) use ($learnerByUserId) {
             $userId = trim((string) ($row->user_id ?? ''));
-            $phone = trim((string) ($row->phone ?? ''));
             $learner = null;
 
             if ($userId !== '' && isset($learnerByUserId[$userId])) {
                 $learner = $learnerByUserId[$userId];
-            } elseif ($phone !== '' && isset($learnerByPhone[$phone])) {
-                $learner = $learnerByPhone[$phone];
+            }
+
+            $phoneNumber = trim((string) ($learner?->learner_phone ?? $userId));
+            $phoneValue = null;
+            if ($phoneNumber !== '' && ctype_digit($phoneNumber)) {
+                $phoneValue = (int) $phoneNumber;
             }
 
             return [
                 'id' => (int) $row->id,
                 'user_id' => $userId,
-                'phone' => $phone,
+                'phone' => $phoneValue,
                 'date' => (string) ($row->date ?? ''),
                 'deleted_account' => (int) ($row->deleted_account ?? 0),
                 'learner_name' => (string) ($learner?->learner_name ?? ''),

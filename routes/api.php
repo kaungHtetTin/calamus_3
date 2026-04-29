@@ -27,6 +27,7 @@ use App\Http\Controllers\VocabLearningController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\WordOfDayController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\SearchController;
@@ -254,6 +255,10 @@ Route::prefix('payments')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('announcements')->group(function () {
     Route::get('/get', [AnnouncementController::class, 'index']);
+});
+
+Route::prefix('faqs')->group(function () {
+    Route::get('/get', [FaqController::class, 'get']);
 });
 
 Route::prefix('communities')->group(function () {

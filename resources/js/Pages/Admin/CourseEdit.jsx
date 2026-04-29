@@ -61,6 +61,8 @@ import {
   FormatItalic as FormatItalicIcon,
   FormatListBulleted as FormatListBulletedIcon,
   FormatListNumbered as FormatListNumberedIcon,
+  OpenInNew as OpenInNewIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 
 const navItems = [
@@ -513,36 +515,25 @@ export default function CourseEdit({
     setStudentSearchKeyword(String(enrolledStudentsFilters?.q || ''));
   }, [enrolledStudentsFilters?.q]);
 
-  useEffect(() => {
+  const submitStudentSearch = () => {
     if (!isStudents) {
       return;
     }
-    const nextQ = String(studentSearchKeyword || '').trim();
-    const currentQ = String(enrolledStudentsFilters?.q || '').trim();
-
-    if (nextQ === currentQ) {
-      return;
-    }
-
-    const handle = setTimeout(() => {
-      router.get(
-        `${admin_app_url}/courses/${course.course_id}/edit`,
-        {
-          studentsPage: 1,
-          studentsPerPage,
-          studentsQ: nextQ,
-        },
-        {
-          preserveState: true,
-          preserveScroll: true,
-          replace: true,
-          only: ['enrolledStudents', 'enrolledStudentsFilters', 'enrollmentStats'],
-        }
-      );
-    }, 450);
-
-    return () => clearTimeout(handle);
-  }, [admin_app_url, course?.course_id, enrolledStudentsFilters?.q, isStudents, studentSearchKeyword, studentsPerPage]);
+    router.get(
+      `${admin_app_url}/courses/${course.course_id}/edit`,
+      {
+        studentsPage: 1,
+        studentsPerPage,
+        studentsQ: String(studentSearchKeyword || '').trim(),
+      },
+      {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+        only: ['enrolledStudents', 'enrolledStudentsFilters', 'enrollmentStats'],
+      }
+    );
+  };
   useEffect(() => {
     setCourseFormData({
       teacher_id: Number(course?.teacher_id || 0),
@@ -2001,13 +1992,24 @@ export default function CourseEdit({
                     <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                       Student List ({studentsTotal})
                     </Typography>
-                    <TextField
-                      size="small"
-                      label="Search"
-                      value={studentSearchKeyword}
-                      onChange={(event) => setStudentSearchKeyword(event.target.value)}
-                      sx={{ minWidth: 260 }}
-                    />
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <TextField
+                        size="small"
+                        label="Search"
+                        value={studentSearchKeyword}
+                        onChange={(event) => setStudentSearchKeyword(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') {
+                            event.preventDefault();
+                            submitStudentSearch();
+                          }
+                        }}
+                        sx={{ minWidth: 260 }}
+                      />
+                      <Button variant="contained" size="small" startIcon={<SearchIcon />} onClick={submitStudentSearch}>
+                        Search
+                      </Button>
+                    </Stack>
                   </Stack>
                   {studentRows.length ? (
                     <>
@@ -2052,23 +2054,41 @@ export default function CourseEdit({
                                     color={Number(student.deleted_account || 0) === 1 ? 'default' : 'success'}
                                   />
                                 </TableCell>
-                                <TableCell align="right" sx={{ py: 0.65,maxWidth: 70 }}>
-                                  <Tooltip title="Generate Certificate">
-                                    <span>
-                                      <IconButton
-                                        size="small"
-                                        color="primary"
-                                        component={Link}
-                                        href={`${admin_app_url}/certificate?courseId=${course.course_id}&userId=${encodeURIComponent(student.user_id || student.phone || '')}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        disabled={!(student.user_id || student.phone)}
-                                        sx={{ border: '1px solid', borderColor: 'divider' }}
-                                      >
-                                        <CertificateIcon fontSize="small" />
-                                      </IconButton>
-                                    </span>
-                                  </Tooltip>
+                                <TableCell align="right" sx={{ py: 0.65, maxWidth: 120 }}>
+                                  <Stack direction="row" spacing={0.75} justifyContent="flex-end">
+                                    <Tooltip title="User Workspace">
+                                      <span>
+                                        <IconButton
+                                          size="small"
+                                          color="primary"
+                                          component={Link}
+                                          href={`${admin_app_url}/users/${encodeURIComponent(String(student.user_id || ''))}/edit`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          disabled={!student.user_id}
+                                          sx={{ border: '1px solid', borderColor: 'divider' }}
+                                        >
+                                          <OpenInNewIcon fontSize="small" />
+                                        </IconButton>
+                                      </span>
+                                    </Tooltip>
+                                    <Tooltip title="Generate Certificate">
+                                      <span>
+                                        <IconButton
+                                          size="small"
+                                          color="primary"
+                                          component={Link}
+                                          href={`${admin_app_url}/certificate?courseId=${course.course_id}&userId=${encodeURIComponent(student.user_id || student.phone || '')}`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          disabled={!(student.user_id || student.phone)}
+                                          sx={{ border: '1px solid', borderColor: 'divider' }}
+                                        >
+                                          <CertificateIcon fontSize="small" />
+                                        </IconButton>
+                                      </span>
+                                    </Tooltip>
+                                  </Stack>
                                 </TableCell>
                               </TableRow>
                             ))}

@@ -25,6 +25,7 @@ import {
   BookmarksOutlined as SavedRepliesIcon,
   Close as CloseIcon,
   Image as ImageIcon,
+  OpenInNew as OpenInNewIcon,
   Refresh as RefreshIcon,
   Search as SearchIcon,
   Send as SendIcon,
@@ -605,7 +606,24 @@ export default function SupportChat() {
                         ? `Conversation #${selectedConversation.id}`
                         : 'Select a conversation'}
                   </Typography>
-                  {selectedConversation?.major ? <Chip size="small" label={selectedConversation.major} /> : null}
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {selectedConversation?.friend?.id || selectedConversation?.other_user_id ? (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        component={Link}
+                        href={`${admin_app_url}/users/${encodeURIComponent(
+                          String(selectedConversation.friend?.id || selectedConversation.other_user_id)
+                        )}/edit`}
+                        target="_blank"
+                        rel="noreferrer"
+                        startIcon={<OpenInNewIcon />}
+                      >
+                        User Workspace
+                      </Button>
+                    ) : null}
+                    {selectedConversation?.major ? <Chip size="small" label={selectedConversation.major} /> : null}
+                  </Stack>
                 </Stack>
                 {selectedConversation?.friend?.phone || selectedConversation?.friend?.email ? (
                   <Typography variant="caption" sx={{ opacity: 0.75 }} noWrap>

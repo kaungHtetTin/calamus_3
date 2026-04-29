@@ -2,7 +2,6 @@ import React from 'react';
 import { Head, useForm, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import {
-  Avatar,
   Box,
   Button,
   Chip,
@@ -34,45 +33,24 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   HelpOutline as HelpOutlineIcon,
-  Language as LanguageIcon,
   MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 
 const defaultForm = {
-  major: '',
   question: '',
   answer: '',
   sort_order: 0,
   active: true,
 };
 
-export default function Faqs({ faqs, languageOptions }) {
+export default function Faqs({ faqs }) {
   const { admin_app_url } = usePage().props;
   const rows = Array.isArray(faqs) ? faqs : [];
-  const languages = Array.isArray(languageOptions) ? languageOptions : [];
-  const appBaseUrl = admin_app_url.replace(/\/admin\/?$/, '');
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [editing, setEditing] = React.useState(null);
   const [rowMenu, setRowMenu] = React.useState({ anchorEl: null, row: null });
   const rowMenuOpen = Boolean(rowMenu.anchorEl);
-
-  const buildImageUrl = (path) => {
-    if (!path) return '';
-    if (String(path).startsWith('http://') || String(path).startsWith('https://')) return path;
-    const normalizedPath = String(path).startsWith('/') ? path : `/${path}`;
-    return `${appBaseUrl}${normalizedPath}`;
-  };
-
-  const languageByCode = React.useMemo(() => {
-    const map = new Map();
-    languages.forEach((l) => {
-      const code = String(l.code || '').toLowerCase().trim();
-      if (!code) return;
-      map.set(code, l);
-    });
-    return map;
-  }, [languages]);
 
   const { data, setData, post, patch, processing, errors, reset, clearErrors } = useForm(defaultForm);
 
@@ -82,7 +60,6 @@ export default function Faqs({ faqs, languageOptions }) {
     clearErrors();
     setData({
       ...defaultForm,
-      major: languages[0]?.code || '',
       active: true,
       sort_order: 0,
     });
@@ -93,7 +70,6 @@ export default function Faqs({ faqs, languageOptions }) {
     setEditing(row);
     clearErrors();
     setData({
-      major: row.major || '',
       question: row.question || '',
       answer: row.answer || '',
       sort_order: Number(row.sort_order || 0),
@@ -137,8 +113,6 @@ export default function Faqs({ faqs, languageOptions }) {
     setRowMenu({ anchorEl: null, row: null });
   };
 
-  const selectedLang = languageByCode.get(String(data.major || '').toLowerCase().trim());
-
   return (
     <Box>
       <Head title="FAQs" />
@@ -174,7 +148,6 @@ export default function Faqs({ faqs, languageOptions }) {
             >
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Major</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>Question</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>Answer</TableCell>
                   <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Sort</TableCell>
@@ -184,31 +157,8 @@ export default function Faqs({ faqs, languageOptions }) {
               </TableHead>
               <TableBody>
                 {rows.map((row) => {
-                  const lang = languageByCode.get(String(row.major || '').toLowerCase().trim());
                   return (
                     <TableRow key={`faq-${row.id}`} hover>
-                      <TableCell sx={{ width: 150 }}>
-                        {lang ? (
-                          <Stack direction="row" spacing={1} alignItems="center">
-                            <Avatar
-                              src={buildImageUrl(lang.image_path)}
-                              sx={{ width: 24, height: 24, bgcolor: lang.primary_color || 'action.selected' }}
-                            >
-                              <LanguageIcon fontSize="small" />
-                            </Avatar>
-                            <Box>
-                              <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.15 }}>
-                                {lang.name}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.1 }}>
-                                {row.major}
-                              </Typography>
-                            </Box>
-                          </Stack>
-                        ) : (
-                          <Typography variant="body2">{row.major || '-'}</Typography>
-                        )}
-                      </TableCell>
                       <TableCell sx={{ maxWidth: 340 }}>
                         <Typography
                           variant="body2"
@@ -254,7 +204,7 @@ export default function Faqs({ faqs, languageOptions }) {
                 })}
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6}>
+                    <TableCell colSpan={5}>
                       <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
                         No FAQs found.
                       </Typography>
@@ -269,25 +219,9 @@ export default function Faqs({ faqs, languageOptions }) {
 
       <Dialog open={openDialog} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle sx={{ fontWeight: 700 }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Avatar
-                src={selectedLang ? buildImageUrl(selectedLang.image_path) : ''}
-                sx={{ width: 28, height: 28, bgcolor: selectedLang?.primary_color || 'action.selected' }}
-              >
-                <LanguageIcon fontSize="small" />
-              </Avatar>
-              <Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.15 }}>
-                  {selectedLang?.name || 'Select Major'}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.1 }}>
-                  {selectedLang?.code || '-'}
-                </Typography>
-              </Box>
-            </Stack>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <HelpOutlineIcon fontSize="small" />
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <HelpOutlineIcon fontSize="small" />
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
               {editing ? 'Edit FAQ' : 'Add FAQ'}
             </Typography>
           </Stack>
@@ -295,38 +229,6 @@ export default function Faqs({ faqs, languageOptions }) {
         <Divider />
         <DialogContent sx={{ pt: 2 }}>
           <Stack spacing={1.25}>
-            <TextField
-              select
-              label="Major"
-              value={data.major}
-              onChange={(e) => setData('major', e.target.value)}
-              error={Boolean(errors.major)}
-              helperText={errors.major}
-              fullWidth
-              size="small"
-            >
-              {languages.map((l) => (
-                <MenuItem key={`faq-major-${l.code}`} value={l.code}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Avatar
-                      src={buildImageUrl(l.image_path)}
-                      sx={{ width: 22, height: 22, bgcolor: l.primary_color || 'action.selected' }}
-                    >
-                      <LanguageIcon fontSize="small" />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.1 }}>
-                        {l.name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.05 }}>
-                        {l.code}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </MenuItem>
-              ))}
-            </TextField>
-
             <TextField
               label="Question"
               value={data.question}
