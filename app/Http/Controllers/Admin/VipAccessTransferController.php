@@ -37,8 +37,8 @@ class VipAccessTransferController extends Controller
     public function execute(Request $request)
     {
         $data = $request->validate([
-            'sourceUserId' => ['required', 'string', 'regex:/^\d+$/'],
-            'targetUserId' => ['required', 'string', 'regex:/^\d+$/'],
+            'sourceUserId' => ['required', 'string', 'regex:/^\d{1,20}$/', 'not_in:0'],
+            'targetUserId' => ['required', 'string', 'regex:/^\d{1,20}$/', 'not_in:0'],
             'mode' => ['required', 'string', 'in:move,copy'],
         ]);
 

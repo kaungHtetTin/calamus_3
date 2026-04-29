@@ -9,9 +9,12 @@ use App\Events\PostLiked;
 use App\Jobs\EmailBroadcastChunk;
 use App\Jobs\SendFcmToTokens;
 use App\Jobs\SendFcmToTopic;
+use App\Models\ActivationMessage;
 use App\Models\Language;
 use App\Models\Comment;
+use App\Models\Conversation;
 use App\Models\Learner;
+use App\Models\Message;
 use App\Models\MyLike;
 use App\Models\Payment;
 use App\Models\Post;
@@ -35,6 +38,8 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
+    private const SUPPORT_ADMIN_USER_ID = 10000;
+
     /**
      * Display a listing of the learners.
      */
@@ -566,7 +571,80 @@ class UserController extends Controller
             ]
         );
 
+        $this->sendActivationChatMessage($userId, $dispatch);
+
         return redirect()->back(303);
+    }
+
+    private function sendActivationChatMessage(string $userId, NotificationDispatchService $dispatch): void
+    {
+        $userId = trim((string) $userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return;
+        }
+
+        if (!Schema::hasTable('activation_messages') || !Schema::hasTable('conversations') || !Schema::hasTable('messages')) {
+            return;
+        }
+
+        $messageText = ActivationMessage::query()
+            ->whereRaw('LOWER(TRIM(major)) = ?', ['english'])
+            ->orderByDesc('id')
+            ->value('message');
+
+        $messageText = is_string($messageText) ? trim($messageText) : '';
+        if ($messageText === '') {
+            return;
+        }
+
+        if (mb_strlen($messageText) > 2000) {
+            $messageText = mb_substr($messageText, 0, 2000);
+        }
+
+        $conversation = Conversation::query()
+            ->where(function ($q) use ($userId) {
+                $q->where(function ($q2) use ($userId) {
+                    $q2->where('user1_id', self::SUPPORT_ADMIN_USER_ID)->where('user2_id', $userId);
+                })->orWhere(function ($q2) use ($userId) {
+                    $q2->where('user2_id', self::SUPPORT_ADMIN_USER_ID)->where('user1_id', $userId);
+                });
+            })
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$conversation) {
+            $conversation = Conversation::query()->create([
+                'user1_id' => self::SUPPORT_ADMIN_USER_ID,
+                'user2_id' => $userId,
+                'major' => 'english',
+                'last_message_at' => null,
+            ]);
+        }
+
+        if (!$conversation) {
+            return;
+        }
+
+        $msg = new Message();
+        $msg->conversation_id = (int) $conversation->id;
+        $msg->sender_id = self::SUPPORT_ADMIN_USER_ID;
+        $msg->major = 'english';
+        $msg->message_type = 'text';
+        $msg->message_text = $messageText;
+        $msg->file_path = '';
+        $msg->file_size = 0;
+        $msg->is_read = 0;
+        $msg->save();
+
+        $conversation->last_message_at = now();
+        $conversation->save();
+
+        $dispatch->queuePushToUserTokens($userId, 'Support', $messageText, [
+            'type' => 'chat.message',
+            'conversationId' => (string) $conversation->id,
+            'friendId' => (string) self::SUPPORT_ADMIN_USER_ID,
+        ]);
     }
 
     public function edit(string $id)

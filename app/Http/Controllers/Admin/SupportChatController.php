@@ -132,12 +132,6 @@ class SupportChatController extends Controller
 
     public function conversations(Request $request): JsonResponse
     {
-        $major = $request->query('major');
-        $major = $major !== null ? trim((string) $major) : null;
-        if ($major === '') {
-            $major = null;
-        }
-
         $perPage = (int) $request->query('perPage', 25);
         if ($perPage < 10) {
             $perPage = 10;
@@ -266,12 +260,13 @@ class SupportChatController extends Controller
     public function conversation(Request $request): JsonResponse
     {
         $otherUserId = trim((string) $request->query('otherUserId', ''));
-        $major = strtolower(trim((string) $request->query('major', '')));
+        $major = 'english';
 
         if ($otherUserId === '' || $otherUserId === '0' || !ctype_digit($otherUserId)) {
             return response()->json(['message' => 'otherUserId is required'], 422);
         }
 
+       
         $query = Conversation::query()
             ->where(function ($q) use ($otherUserId) {
                 $q->where(function ($q2) use ($otherUserId) {
@@ -287,13 +282,55 @@ class SupportChatController extends Controller
 
         $conversation = $query->orderByDesc('last_message_at')->orderByDesc('created_at')->first();
 
-        if (!$conversation && $major !== '') {
-            $conversation = Conversation::query()->create([
-                'user1_id' => self::SUPPORT_ADMIN_USER_ID,
-                'user2_id' => $otherUserId,
-                'major' => $major,
-                'last_message_at' => null,
-            ]);
+        if (!$conversation) {
+            $conversation = Conversation::query()
+                ->where(function ($q) use ($otherUserId) {
+                    $q->where(function ($q2) use ($otherUserId) {
+                        $q2->where('user1_id', self::SUPPORT_ADMIN_USER_ID)->where('user2_id', $otherUserId);
+                    })->orWhere(function ($q2) use ($otherUserId) {
+                        $q2->where('user2_id', self::SUPPORT_ADMIN_USER_ID)->where('user1_id', $otherUserId);
+                    });
+                })
+                ->orderByDesc('last_message_at')
+                ->orderByDesc('created_at')
+                ->first();
+        }
+
+        if ($conversation) {
+            $existingMajor = strtolower(trim((string) ($conversation->major ?? '')));
+            if ($existingMajor !== $major) {
+                $conversation->major = $major;
+                $conversation->save();
+            }
+        } else {
+            try {
+                $conversation = Conversation::query()->create([
+                    'user1_id' => self::SUPPORT_ADMIN_USER_ID,
+                    'user2_id' => $otherUserId,
+                    'major' => $major,
+                    'last_message_at' => null,
+                ]);
+            } catch (\Throwable $e) {
+                $conversation = Conversation::query()
+                    ->where(function ($q) use ($otherUserId) {
+                        $q->where(function ($q2) use ($otherUserId) {
+                            $q2->where('user1_id', self::SUPPORT_ADMIN_USER_ID)->where('user2_id', $otherUserId);
+                        })->orWhere(function ($q2) use ($otherUserId) {
+                            $q2->where('user2_id', self::SUPPORT_ADMIN_USER_ID)->where('user1_id', $otherUserId);
+                        });
+                    })
+                    ->orderByDesc('last_message_at')
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                if ($conversation) {
+                    $existingMajor = strtolower(trim((string) ($conversation->major ?? '')));
+                    if ($existingMajor !== $major) {
+                        $conversation->major = $major;
+                        $conversation->save();
+                    }
+                }
+            }
         }
 
         if (!$conversation) {

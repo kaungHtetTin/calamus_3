@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivationMessage;
 use App\Models\Admin;
+use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\Payment;
 use App\Traits\ApiResponse;
 use App\Services\NotificationDispatchService;
@@ -16,6 +19,8 @@ use Illuminate\Validation\ValidationException;
 class AdminPaymentController extends Controller
 {
     use ApiResponse;
+
+    private const SUPPORT_ADMIN_USER_ID = 10000;
 
     private function resolvePaymentApproveColumn(): ?string
     {
@@ -585,12 +590,88 @@ class AdminPaymentController extends Controller
             ]
         );
 
+        $this->sendActivationChatMessage($userId, $major, $dispatch);
+
         return $this->successResponse([
             'paymentId' => (int) ($paymentRow->id ?? 0),
             'userId' => $userId,
             'major' => $major,
             'courses' => array_values($courseIds->all()),
             'activated' => true,
+        ]);
+    }
+
+    private function sendActivationChatMessage(string $userId, string $major, NotificationDispatchService $dispatch): void
+    {
+        $userId = trim((string) $userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return;
+        }
+
+        if (!Schema::hasTable('activation_messages') || !Schema::hasTable('conversations') || !Schema::hasTable('messages')) {
+            return;
+        }
+
+        $normalizedMajor = 'english';
+
+        $messageText = ActivationMessage::query()
+            ->whereRaw('LOWER(TRIM(major)) = ?', [$normalizedMajor])
+            ->orderByDesc('id')
+            ->value('message');
+
+        $messageText = is_string($messageText) ? trim($messageText) : '';
+
+        if ($messageText === '') {
+            return;
+        }
+
+        if (mb_strlen($messageText) > 2000) {
+            $messageText = mb_substr($messageText, 0, 2000);
+        }
+
+        $conversation = Conversation::query()
+            ->where(function ($q) use ($userId) {
+                $q->where(function ($q2) use ($userId) {
+                    $q2->where('user1_id', self::SUPPORT_ADMIN_USER_ID)->where('user2_id', $userId);
+                })->orWhere(function ($q2) use ($userId) {
+                    $q2->where('user2_id', self::SUPPORT_ADMIN_USER_ID)->where('user1_id', $userId);
+                });
+            })
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$conversation) {
+            $conversation = Conversation::query()->create([
+                'user1_id' => self::SUPPORT_ADMIN_USER_ID,
+                'user2_id' => $userId,
+                'major' => $normalizedMajor,
+                'last_message_at' => null,
+            ]);
+        }
+
+        if (!$conversation) {
+            return;
+        }
+
+        $msg = new Message();
+        $msg->conversation_id = (int) $conversation->id;
+        $msg->sender_id = self::SUPPORT_ADMIN_USER_ID;
+        $msg->major = $normalizedMajor;
+        $msg->message_type = 'text';
+        $msg->message_text = $messageText;
+        $msg->file_path = '';
+        $msg->file_size = 0;
+        $msg->is_read = 0;
+        $msg->save();
+
+        $conversation->last_message_at = now();
+        $conversation->save();
+
+        $dispatch->queuePushToUserTokens($userId, 'Support', $messageText, [
+            'type' => 'chat.message',
+            'conversationId' => (string) $conversation->id,
+            'friendId' => (string) self::SUPPORT_ADMIN_USER_ID,
         ]);
     }
 }

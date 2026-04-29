@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ResourceManagementController as AdminResourceMana
 use App\Http\Controllers\Admin\SupportChatController as AdminSupportChatController;
 use App\Http\Controllers\Admin\AdminNotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\SaveReplyController as AdminSaveReplyController;
+use App\Http\Controllers\Admin\ActivationMessageController as AdminActivationMessageController;
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Admin\VipAccessTransferController as AdminVipAccessTransferController;
 use App\Http\Controllers\Admin\CommunityController as AdminCommunityController;
@@ -83,6 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::prefix('support-chat')->name('support-chat.')->middleware('admin.permission:user')->group(function () {
             Route::get('/', [AdminSupportChatController::class, 'index'])->name('index');
+            Route::get('/conversation', [AdminSupportChatController::class, 'conversation'])->name('conversation');
             Route::get('/conversations', [AdminSupportChatController::class, 'conversations'])->name('conversations');
             Route::get('/unread-count', [AdminSupportChatController::class, 'unreadCount'])->name('unread-count');
             Route::get('/messages', [AdminSupportChatController::class, 'messages'])->name('messages');
@@ -130,6 +132,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/', [AdminSaveReplyController::class, 'store'])->name('store');
             Route::patch('/{saveReply}', [AdminSaveReplyController::class, 'update'])->name('update');
             Route::delete('/{saveReply}', [AdminSaveReplyController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('activation-messages')->name('activation-messages.')->group(function () {
+            Route::get('/', [AdminActivationMessageController::class, 'index'])->name('index');
+            Route::post('/', [AdminActivationMessageController::class, 'store'])->name('store');
+            Route::patch('/{activationMessage}', [AdminActivationMessageController::class, 'update'])->name('update');
+            Route::delete('/{activationMessage}', [AdminActivationMessageController::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('activity-logs')->name('activity-logs.')->middleware('admin.permission:administration')->group(function () {

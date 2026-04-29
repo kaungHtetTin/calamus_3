@@ -41,14 +41,12 @@ export default function VipAccessTransfer({ sourceQuery, targetQuery, sourceUser
   const execute = () => {
     if (!canTransfer) return;
     if (!hasVip) return;
-    const confirmText = window.prompt('Type TRANSFER to continue.');
-    if (confirmText !== 'TRANSFER') return;
     setSubmitting(true);
     router.post(
       `${admin_app_url}/users/vip-transfer`,
       {
-        sourceUserId: Number(sourceUser.user_id),
-        targetUserId: Number(targetUser.user_id),
+        sourceUserId: String(sourceUser.user_id),
+        targetUserId: String(targetUser.user_id),
         mode,
       },
       {
@@ -142,7 +140,7 @@ export default function VipAccessTransfer({ sourceQuery, targetQuery, sourceUser
 
             {canTransfer ? (
               <Stack spacing={1}>
-                {!hasVip ? (
+                {!hasVip && !flash?.success ? (
                   <Alert severity="warning">
                     Source account has no VIP access to transfer (no VIP majors, no diamond plan, and no VIP courses).
                   </Alert>

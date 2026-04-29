@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import {
@@ -8,7 +8,9 @@ import {
   Button,
   Chip,
   Divider,
+  Drawer,
   Grid,
+  InputAdornment,
   List,
   ListItem,
   ListItemButton,
@@ -43,6 +45,13 @@ import {
   Security as SecurityIcon,
   Delete as DeleteIcon,
   ExpandMore as ExpandMoreIcon,
+  ChatBubbleOutline as ChatBubbleOutlineIcon,
+  BookmarksOutlined as SavedRepliesIcon,
+  Image as ImageIcon,
+  Close as CloseIcon,
+  Refresh as RefreshIcon,
+  Search as SearchIcon,
+  Send as SendIcon,
 } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
 
@@ -99,9 +108,28 @@ export default function UserEdit({ user, userData = [], vipCourses = [], certifi
   const [emailForm, setEmailForm] = useState({ title: '', body: '' });
   const [emailSending, setEmailSending] = useState(false);
   const [emailErrors, setEmailErrors] = useState({});
+  const SUPPORT_ADMIN_USER_ID = 10000;
+  const [chatConversationId, setChatConversationId] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessageText, setChatMessageText] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatSending, setChatSending] = useState(false);
+  const [chatError, setChatError] = useState('');
+  const [pendingChatImage, setPendingChatImage] = useState(null);
+  const [pendingChatImageUrl, setPendingChatImageUrl] = useState('');
+  const chatImageInputRef = useRef(null);
+  const [savedRepliesDrawerOpen, setSavedRepliesDrawerOpen] = useState(false);
+  const [savedRepliesLoading, setSavedRepliesLoading] = useState(false);
+  const [savedRepliesQuery, setSavedRepliesQuery] = useState('');
+  const [savedReplies, setSavedReplies] = useState([]);
+  const chatMessageListRef = useRef(null);
+  const chatReplyInputRef = useRef(null);
+  const latestChatMessageIdRef = useRef(0);
+  const isChatLoadingRef = useRef(false);
   const navItems = useMemo(() => {
     const items = [
       { key: 'profile', label: 'Profile', icon: <PersonIcon fontSize="small" /> },
+      { key: 'messages', label: 'Messages', icon: <ChatBubbleOutlineIcon fontSize="small" /> },
       { key: 'push', label: 'Push Notification', icon: <NotificationsIcon fontSize="small" /> },
       { key: 'email', label: 'Email', icon: <EmailIcon fontSize="small" /> },
       { key: 'security', label: 'Account Security', icon: <SecurityIcon fontSize="small" /> },
@@ -120,6 +148,7 @@ export default function UserEdit({ user, userData = [], vipCourses = [], certifi
   );
   const isProfile = activeMenu.key === 'profile';
   const isVipAccess = activeMenu.key === 'vip-access';
+  const isMessages = activeMenu.key === 'messages';
   const isPush = activeMenu.key === 'push';
   const isEmail = activeMenu.key === 'email';
   const isSecurity = activeMenu.key === 'security';
@@ -435,6 +464,222 @@ export default function UserEdit({ user, userData = [], vipCourses = [], certifi
       return String(value);
     }
     return parsed.toLocaleString();
+  };
+
+  useEffect(() => {
+    latestChatMessageIdRef.current = Array.isArray(chatMessages) && chatMessages.length > 0 ? Number(chatMessages[chatMessages.length - 1]?.id || 0) : 0;
+  }, [chatMessages]);
+
+  useEffect(() => {
+    if (!pendingChatImage) {
+      if (pendingChatImageUrl) {
+        URL.revokeObjectURL(pendingChatImageUrl);
+        setPendingChatImageUrl('');
+      }
+      return;
+    }
+    const url = URL.createObjectURL(pendingChatImage);
+    setPendingChatImageUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [pendingChatImage]);
+
+  useEffect(() => {
+    isChatLoadingRef.current = chatLoading;
+  }, [chatLoading]);
+
+  const loadSavedReplies = React.useCallback(() => {
+    if (!window.axios) {
+      return Promise.resolve([]);
+    }
+    setSavedRepliesLoading(true);
+    return window.axios
+      .get(`${admin_app_url}/save-replies/options`)
+      .then((res) => {
+        const items = Array.isArray(res.data?.data) ? res.data.data : [];
+        setSavedReplies(items);
+        return items;
+      })
+      .catch(() => [])
+      .finally(() => setSavedRepliesLoading(false));
+  }, [admin_app_url]);
+
+  const insertSavedReplyText = (text) => {
+    const next = String(text || '').trim();
+    if (!next) return;
+    setChatMessageText((prev) => {
+      const current = String(prev || '').trim();
+      if (!current) return next;
+      return `${current}\n\n${next}`;
+    });
+  };
+
+  const resolveChatConversation = React.useCallback(() => {
+    const otherUserId = user?.user_id ? String(user.user_id) : '';
+    if (!otherUserId) {
+      return Promise.resolve(null);
+    }
+    if (!window.axios) {
+      return Promise.resolve(null);
+    }
+    setChatError('');
+    setChatLoading(true);
+    return window.axios
+      .get(`${admin_app_url}/support-chat/conversation`, { params: { otherUserId } })
+      .then((res) => {
+        const conv = res.data;
+        const id = conv?.id ? Number(conv.id) : 0;
+        if (id > 0) {
+          setChatConversationId(id);
+          return id;
+        }
+        return null;
+      })
+      .catch(() => {
+        setChatError('Failed to open conversation.');
+        return null;
+      })
+      .finally(() => setChatLoading(false));
+  }, [admin_app_url, user?.user_id]);
+
+  const fetchChatMessages = React.useCallback(
+    (conversationId, options = {}) => {
+      if (!window.axios || !conversationId) {
+        return Promise.resolve(null);
+      }
+      const params = { conversationId, limit: 30, ...options };
+      return window.axios
+        .get(`${admin_app_url}/support-chat/messages`, { params })
+        .then((res) => {
+          const data = Array.isArray(res.data?.data) ? res.data.data : [];
+          return data;
+        })
+        .catch(() => null);
+    },
+    [admin_app_url]
+  );
+
+  useEffect(() => {
+    if (!isMessages) {
+      return;
+    }
+    resolveChatConversation().then((conversationId) => {
+      if (!conversationId) return;
+      fetchChatMessages(conversationId).then((data) => {
+        if (!Array.isArray(data)) return;
+        setChatMessages(data);
+      });
+    });
+  }, [isMessages, resolveChatConversation, fetchChatMessages]);
+
+  useEffect(() => {
+    if (!isMessages) return;
+    const el = chatMessageListRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [isMessages, chatConversationId, chatMessages]);
+
+  useEffect(() => {
+    if (!isMessages) return undefined;
+    if (!chatConversationId || !window.axios) return undefined;
+    const poll = () => {
+      if (document.visibilityState && document.visibilityState !== 'visible') {
+        return;
+      }
+      if (isChatLoadingRef.current) {
+        return;
+      }
+      const afterId = Number(latestChatMessageIdRef.current || 0);
+      fetchChatMessages(chatConversationId, afterId > 0 ? { afterId, limit: 50 } : { limit: 30 }).then((incoming) => {
+        if (!Array.isArray(incoming) || incoming.length === 0) return;
+        setChatMessages((prev) => {
+          const existingIds = new Set((prev || []).map((m) => Number(m.id)));
+          const merged = [...(prev || [])];
+          for (const m of incoming) {
+            const id = Number(m.id);
+            if (!existingIds.has(id)) {
+              merged.push(m);
+              existingIds.add(id);
+            }
+          }
+          return merged;
+        });
+      });
+    };
+
+    const timer = window.setInterval(poll, 3000);
+    return () => window.clearInterval(timer);
+  }, [isMessages, chatConversationId, fetchChatMessages]);
+
+  const sendChatMessage = () => {
+    const text = String(chatMessageText || '').trim();
+    if (!text) return;
+    if (!chatConversationId || !window.axios) return;
+    setChatSending(true);
+    setChatError('');
+    window.axios
+      .post(`${admin_app_url}/support-chat/messages`, { conversationId: chatConversationId, messageText: text })
+      .then((res) => {
+        const msg = res.data?.message;
+        if (msg?.id) {
+          setChatMessages((prev) => {
+            const list = Array.isArray(prev) ? [...prev] : [];
+            const exists = list.some((m) => Number(m.id) === Number(msg.id));
+            if (!exists) {
+              list.push(msg);
+            }
+            return list;
+          });
+        }
+        setChatMessageText('');
+      })
+      .catch(() => setChatError('Failed to send message.'))
+      .finally(() => setChatSending(false));
+  };
+
+  const sendChatImage = () => {
+    if (!pendingChatImage) return;
+    if (!chatConversationId || !window.axios) return;
+    const form = new FormData();
+    form.append('conversationId', String(chatConversationId));
+    const text = String(chatMessageText || '').trim();
+    if (text) {
+      form.append('messageText', text);
+    }
+    form.append('image', pendingChatImage);
+
+    setChatSending(true);
+    setChatError('');
+    window.axios
+      .post(`${admin_app_url}/support-chat/messages/image`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((res) => {
+        const msg = res.data?.message;
+        if (msg?.id) {
+          setChatMessages((prev) => {
+            const list = Array.isArray(prev) ? [...prev] : [];
+            const exists = list.some((m) => Number(m.id) === Number(msg.id));
+            if (!exists) {
+              list.push(msg);
+            }
+            return list;
+          });
+        }
+        setChatMessageText('');
+        setPendingChatImage(null);
+      })
+      .catch(() => setChatError('Failed to send image.'))
+      .finally(() => setChatSending(false));
+  };
+
+  const handleSendChat = () => {
+    if (pendingChatImage) {
+      sendChatImage();
+      return;
+    }
+    sendChatMessage();
   };
 
   const handleSavePassword = (event) => {
@@ -1023,6 +1268,385 @@ export default function UserEdit({ user, userData = [], vipCourses = [], certifi
                       </Button>
                     </Stack>
                   </Stack>
+                </Paper>
+              )}
+
+              {isMessages && (
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: { xs: 640, md: 720 },
+                  }}
+                >
+                  <Box sx={{ p: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                    <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }} noWrap>
+                        {user?.learner_name ? user.learner_name : `User ${user?.user_id || ''}`}
+                      </Typography>
+                      <Chip size="small" label="english" />
+                    </Stack>
+                    {(user?.learner_phone || user?.learner_email) ? (
+                      <Typography variant="caption" sx={{ opacity: 0.75 }} noWrap>
+                        {[user?.learner_phone, user?.learner_email].filter(Boolean).join(' • ')}
+                      </Typography>
+                    ) : null}
+                  </Box>
+
+                  <Box
+                    ref={chatMessageListRef}
+                    sx={{
+                      flex: 1,
+                      minHeight: 0,
+                      overflow: 'auto',
+                      p: 2,
+                      bgcolor: 'background.default',
+                    }}
+                  >
+                    {(chatMessages || []).map((m) => {
+                      const isMe = Number(m?.sender_id) === Number(SUPPORT_ADMIN_USER_ID);
+                      const filePath = String(m?.file_path || '').trim();
+                      const fileUrl = filePath
+                        ? filePath.startsWith('http://') || filePath.startsWith('https://')
+                          ? filePath
+                          : `${appBaseUrl}/${filePath.replace(/^\/+/, '')}`
+                        : '';
+                      const text = String(m?.message_text || '').trim();
+                      const isImage = String(m?.message_type || '') === 'image' && !!fileUrl;
+                      return (
+                        <Box
+                          key={m?.id}
+                          sx={{
+                            display: 'flex',
+                            justifyContent: isMe ? 'flex-end' : 'flex-start',
+                            mb: 1,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              maxWidth: '78%',
+                              px: 1.5,
+                              py: 1,
+                              borderRadius: 2,
+                              bgcolor: isMe ? 'primary.main' : 'background.paper',
+                              color: isMe ? 'primary.contrastText' : 'text.primary',
+                              border: isMe ? 'none' : '1px solid',
+                              borderColor: isMe ? 'transparent' : 'divider',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word',
+                              p: isImage ? 0.75 : undefined,
+                            }}
+                          >
+                            {isImage ? (
+                              <Box>
+                                <Box component="a" href={fileUrl} target="_blank" rel="noreferrer" sx={{ display: 'block' }}>
+                                  <Box
+                                    component="img"
+                                    src={fileUrl}
+                                    alt="Chat image"
+                                    sx={{
+                                      display: 'block',
+                                      width: '100%',
+                                      maxWidth: 360,
+                                      height: 'auto',
+                                      borderRadius: 1.25,
+                                    }}
+                                  />
+                                </Box>
+                                {text ? (
+                                  <Typography variant="body2" sx={{ mt: 0.75 }}>
+                                    {text}
+                                  </Typography>
+                                ) : null}
+                              </Box>
+                            ) : (
+                              <Typography variant="body2">{text || fileUrl}</Typography>
+                            )}
+                          </Box>
+                        </Box>
+                      );
+                    })}
+
+                    {chatError ? (
+                      <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                        {chatError}
+                      </Typography>
+                    ) : null}
+
+                    {(!chatMessages || chatMessages.length === 0) && chatConversationId && !chatLoading ? (
+                      <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                        No messages yet.
+                      </Typography>
+                    ) : null}
+                  </Box>
+
+                  <Box sx={{ p: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Box
+                      component="form"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSendChat();
+                      }}
+                    >
+                      {pendingChatImage ? (
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                          {pendingChatImageUrl ? (
+                            <Box
+                              component="img"
+                              src={pendingChatImageUrl}
+                              alt="Selected upload"
+                              sx={{ width: 36, height: 36, borderRadius: 1, objectFit: 'cover', border: '1px solid', borderColor: 'divider' }}
+                            />
+                          ) : null}
+                          <Chip
+                            size="small"
+                            label={pendingChatImage?.name || 'Selected image'}
+                            onDelete={() => setPendingChatImage(null)}
+                            deleteIcon={<CloseIcon />}
+                            variant="outlined"
+                            sx={{ maxWidth: 320 }}
+                          />
+                        </Stack>
+                      ) : null}
+
+                      <Stack direction="row" spacing={1} alignItems="flex-end">
+                        <input
+                          ref={chatImageInputRef}
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+                            e.target.value = '';
+                            if (!file) return;
+                            setPendingChatImage(file);
+                          }}
+                          disabled={!chatConversationId || chatSending}
+                        />
+                        <IconButton
+                          onClick={() => chatImageInputRef.current && chatImageInputRef.current.click()}
+                          disabled={!chatConversationId || chatSending}
+                          size="small"
+                        >
+                          <ImageIcon />
+                        </IconButton>
+                        <Tooltip title="Saved replies">
+                          <span>
+                            <IconButton
+                              onClick={() => {
+                                setSavedRepliesDrawerOpen(true);
+                                if (savedReplies.length === 0) {
+                                  loadSavedReplies();
+                                }
+                              }}
+                              disabled={!chatConversationId || chatSending}
+                              size="small"
+                            >
+                              <SavedRepliesIcon />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                        <TextField
+                          fullWidth
+                          multiline
+                          minRows={1}
+                          maxRows={4}
+                          size="small"
+                          label="Reply"
+                          value={chatMessageText}
+                          onChange={(e) => setChatMessageText(e.target.value)}
+                          inputRef={chatReplyInputRef}
+                          disabled={!chatConversationId || chatSending}
+                        />
+                        <Button
+                          variant="contained"
+                          type="submit"
+                          startIcon={<SendIcon />}
+                          disabled={!chatConversationId || chatSending || (!pendingChatImage && String(chatMessageText || '').trim() === '')}
+                        >
+                          Send
+                        </Button>
+                      </Stack>
+                    </Box>
+                  </Box>
+
+                  <Drawer
+                    anchor="right"
+                    open={savedRepliesDrawerOpen}
+                    onClose={() => setSavedRepliesDrawerOpen(false)}
+                    ModalProps={{ keepMounted: true }}
+                    sx={{
+                      zIndex: (theme) => theme.zIndex.drawer + 3,
+                      '& .MuiBackdrop-root': {
+                        zIndex: (theme) => theme.zIndex.drawer + 2,
+                      },
+                      '& .MuiDrawer-paper': {
+                        zIndex: (theme) => theme.zIndex.drawer + 3,
+                      },
+                    }}
+                    PaperProps={{
+                      sx: {
+                        width: { xs: '100%', sm: 420 },
+                        borderLeft: '1px solid',
+                        borderColor: 'divider',
+                      },
+                    }}
+                  >
+                    <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                      <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                        <Box>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                            Saved Replies
+                          </Typography>
+                          <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                            Click a template to insert into the reply box
+                          </Typography>
+                        </Box>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          <Tooltip title="Refresh">
+                            <span>
+                              <IconButton size="small" onClick={loadSavedReplies} disabled={savedRepliesLoading}>
+                                <RefreshIcon fontSize="small" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
+                          <IconButton size="small" onClick={() => setSavedRepliesDrawerOpen(false)}>
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                        </Stack>
+                      </Stack>
+
+                      <TextField
+                        size="small"
+                        placeholder="Search replies"
+                        value={savedRepliesQuery}
+                        onChange={(e) => setSavedRepliesQuery(e.target.value)}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SearchIcon fontSize="small" />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{ mt: 2 }}
+                        fullWidth
+                      />
+
+                      <Divider sx={{ my: 2 }} />
+
+                      <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                        {savedRepliesLoading ? (
+                          <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                            Loading...
+                          </Typography>
+                        ) : null}
+
+                        {(!savedReplies || savedReplies.length === 0) && !savedRepliesLoading ? (
+                          <Box sx={{ py: 6, textAlign: 'center' }}>
+                            <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                              No saved replies yet.
+                            </Typography>
+                            <Button component={Link} href={`${admin_app_url}/save-replies`} variant="outlined" size="small" sx={{ mt: 1.5 }}>
+                              Manage Saved Replies
+                            </Button>
+                          </Box>
+                        ) : null}
+
+                        {Array.isArray(savedReplies) && savedReplies.length > 0 ? (
+                          <List disablePadding>
+                            {(savedReplies || [])
+                              .filter((r) => {
+                                const q = String(savedRepliesQuery || '').trim().toLowerCase();
+                                if (!q) return true;
+                                const title = String(r?.title || '').toLowerCase();
+                                const msg = String(r?.message || '').toLowerCase();
+                                return title.includes(q) || msg.includes(q);
+                              })
+                              .map((r) => {
+                                const title = String(r?.title || '').trim() || 'Untitled';
+                                const msg = String(r?.message || '').trim();
+                                return (
+                                  <Box key={`sr-${r.id}`} sx={{ mb: 1 }}>
+                                    <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                                      <ListItemButton
+                                        onClick={() => {
+                                          insertSavedReplyText(r?.message);
+                                          setSavedRepliesDrawerOpen(false);
+                                          window.setTimeout(() => {
+                                            const el = chatReplyInputRef.current;
+                                            if (el && typeof el.focus === 'function') {
+                                              el.focus();
+                                            }
+                                          }, 0);
+                                        }}
+                                        sx={{ alignItems: 'flex-start', py: 1.25 }}
+                                      >
+                                        <Box sx={{ width: '100%' }}>
+                                          <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1}>
+                                            <Box sx={{ minWidth: 0 }}>
+                                              <Typography variant="subtitle2" sx={{ fontWeight: 800 }} noWrap>
+                                                {title}
+                                              </Typography>
+                                              <Typography
+                                                variant="body2"
+                                                sx={{
+                                                  mt: 0.5,
+                                                  opacity: 0.8,
+                                                  overflow: 'hidden',
+                                                  display: '-webkit-box',
+                                                  WebkitBoxOrient: 'vertical',
+                                                  WebkitLineClamp: 3,
+                                                  whiteSpace: 'pre-wrap',
+                                                  lineHeight: 1.4,
+                                                }}
+                                              >
+                                                {msg}
+                                              </Typography>
+                                            </Box>
+                                            <Button
+                                              variant="contained"
+                                              size="small"
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                insertSavedReplyText(r?.message);
+                                                setSavedRepliesDrawerOpen(false);
+                                                window.setTimeout(() => {
+                                                  const el = chatReplyInputRef.current;
+                                                  if (el && typeof el.focus === 'function') {
+                                                    el.focus();
+                                                  }
+                                                }, 0);
+                                              }}
+                                            >
+                                              Insert
+                                            </Button>
+                                          </Stack>
+                                        </Box>
+                                      </ListItemButton>
+                                    </Paper>
+                                  </Box>
+                                );
+                              })}
+                          </List>
+                        ) : null}
+                      </Box>
+
+                      <Divider sx={{ my: 2 }} />
+
+                      <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                        <Typography variant="caption" sx={{ opacity: 0.65 }}>
+                          Tip: keep titles short for faster selection
+                        </Typography>
+                        <Button component={Link} href={`${admin_app_url}/save-replies`} size="small" variant="text">
+                          Manage
+                        </Button>
+                      </Stack>
+                    </Box>
+                  </Drawer>
                 </Paper>
               )}
 

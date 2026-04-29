@@ -211,6 +211,7 @@ export default function AdminLayout({ children }) {
       title: 'System',
       items: [
         { name: 'Save Replies', href: `${admin_app_url}/save-replies`, icon: <ChatBubbleOutlineIcon /> },
+        { name: 'Activation Messages', href: `${admin_app_url}/activation-messages`, icon: <AnnouncementIcon /> },
         { name: 'Activity Logs', href: `${admin_app_url}/activity-logs`, icon: <BarChartIcon /> },
         { name: 'Administration', href: `${admin_app_url}/administration`, icon: <AdministrationIcon /> },
         { name: 'Communities', href: `${admin_app_url}/communities`, icon: <CommunitiesIcon /> },

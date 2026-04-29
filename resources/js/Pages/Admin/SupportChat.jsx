@@ -116,6 +116,43 @@ export default function SupportChat() {
   };
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const otherUserId = String(url.searchParams.get('otherUserId') || '').trim();
+    if (!otherUserId) {
+      return;
+    }
+
+    window.axios
+      .get(`${admin_app_url}/support-chat/conversation`, {
+        params: { otherUserId },
+      })
+      .then((res) => {
+        const conv = res.data;
+        if (!conv?.id) {
+          return;
+        }
+
+        setLoadedConversations((prev) => {
+          const list = Array.isArray(prev) ? [...prev] : [];
+          const idx = list.findIndex((c) => Number(c.id) === Number(conv.id));
+          if (idx >= 0) {
+            list.splice(idx, 1);
+          }
+          list.unshift(conv);
+          return list;
+        });
+
+        setActiveConversationId((prev) => prev || conv.id);
+
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('conversationId', String(conv.id));
+        nextUrl.searchParams.delete('otherUserId');
+        window.history.replaceState({}, '', nextUrl.toString());
+      })
+      .catch(() => {});
+  }, [admin_app_url]);
+
+  useEffect(() => {
     fetchConversationsPage(1, 25)
       .then((pager) => {
         setConversationPager(pager);

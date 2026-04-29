@@ -192,7 +192,7 @@ class ChatController extends Controller
         }
         $user1Id = trim((string) ($user->user_id ?? ''));
         $user2Id = trim((string) $request->input('user2Id'));
-        $major = $request->input('major', 'english');
+        $major = 'english';
 
         if ($user1Id === '' || $user1Id === '0' || !ctype_digit($user1Id)) {
             return $this->errorResponse('Invalid user id', 400);

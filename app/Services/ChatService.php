@@ -60,6 +60,11 @@ class ChatService
             throw new \Exception('Conversation not found');
         }
 
+        $effectiveMajor = strtolower(trim((string) ($conversation->major ?? '')));
+        if ($effectiveMajor === '') {
+            $effectiveMajor = 'english';
+        }
+
         // Determine receiver
         $receiverId = ($conversation->user1_id == $senderId) ? $conversation->user2_id : $conversation->user1_id;
 
@@ -67,7 +72,7 @@ class ChatService
         $message = new Message();
         $message->conversation_id = $conversationId;
         $message->sender_id = $senderId;
-        $message->major = $major;
+        $message->major = $effectiveMajor;
         $message->message_type = $messageType;
         $message->message_text = $messageText; // Can be empty if file
         $message->file_path = $filePath;
@@ -109,7 +114,7 @@ class ChatService
                 ], 'App\\Notifications\\SupportChatMessage');
 
                 $this->dispatch->pushToAdminTopicByMajor(
-                    (string) $major,
+                    (string) $effectiveMajor,
                     (string) $senderName,
                     (string) $preview,
                     [
@@ -341,6 +346,8 @@ class ChatService
 
     public function createConversation($user1Id, $user2Id, $major)
     {
+        $major = 'english';
+
         $originalCallerId = $user1Id;
         if ($user1Id > $user2Id) {
             $temp = $user1Id;
@@ -353,9 +360,16 @@ class ChatService
         // Check existing
         $existing = Conversation::where('user1_id', $user1Id)
             ->where('user2_id', $user2Id)
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
             ->first();
 
         if ($existing) {
+            $existingMajor = strtolower(trim((string) ($existing->major ?? '')));
+            if ($existingMajor !== $major) {
+                $existing->major = $major;
+                $existing->save();
+            }
             return $this->formatConversationResponse($existing, $friendId, $originalCallerId);
         }
 

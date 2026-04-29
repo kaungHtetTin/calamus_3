@@ -39,6 +39,11 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'admin_app_url' => env('ADMIN_APP_URL', 'http://localhost/admin'),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+            ],
             'auth' => [
                 'admin' => $request->user('admin') ? [
                     'id' => $request->user('admin')->id,
