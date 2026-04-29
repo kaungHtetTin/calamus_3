@@ -571,12 +571,12 @@ class UserController extends Controller
             ]
         );
 
-        $this->sendActivationChatMessage($userId, $dispatch);
+        $this->sendActivationChatMessage($userId, $major, $dispatch);
 
         return redirect()->back(303);
     }
 
-    private function sendActivationChatMessage(string $userId, NotificationDispatchService $dispatch): void
+    private function sendActivationChatMessage(string $userId, string $major, NotificationDispatchService $dispatch): void
     {
         $userId = trim((string) $userId);
         if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
@@ -587,12 +587,24 @@ class UserController extends Controller
             return;
         }
 
+        $selectionMajor = strtolower(trim((string) $major));
+        if ($selectionMajor === '') {
+            $selectionMajor = 'english';
+        }
+
         $messageText = ActivationMessage::query()
-            ->whereRaw('LOWER(TRIM(major)) = ?', ['english'])
+            ->whereRaw('LOWER(TRIM(major)) = ?', [$selectionMajor])
             ->orderByDesc('id')
             ->value('message');
 
         $messageText = is_string($messageText) ? trim($messageText) : '';
+        if ($messageText === '') {
+            $fallback = ActivationMessage::query()
+                ->whereRaw('LOWER(TRIM(major)) = ?', ['english'])
+                ->orderByDesc('id')
+                ->value('message');
+            $messageText = is_string($fallback) ? trim($fallback) : '';
+        }
         if ($messageText === '') {
             return;
         }

@@ -612,14 +612,25 @@ class AdminPaymentController extends Controller
             return;
         }
 
-        $normalizedMajor = 'english';
+        $selectionMajor = strtolower(trim((string) $major));
+        if ($selectionMajor === '') {
+            $selectionMajor = 'english';
+        }
+        $chatMajor = 'english';
 
         $messageText = ActivationMessage::query()
-            ->whereRaw('LOWER(TRIM(major)) = ?', [$normalizedMajor])
+            ->whereRaw('LOWER(TRIM(major)) = ?', [$selectionMajor])
             ->orderByDesc('id')
             ->value('message');
 
         $messageText = is_string($messageText) ? trim($messageText) : '';
+        if ($messageText === '') {
+            $fallback = ActivationMessage::query()
+                ->whereRaw('LOWER(TRIM(major)) = ?', ['english'])
+                ->orderByDesc('id')
+                ->value('message');
+            $messageText = is_string($fallback) ? trim($fallback) : '';
+        }
 
         if ($messageText === '') {
             return;
@@ -645,7 +656,7 @@ class AdminPaymentController extends Controller
             $conversation = Conversation::query()->create([
                 'user1_id' => self::SUPPORT_ADMIN_USER_ID,
                 'user2_id' => $userId,
-                'major' => $normalizedMajor,
+                'major' => $chatMajor,
                 'last_message_at' => null,
             ]);
         }
@@ -657,7 +668,7 @@ class AdminPaymentController extends Controller
         $msg = new Message();
         $msg->conversation_id = (int) $conversation->id;
         $msg->sender_id = self::SUPPORT_ADMIN_USER_ID;
-        $msg->major = $normalizedMajor;
+        $msg->major = $chatMajor;
         $msg->message_type = 'text';
         $msg->message_text = $messageText;
         $msg->file_path = '';

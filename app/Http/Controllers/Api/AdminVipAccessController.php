@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivationMessage;
 use App\Models\Admin;
+use App\Models\Conversation;
 use App\Models\Course;
+use App\Models\Message;
 use App\Models\PackagePlan;
 use App\Models\Payment;
 use App\Traits\ApiResponse;
+use App\Services\NotificationDispatchService;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +22,8 @@ use Illuminate\Support\Str;
 class AdminVipAccessController extends Controller
 {
     use ApiResponse;
+
+    private const SUPPORT_ADMIN_USER_ID = 10000;
 
     private function getPivotColumns(): ?array
     {
@@ -253,7 +259,7 @@ class AdminVipAccessController extends Controller
         return $this->successResponse($data);
     }
 
-    public function update(Request $request, string $userId)
+    public function update(Request $request, string $userId, NotificationDispatchService $dispatch)
     {
         $admin = $request->user();
         if (! $admin instanceof Admin) {
@@ -366,6 +372,20 @@ class AdminVipAccessController extends Controller
 
         $partnerCode = trim((string) $request->input('partnerCode', ''));
         $now = now();
+
+        $wasVipInt = 0;
+        $wasDiamondInt = 0;
+        if (Schema::hasTable('user_data') && Schema::hasColumn('user_data', 'user_id') && Schema::hasColumn('user_data', 'major')) {
+            $existingUserData = DB::table('user_data')
+                ->where('user_id', $userId)
+                ->whereRaw('LOWER(TRIM(major)) = ?', [$major])
+                ->first();
+
+            if ($existingUserData) {
+                $wasVipInt = isset($existingUserData->is_vip) ? (int) $existingUserData->is_vip : 0;
+                $wasDiamondInt = isset($existingUserData->diamond_plan) ? (int) $existingUserData->diamond_plan : 0;
+            }
+        }
 
         $changes = [
             'insertedCourseIds' => [],
@@ -540,6 +560,14 @@ class AdminVipAccessController extends Controller
             return $this->errorResponse('VIP update failed.', 500);
         }
 
+        $didActivateVip = ($wasVipInt === 0 && $isVipInt === 1)
+            || ($wasDiamondInt === 0 && $isDiamondInt === 1)
+            || ($isVipInt === 1 && !empty($changes['insertedCourseIds']));
+
+        if ($didActivateVip) {
+            $this->sendActivationChatMessage($userId, $major, $dispatch);
+        }
+
         return $this->successResponse([
             'userId' => (string) $userId,
             'major' => $major,
@@ -556,6 +584,124 @@ class AdminVipAccessController extends Controller
                 'screenshotUrl' => $screenshotUrl,
                 'partnerCode' => $partnerCode !== '' ? $partnerCode : null,
             ],
+        ]);
+    }
+
+    private function sendActivationChatMessage(string $userId, string $sourceMajor, NotificationDispatchService $dispatch): void
+    {
+        $userId = trim((string) $userId);
+        if ($userId === '' || $userId === '0' || !ctype_digit($userId)) {
+            return;
+        }
+
+        $messageText = '';
+        if (Schema::hasTable('activation_messages')) {
+            $selectionMajor = strtolower(trim((string) $sourceMajor));
+            if ($selectionMajor === '') {
+                $selectionMajor = 'english';
+            }
+
+            $messageText = ActivationMessage::query()
+                ->whereRaw('LOWER(TRIM(major)) = ?', [$selectionMajor])
+                ->orderByDesc('id')
+                ->value('message') ?? '';
+
+            $messageText = is_string($messageText) ? trim($messageText) : '';
+
+            if ($messageText === '') {
+                $fallback = ActivationMessage::query()
+                    ->whereRaw('LOWER(TRIM(major)) = ?', ['english'])
+                    ->orderByDesc('id')
+                    ->value('message') ?? '';
+                $messageText = is_string($fallback) ? trim($fallback) : '';
+            }
+        }
+
+        if ($messageText === '') {
+            $messageText = 'Your course subscription has been activated.';
+        }
+
+        if (!Schema::hasTable('conversations') || !Schema::hasTable('messages')) {
+            return;
+        }
+
+        if (mb_strlen($messageText) > 2000) {
+            $messageText = mb_substr($messageText, 0, 2000);
+        }
+
+        $major = 'english';
+
+        $conversation = Conversation::query()
+            ->where(function ($q) use ($userId) {
+                $q->where(function ($q2) use ($userId) {
+                    $q2->where('user1_id', self::SUPPORT_ADMIN_USER_ID)->where('user2_id', $userId);
+                })->orWhere(function ($q2) use ($userId) {
+                    $q2->where('user2_id', self::SUPPORT_ADMIN_USER_ID)->where('user1_id', $userId);
+                });
+            })
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
+            ->first();
+
+        if ($conversation) {
+            $existingMajor = strtolower(trim((string) ($conversation->major ?? '')));
+            if ($existingMajor !== $major) {
+                $conversation->major = $major;
+                $conversation->save();
+            }
+        } else {
+            try {
+                $conversation = Conversation::query()->create([
+                    'user1_id' => self::SUPPORT_ADMIN_USER_ID,
+                    'user2_id' => $userId,
+                    'major' => $major,
+                    'last_message_at' => null,
+                ]);
+            } catch (\Throwable $e) {
+                $conversation = Conversation::query()
+                    ->where(function ($q) use ($userId) {
+                        $q->where(function ($q2) use ($userId) {
+                            $q2->where('user1_id', self::SUPPORT_ADMIN_USER_ID)->where('user2_id', $userId);
+                        })->orWhere(function ($q2) use ($userId) {
+                            $q2->where('user2_id', self::SUPPORT_ADMIN_USER_ID)->where('user1_id', $userId);
+                        });
+                    })
+                    ->orderByDesc('last_message_at')
+                    ->orderByDesc('created_at')
+                    ->first();
+
+                if ($conversation) {
+                    $existingMajor = strtolower(trim((string) ($conversation->major ?? '')));
+                    if ($existingMajor !== $major) {
+                        $conversation->major = $major;
+                        $conversation->save();
+                    }
+                }
+            }
+        }
+
+        if (!$conversation) {
+            return;
+        }
+
+        $msg = new Message();
+        $msg->conversation_id = (int) $conversation->id;
+        $msg->sender_id = self::SUPPORT_ADMIN_USER_ID;
+        $msg->major = $major;
+        $msg->message_type = 'text';
+        $msg->message_text = $messageText;
+        $msg->file_path = '';
+        $msg->file_size = 0;
+        $msg->is_read = 0;
+        $msg->save();
+
+        $conversation->last_message_at = now();
+        $conversation->save();
+
+        $dispatch->queuePushToUserTokens($userId, 'Support', $messageText, [
+            'type' => 'chat.message',
+            'conversationId' => (string) $conversation->id,
+            'friendId' => (string) self::SUPPORT_ADMIN_USER_ID,
         ]);
     }
 }
