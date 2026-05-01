@@ -32,6 +32,7 @@ use App\Http\Controllers\WordOfDayController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SpeakingChatbotController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\MiniProgram\MiniProgramController;
 use App\Http\Controllers\Api\AdminAuthController as AdminApiAuthController;
 use App\Http\Controllers\Api\AdminFlashcardController;
@@ -125,6 +126,10 @@ Route::prefix('additional-lessons')->group(function () {
 Route::prefix('apps')->group(function () {
     Route::get('/get', [AppController::class, 'index']); //ok
     Route::get('/check-update', [AppController::class, 'checkUpdate']);
+});
+
+Route::prefix('banners')->group(function () {
+    Route::get('/first', [BannerController::class, 'first']);
 });
 
 Route::get('/mini-programs', [MiniProgramController::class, 'index']);

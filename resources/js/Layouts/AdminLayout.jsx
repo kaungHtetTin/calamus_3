@@ -55,6 +55,7 @@ import {
   Apps as AppsIcon,
   Extension as MiniProgramIcon,
   Groups as CommunitiesIcon,
+  Image as BannersIcon,
 } from '@mui/icons-material';
 
 const compactDrawerWidth = 208;
@@ -219,6 +220,7 @@ export default function AdminLayout({ children }) {
         { name: 'Payment Methods', href: `${admin_app_url}/payment-methods`, icon: <FinancialIcon /> },
         { name: 'Package Plans', href: `${admin_app_url}/package-plans`, icon: <SettingsIcon /> },
         { name: 'Announcements', href: `${admin_app_url}/announcements`, icon: <AnnouncementIcon /> },
+        { name: 'Banners', href: `${admin_app_url}/banners`, icon: <BannersIcon /> },
         { name: 'Applications', href: `${admin_app_url}/apps`, icon: <AppsIcon /> },
         { name: 'Mini Programs', href: `${admin_app_url}/mini-programs`, icon: <MiniProgramIcon /> },
         { name: 'UI Showcase', href: `${admin_app_url}/ui-showcase`, icon: <UiShowcaseIcon /> },
@@ -265,6 +267,7 @@ export default function AdminLayout({ children }) {
           item.href.endsWith('/payment-methods') ||
           item.href.endsWith('/package-plans') ||
           item.href.endsWith('/announcements') ||
+          item.href.endsWith('/banners') ||
           item.href.endsWith('/apps') ||
           item.href.endsWith('/mini-programs')
         ) {

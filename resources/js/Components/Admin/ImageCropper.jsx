@@ -11,7 +11,17 @@ import {
   Box,
 } from '@mui/material';
 
-export default function ImageCropper({ open, image, onCropComplete, onCancel, aspect = 1 / 1, title = 'Crop Image' }) {
+export default function ImageCropper({
+  open,
+  image,
+  onCropComplete,
+  onCancel,
+  aspect = 1 / 1,
+  title = 'Crop Image',
+  outputWidth = null,
+  outputHeight = null,
+  cornerRadius = 15,
+}) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -46,8 +56,11 @@ export default function ImageCropper({ open, image, onCropComplete, onCancel, as
       return null;
     }
 
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    const targetW = Number.isFinite(Number(outputWidth)) && Number(outputWidth) > 0 ? Math.round(Number(outputWidth)) : pixelCrop.width;
+    const targetH = Number.isFinite(Number(outputHeight)) && Number(outputHeight) > 0 ? Math.round(Number(outputHeight)) : pixelCrop.height;
+
+    canvas.width = targetW;
+    canvas.height = targetH;
 
     ctx.drawImage(
       image,
@@ -57,8 +70,8 @@ export default function ImageCropper({ open, image, onCropComplete, onCancel, as
       pixelCrop.height,
       0,
       0,
-      pixelCrop.width,
-      pixelCrop.height
+      targetW,
+      targetH
     );
 
     return new Promise((resolve) => {
@@ -83,7 +96,16 @@ export default function ImageCropper({ open, image, onCropComplete, onCancel, as
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
-      <DialogContent sx={{ position: 'relative', height: 400, bgcolor: '#333' }}>
+      <DialogContent
+        sx={{
+          position: 'relative',
+          height: 400,
+          bgcolor: '#333',
+          '& .reactEasyCrop_CropArea': {
+            borderRadius: `${Number.isFinite(Number(cornerRadius)) ? Math.max(0, Number(cornerRadius)) : 0}px`,
+          },
+        }}
+      >
         <Cropper
           image={image}
           crop={crop}

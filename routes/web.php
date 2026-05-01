@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogControll
 use App\Http\Controllers\Admin\VipAccessTransferController as AdminVipAccessTransferController;
 use App\Http\Controllers\Admin\CommunityController as AdminCommunityController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -181,6 +182,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('store');
             Route::patch('/{announcement}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'update'])->name('update');
             Route::delete('/{announcement}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('banners')->name('banners.')->middleware('admin.permission:administration')->group(function () {
+            Route::get('/', [AdminBannerController::class, 'index'])->name('index');
+            Route::post('/', [AdminBannerController::class, 'store'])->name('store');
+            Route::patch('/{banner}', [AdminBannerController::class, 'update'])->name('update');
+            Route::delete('/{banner}', [AdminBannerController::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('apps')->name('apps.')->middleware('admin.permission:administration')->group(function () {
