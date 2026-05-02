@@ -109,6 +109,9 @@ class LessonController extends Controller
             return $this->errorResponse('VIP Content - Subscription required', 403);
         }
 
+        DB::table('lessons')->where('id', $lessonId)->increment('view_count');
+        $lesson->view_count = (int) ($lesson->view_count ?? 0) + 1;
+
         $isVideo = (int)$lesson->isVideo;
         $resolvedLink = $isVideo === 1
             ? $lesson->link
