@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Course extends Model
 {
@@ -57,5 +58,17 @@ class Course extends Model
     public function lessonsCategories()
     {
         return $this->hasMany(LessonCategory::class, 'course_id', 'course_id');
+    }
+
+    public static function syncLessonsCount(int $courseId): void
+    {
+        $count = (int) DB::table('lessons')
+            ->join('lessons_categories as lc', 'lc.id', '=', 'lessons.category_id')
+            ->where('lc.course_id', $courseId)
+            ->count();
+
+        DB::table('courses')
+            ->where('course_id', $courseId)
+            ->update(['lessons_count' => $count]);
     }
 }

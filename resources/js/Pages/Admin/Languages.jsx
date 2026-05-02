@@ -360,7 +360,16 @@ export default function Languages({ languages }) {
       </Menu>
 
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>{editingLanguage ? 'Edit Language' : 'Add Language'}</DialogTitle>
+        <DialogTitle>
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+            <Typography variant="inherit" component="div">
+              {editingLanguage ? 'Edit Language' : 'Add Language'}
+            </Typography>
+            {editingLanguage?.id ? (
+              <Chip size="small" variant="outlined" label={`ID: ${editingLanguage.id}`} />
+            ) : null}
+          </Stack>
+        </DialogTitle>
         <Box component="form" onSubmit={handleSubmit}>
           <DialogContent dividers>
             <Stack spacing={3}>

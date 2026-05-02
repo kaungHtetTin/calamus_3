@@ -16,11 +16,11 @@ class SongRequestController extends Controller
     public function index(Request $request)
     {
         $major = $request->query('major', 'korea');
-        $userId = $request->query('userId');
-
+        $userId = $request->query('userId')? $request->query('userId'): $request->query('userid');
         // Fetch artists for this major, but no need to load requested songs here
         $artists = Artist::where('major', $major)->orderBy('name', 'asc')->get();
 
+      
         return view('mini-program.song-request.index', [
             'artists' => $artists,
             'major' => $major,

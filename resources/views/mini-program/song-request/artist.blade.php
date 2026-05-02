@@ -51,6 +51,21 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        @media (max-width: 420px) {
+            .song-compact { align-items: flex-start; }
+            .song-name h6 {
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                word-break: break-word;
+                line-height: 1.25;
+            }
+            .vote-pill { margin-top: 2px; }
+        }
         
         .vote-pill { 
             display: flex; 

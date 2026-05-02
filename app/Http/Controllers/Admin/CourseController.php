@@ -667,6 +667,7 @@ class CourseController extends Controller
 
         Lesson::where('category_id', $category->id)->delete();
         $category->delete();
+        Course::syncLessonsCount((int) $course->course_id);
 
         return redirect()->back()->with('success', 'Lesson category deleted successfully.');
     }

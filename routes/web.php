@@ -332,7 +332,6 @@ Route::get('/certificate/image-proxy', [App\Http\Controllers\MiniProgram\Certifi
 
 Route::prefix('mini-program')->name('mini-program.')->group(function () {
     Route::get('/vimeo-player', [LessonController::class, 'vimeoPlayer']);
-   
     
     Route::prefix('song-request')->name('song-request.')->group(function () {
         Route::get('/', [SongRequestController::class, 'index'])->name('index');
