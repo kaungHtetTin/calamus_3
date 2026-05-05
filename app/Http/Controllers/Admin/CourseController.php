@@ -1328,16 +1328,35 @@ class CourseController extends Controller
 
     private function grantDiamondPlanVipAccess(Course $course): void
     {
-
         $major = strtolower(trim((string) ($course->major ?? '')));
-        if ($major === '') {
+        if ($major === '' || $major === 'not') {
+            return;
+        }
+
+        if (!Schema::hasTable('user_data') || !Schema::hasTable('vipusers')) {
+            return;
+        }
+
+        if (!Schema::hasColumn('user_data', 'major') || !Schema::hasColumn('user_data', 'diamond_plan') || !Schema::hasColumn('user_data', 'user_id')) {
+            return;
+        }
+
+        $vipCourseColumn = Schema::hasColumn('vipusers', 'course_id')
+            ? 'course_id'
+            : (Schema::hasColumn('vipusers', 'course') ? 'course' : null);
+        $vipUserColumn = Schema::hasColumn('vipusers', 'user_id')
+            ? 'user_id'
+            : (Schema::hasColumn('vipusers', 'phone') ? 'phone' : null);
+
+        if (!$vipCourseColumn || !$vipUserColumn) {
             return;
         }
 
         $eligibleUserIds = DB::table('user_data')
-            ->where('major', $major)
+            ->whereRaw("LOWER(TRIM(COALESCE(major, ''))) = ?", [$major])
             ->where('diamond_plan', 1)
             ->whereNotNull('user_id')
+            ->where('user_id', '!=', '')
             ->pluck('user_id')
             ->map(function ($id) {
                 return trim((string) $id);
@@ -1352,9 +1371,9 @@ class CourseController extends Controller
 
         $courseId = (int) $course->course_id;
         $existingUserIds = DB::table('vipusers')
-            ->where('course_id', $courseId)
-            ->whereIn('user_id', $eligibleUserIds->all())
-            ->pluck('user_id')
+            ->where($vipCourseColumn, $courseId)
+            ->whereIn($vipUserColumn, $eligibleUserIds->all())
+            ->pluck($vipUserColumn)
             ->map(function ($id) {
                 return trim((string) $id);
             })
@@ -1363,6 +1382,7 @@ class CourseController extends Controller
 
         $hasPhoneColumn = Schema::hasColumn('vipusers', 'phone');
         $hasDateColumn = Schema::hasColumn('vipusers', 'date');
+        $hasMajorColumn = Schema::hasColumn('vipusers', 'major');
         $hasDeletedAccountColumn = Schema::hasColumn('vipusers', 'deleted_account');
         $now = now()->toDateTimeString();
         $batch = [];
@@ -1373,12 +1393,15 @@ class CourseController extends Controller
             }
 
             $row = [
-                'course_id' => $courseId,
-                'user_id' => $userId,
+                $vipCourseColumn => $courseId,
+                $vipUserColumn => $userId,
             ];
 
             if ($hasPhoneColumn) {
                 $row['phone'] = $userId;
+            }
+            if ($hasMajorColumn) {
+                $row['major'] = $major;
             }
             if ($hasDateColumn) {
                 $row['date'] = $now;
