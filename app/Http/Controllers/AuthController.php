@@ -154,7 +154,18 @@ class AuthController extends Controller
         }
 
         try {
-            return $this->socialiteDriver($normalizedProvider)->stateless()->redirect();
+            $state = $this->encodeSocialState([
+                'major' => $request->query('major'),
+                'deviceType' => $request->query('deviceType'),
+                'platform' => $request->query('platform'),
+                'fcmToken' => $request->query('fcmToken'),
+                'origin' => $request->query('origin'),
+            ]);
+
+            return $this->socialiteDriver($normalizedProvider)
+                ->stateless()
+                ->with(['state' => $state])
+                ->redirect();
         } catch (\Throwable $e) {
             return $this->errorResponse('Social login is not configured for this provider.', 400);
         }
@@ -162,22 +173,33 @@ class AuthController extends Controller
 
     public function socialCallback(Request $request, string $provider)
     {
+        $state = $this->decodeSocialState((string) $request->query('state', ''));
+
+        $major = $this->pickSocialContextValue($request->query('major'), $state['major'] ?? null);
+        $deviceType = $this->pickSocialContextValue($request->query('deviceType'), $state['deviceType'] ?? 'mobile') ?: 'mobile';
+        $platform = $this->pickSocialContextValue($request->query('platform'), $state['platform'] ?? null);
+        $fcmToken = $this->pickSocialContextValue($request->query('fcmToken'), $state['fcmToken'] ?? null);
+        $origin = $this->pickSocialContextValue($request->query('origin'), $state['origin'] ?? null);
+
+        $isWebPopupFlow = is_string($deviceType) && strtolower(trim($deviceType)) === 'web';
+
         try {
             $normalizedProvider = $this->normalizeSocialProvider($provider);
         } catch (\Throwable $e) {
+            if ($isWebPopupFlow) {
+                return $this->socialPopupErrorResponse('Unsupported provider.', $origin);
+            }
             return $this->errorResponse('Unsupported provider.', 400);
         }
 
         try {
             $socialUser = $this->socialiteDriver($normalizedProvider)->stateless()->user();
         } catch (\Throwable $e) {
+            if ($isWebPopupFlow) {
+                return $this->socialPopupErrorResponse('Unable to authenticate with provider.', $origin);
+            }
             return $this->errorResponse('Unable to authenticate with provider.', 400);
         }
-
-        $major = $request->query('major');
-        $deviceType = $request->query('deviceType', 'mobile');
-        $platform = $request->query('platform');
-        $fcmToken = $request->query('fcmToken');
 
         try {
             $data = $this->authService->socialLogin(
@@ -196,11 +218,19 @@ class AuthController extends Controller
                 platform: is_string($platform) ? $platform : null
             );
 
+            if ($isWebPopupFlow) {
+                return $this->socialPopupSuccessResponse($data, $origin);
+            }
+
             return $this->successResponse($data);
         } catch (\Exception $e) {
             $code = (int) $e->getCode();
             if ($code < 400 || $code > 500) {
                 $code = 400;
+            }
+
+            if ($isWebPopupFlow) {
+                return $this->socialPopupErrorResponse($e->getMessage(), $origin);
             }
 
             return $this->errorResponse($e->getMessage(), $code);
@@ -510,5 +540,169 @@ class AuthController extends Controller
         }
 
         return Socialite::driver('facebook')->scopes(['email'])->fields(['id', 'name', 'email']);
+    }
+
+    private function socialPopupSuccessResponse(array $data, ?string $origin = null)
+    {
+        $payload = [
+            'success' => true,
+            'data' => $data,
+        ];
+
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return response($this->buildSocialPopupHtml($json, true, $origin), 200)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
+    private function socialPopupErrorResponse(string $message, ?string $origin = null)
+    {
+        $payload = [
+            'success' => false,
+            'error' => $message,
+        ];
+
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return response($this->buildSocialPopupHtml($json, false, $origin), 200)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
+    private function buildSocialPopupHtml(string $jsonPayload, bool $isSuccess, ?string $origin = null): string
+    {
+        $messageType = $isSuccess ? 'calamus-social-login-success' : 'calamus-social-login-error';
+        $safeJson = htmlspecialchars($jsonPayload, ENT_QUOTES, 'UTF-8');
+        $targetOrigin = $this->normalizePopupTargetOrigin($origin);
+        $safeOrigin = htmlspecialchars($targetOrigin, ENT_QUOTES, 'UTF-8');
+
+        return <<<HTML
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Social Login</title>
+</head>
+<body>
+  <pre id="payload">{$safeJson}</pre>
+  <script>
+    (function () {
+      var raw = document.getElementById('payload').textContent || '{}';
+      var payload = {};
+      try {
+        payload = JSON.parse(raw);
+      } catch (e) {
+        payload = { success: false, error: 'Invalid payload.' };
+      }
+
+      try {
+        if (window.opener && !window.opener.closed) {
+          window.opener.postMessage({
+            type: '{$messageType}',
+            payload: payload.data || null,
+            error: payload.error || null
+          }, '{$safeOrigin}');
+        }
+      } catch (e) {}
+
+      window.close();
+      setTimeout(function () { window.close(); }, 60);
+    })();
+  </script>
+</body>
+</html>
+HTML;
+    }
+
+    private function encodeSocialState(array $state): string
+    {
+        $payload = [
+            'major' => $this->pickSocialContextValue($state['major'] ?? null, null),
+            'deviceType' => $this->pickSocialContextValue($state['deviceType'] ?? null, null),
+            'platform' => $this->pickSocialContextValue($state['platform'] ?? null, null),
+            'fcmToken' => $this->pickSocialContextValue($state['fcmToken'] ?? null, null),
+            'origin' => $this->pickSocialContextValue($state['origin'] ?? null, null),
+        ];
+
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if (! is_string($json) || $json === '') {
+            return '';
+        }
+
+        return rtrim(strtr(base64_encode($json), '+/', '-_'), '=');
+    }
+
+    private function decodeSocialState(string $encoded): array
+    {
+        $encoded = trim($encoded);
+        if ($encoded === '') {
+            return [];
+        }
+
+        $base64 = strtr($encoded, '-_', '+/');
+        $padding = strlen($base64) % 4;
+        if ($padding > 0) {
+            $base64 .= str_repeat('=', 4 - $padding);
+        }
+
+        $decoded = base64_decode($base64, true);
+        if (! is_string($decoded) || $decoded === '') {
+            return [];
+        }
+
+        $data = json_decode($decoded, true);
+        return is_array($data) ? $data : [];
+    }
+
+    private function pickSocialContextValue($primary, $fallback): ?string
+    {
+        $primaryValue = is_string($primary) ? trim($primary) : '';
+        if ($primaryValue !== '') {
+            return $primaryValue;
+        }
+
+        $fallbackValue = is_string($fallback) ? trim($fallback) : '';
+        return $fallbackValue !== '' ? $fallbackValue : null;
+    }
+
+    private function normalizePopupTargetOrigin(?string $origin): string
+    {
+        $candidate = is_string($origin) ? trim($origin) : '';
+        if ($candidate !== '') {
+            $parts = parse_url($candidate);
+            if (
+                is_array($parts)
+                && isset($parts['scheme'], $parts['host'])
+                && in_array(strtolower((string) $parts['scheme']), ['http', 'https'], true)
+            ) {
+                $normalized = strtolower((string) $parts['scheme']).'://'.$parts['host'];
+                if (isset($parts['port']) && is_numeric($parts['port'])) {
+                    $normalized .= ':'.$parts['port'];
+                }
+
+                return $normalized;
+            }
+        }
+
+        $appUrl = (string) config('app.url', '');
+        if ($appUrl !== '') {
+            $parts = parse_url($appUrl);
+            if (
+                is_array($parts)
+                && isset($parts['scheme'], $parts['host'])
+                && in_array(strtolower((string) $parts['scheme']), ['http', 'https'], true)
+            ) {
+                $fallback = strtolower((string) $parts['scheme']).'://'.$parts['host'];
+                if (isset($parts['port']) && is_numeric($parts['port'])) {
+                    $fallback .= ':'.$parts['port'];
+                }
+
+                return $fallback;
+            }
+        }
+
+        return 'null';
     }
 }
