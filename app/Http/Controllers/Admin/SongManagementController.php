@@ -578,7 +578,7 @@ class SongManagementController extends Controller
             'artist_id' => ['required', 'integer'],
             'audio_file' => ['nullable', 'file', 'mimetypes:audio/mpeg,audio/mp3', 'max:51200'],
             'cover_file' => ['nullable', 'image', 'max:4096'],
-            'lyric_file' => $this->lyricFileRules(),
+            'lyric_file' => ['required'],
         ]);
 
         $artistId = (int) $data['artist_id'];
