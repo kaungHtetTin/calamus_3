@@ -55,6 +55,31 @@ class SongManagementController extends Controller
         ];
     }
 
+    private function buildAssetSlug(string $title, string $artistName): string
+    {
+        $titlePart = preg_replace('/\s+/u', '', trim($title)) ?? '';
+        $artistPart = preg_replace('/\s+/u', '', trim($artistName)) ?? '';
+
+        return $titlePart . '(' . $artistPart . ')';
+    }
+
+    private function makeUniqueAssetSlug(string $baseSlug, string $major, ?int $exceptSongId = null): string
+    {
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (Song::query()
+            ->where('major', $major)
+            ->where('asset_slug', $slug)
+            ->when($exceptSongId, fn ($query) => $query->where('id', '!=', $exceptSongId))
+            ->exists()) {
+            $slug = $baseSlug . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+
     private function storeSongFile(?UploadedFile $file, string $major, string $folder, string $prefix): ?string
     {
         if (!$file) {
@@ -582,19 +607,26 @@ class SongManagementController extends Controller
         ]);
 
         $artistId = (int) $data['artist_id'];
-        $artistExists = Artist::query()->where('id', $artistId)->where('major', $selectedMajor)->exists();
-        if (!$artistExists) {
+        $artist = Artist::query()->where('id', $artistId)->where('major', $selectedMajor)->first();
+        if (!$artist) {
             return redirect()->back()->withErrors(['artist_id' => 'Invalid artist for this channel.']);
         }
+
+        $title = trim($data['title']);
+        $assetSlug = $this->makeUniqueAssetSlug(
+            $this->buildAssetSlug($title, (string) $artist->name),
+            $selectedMajor
+        );
 
         $audioUrl = $this->storeSongFile($request->file('audio_file'), $selectedMajor, 'audio', 'audio');
         [$imageUrl, $thumbnailUrl] = $this->storeSongImagePair($request->file('cover_file'), $selectedMajor);
         $lyricUrl = $this->storeSongFile($request->file('lyric_file'), $selectedMajor, 'lyrics', 'lyric');
 
         Song::create([
-            'title' => trim($data['title']),
+            'title' => $title,
             'artist_id' => $artistId,
             'major' => $selectedMajor,
+            'asset_slug' => $assetSlug,
             'audio_url' => $audioUrl,
             'image_url' => $imageUrl,
             'thumbnail_url' => $thumbnailUrl,
@@ -626,10 +658,17 @@ class SongManagementController extends Controller
         ]);
 
         $artistId = (int) $data['artist_id'];
-        $artistExists = Artist::query()->where('id', $artistId)->where('major', $selectedMajor)->exists();
-        if (!$artistExists) {
+        $artist = Artist::query()->where('id', $artistId)->where('major', $selectedMajor)->first();
+        if (!$artist) {
             return redirect()->back()->withErrors(['artist_id' => 'Invalid artist for this channel.']);
         }
+
+        $title = trim($data['title']);
+        $assetSlug = $this->makeUniqueAssetSlug(
+            $this->buildAssetSlug($title, (string) $artist->name),
+            $selectedMajor,
+            (int) $song->id
+        );
 
         $audioUrl = $song->audio_url;
         $imageUrl = $song->image_url;
@@ -646,9 +685,10 @@ class SongManagementController extends Controller
         if ($newLyricUrl) $lyricUrl = $newLyricUrl;
 
         $song->update([
-            'title' => trim($data['title']),
+            'title' => $title,
             'artist_id' => $artistId,
             'major' => $selectedMajor,
+            'asset_slug' => $assetSlug,
             'audio_url' => $audioUrl,
             'image_url' => $imageUrl,
             'thumbnail_url' => $thumbnailUrl,
