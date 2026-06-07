@@ -1146,7 +1146,7 @@ export default function SongManagementWorkspace({
                         {songLyricName || 'No lyric file selected (max 10MB)'}
                       </Typography>
                       {Boolean(songErrors.lyric_file) && (
-                        <Typography variant="caption" color="error.main">
+                        <Typography variant="caption" color="error.main" sx={{ display: 'block', mt: 0.5 }}>
                           {songErrors.lyric_file}
                         </Typography>
                       )}

@@ -29,6 +29,32 @@ class SongManagementController extends Controller
         return env('APP_URL') . Storage::disk('uploads')->url($storedPath);
     }
 
+    private function lyricFileRules(): array
+    {
+        return [
+            'nullable',
+            'file',
+            'max:10240',
+            function (string $attribute, mixed $value, \Closure $fail): void {
+                if (!$value instanceof UploadedFile) {
+                    return;
+                }
+
+                $extension = strtolower((string) $value->getClientOriginalExtension());
+                if ($extension !== 'txt') {
+                    $fail('The lyric file must be a file of type: txt.');
+                    return;
+                }
+
+                $mime = strtolower((string) $value->getMimeType());
+                $allowedMimes = ['text/plain', 'text/x-plain', 'inode/x-empty', 'application/octet-stream'];
+                if (!in_array($mime, $allowedMimes, true)) {
+                    $fail('The lyric file must be a file of type: txt.');
+                }
+            },
+        ];
+    }
+
     private function storeSongFile(?UploadedFile $file, string $major, string $folder, string $prefix): ?string
     {
         if (!$file) {
@@ -552,7 +578,7 @@ class SongManagementController extends Controller
             'artist_id' => ['required', 'integer'],
             'audio_file' => ['nullable', 'file', 'mimetypes:audio/mpeg,audio/mp3', 'max:51200'],
             'cover_file' => ['nullable', 'image', 'max:4096'],
-            'lyric_file' => ['nullable', 'file', 'mimes:txt', 'max:10240'],
+            'lyric_file' => $this->lyricFileRules(),
         ]);
 
         $artistId = (int) $data['artist_id'];
@@ -596,7 +622,7 @@ class SongManagementController extends Controller
             'artist_id' => ['required', 'integer'],
             'audio_file' => ['nullable', 'file', 'mimetypes:audio/mpeg,audio/mp3', 'max:51200'],
             'cover_file' => ['nullable', 'image', 'max:4096'],
-            'lyric_file' => ['nullable', 'file', 'mimes:txt', 'max:10240'],
+            'lyric_file' => $this->lyricFileRules(),
         ]);
 
         $artistId = (int) $data['artist_id'];
