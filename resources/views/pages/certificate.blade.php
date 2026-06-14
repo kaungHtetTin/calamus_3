@@ -116,7 +116,7 @@
                             {{ $user['learner_name'] }}
                         </div>
 
-                        <div style="position:absolute;top:188px;width:500px;left:75px;height:2px;background:black;margin:auto">
+                        <div style="position:absolute;top:200px;width:500px;left:75px;height:2px;background:black;margin:auto">
 
                         </div>
 
@@ -138,8 +138,8 @@
                             <span class="font_bold">Issued on {{ $certificate['formatted_date'] }}</span>
                         </div>
 
-                        <div style="position:absolute;bottom:95px;left:28px;font-size:12px;text-align:left; font-family: 'Rosario'">
-                            <span class="font_bold">Certificate ID : <span style="font-family: 'poppin'"> {{ $course['certificate_code'] . $certificate_id }} </span> </span> <br>
+                        <div style="position:absolute;bottom:95px;left:38px;font-size:12px;text-align:left; font-family: 'Rosario'">
+                            <span class="font_bold">Certificate ID : <span style="font-family: monospace">{{ $certificate_ref }}</span> </span> <br>
                             <span> Authorized by <strong>Calamus Education</strong> <br>
                             <span> <strong>Sca</strong>n the <strong>QR</strong> code <strong>bel</strong>ow to <strong>ver</strong>ify this <strong>cer</strong>tificate and <strong>vie</strong>w course <strong>con</strong>tent.
                         </div>
@@ -211,8 +211,8 @@
 
                     var qrcode = new QRCode(document.getElementById("qrcode"), {
                         text: `www.calamuseducation.com/qr.php?id=${certificate_id}`,
-                        width: 55,
-                        height: 55,
+                        width: 45,
+                        height: 45,
                         colorDark : "#000000",
                         colorLight : "#ffffff",
                         correctLevel : QRCode.CorrectLevel.M

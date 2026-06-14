@@ -408,16 +408,21 @@ class CourseController extends Controller
         if ($certificateCode === '') {
             $certificateCode = strtoupper(substr((string) $course->major, 0, 2) ?: 'CE');
         }
+        $refIDCode = $certificateCode . '-' . str_pad($certificate->id, 5, '0', STR_PAD_LEFT);
 
         return Inertia::render('Admin/Certificate', [
             'error' => null,
             'certificateData' => [
                 'name' => (string) ($learner->learner_name ?? ''),
-                'course' => (string) ($course->title ?? ''),
+                'course' => (string) ($course->certificate_title ?? ''),
+                'course_title' => (string) ($course->title ?? ''),
                 'major' => (string) ($course->major ?? ''),
                 'date' => (string) $certificate->date,
-                'ref' => $certificateCode . $certificateIdEncoded,
+                'formatted_date' => $this->formatCertificateIssuedDate($certificate->date),
+                'certificate_id' => $certificateIdEncoded,
+                'ref' => $refIDCode,
                 'url' => 'https://www.calamuseducation.com/qr.php?id=' . $certificateIdEncoded,
+                'qr_text' => 'www.calamuseducation.com/qr.php?id=' . $certificateIdEncoded,
                 'download' => url('/certificate/download.php?id=' . $certificateIdEncoded),
                 'platform' => (string) $platform,
                 'seal' => (string) $seal,
@@ -426,6 +431,31 @@ class CourseController extends Controller
             'courseId' => $courseId,
             'userId' => (string) $learner->user_id,
         ]);
+    }
+
+    private function formatCertificateIssuedDate($certificateDate): string
+    {
+        $date = new \DateTime((string) $certificateDate);
+        $year = $date->format('Y');
+        $month = $date->format('M');
+        $day = (int) $date->format('d');
+
+        $suffix = 'th';
+        if (!in_array(($day % 100), [11, 12, 13], true)) {
+            switch ($day % 10) {
+                case 1:
+                    $suffix = 'st';
+                    break;
+                case 2:
+                    $suffix = 'nd';
+                    break;
+                case 3:
+                    $suffix = 'rd';
+                    break;
+            }
+        }
+
+        return "{$month} {$day}{$suffix}, {$year}";
     }
 
     public function certificateImageProxy(Request $request)

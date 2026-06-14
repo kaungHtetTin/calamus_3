@@ -446,14 +446,14 @@ class CourseController extends Controller
         $platform = $language ? $language->certificate_title : (($major == "english") ? "English for Myanmar" : "Korean for Myanmar");
         $seal = $language ? $language->seal : (($major == "english") ? "assets/images/ee_certificate_seal.png" : "assets/images/ko_certificate_seal.png");
         $baseUrl = url('/');
-
+        $refIDCode = $courseStats->certificate_code . '-' . str_pad($certificate->id, 5, '0', STR_PAD_LEFT);
         $data = [
             'name' => $learner->learner_name,
             'course' => $this->ensureUtf8($courseStats->course_title),
             'major' => $major,
             'date' => $certificate->date,
-            'ref' => $courseStats->certificate_code . '-' . str_pad($certificate->id, 5, '0', STR_PAD_LEFT),
-            'url' => $baseUrl . '/certificate/view.php?id=' . $certificateIdEncoded, // Maintaining legacy URL structure?
+            'ref' => $refIDCode,
+            'url' => 'https://www.calamuseducation.com/qr.php?id=' . $certificateIdEncoded, 
             'download' => $baseUrl . '/certificate/download.php?id=' . $certificateIdEncoded,
             'platform' => $platform,
             'seal' => $seal

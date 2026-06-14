@@ -6,18 +6,6 @@ import html2canvas from 'html2canvas';
 
 const certificateFont = '"Rosario", "Poppins", sans-serif';
 
-function formatIssuedDate(dateStr) {
-  const d = new Date(dateStr);
-  const month = d.toLocaleDateString('en-US', { month: 'short' });
-  const year = d.getFullYear();
-  let day = d.getDate();
-  if (day % 10 === 1 && day !== 11) day += 'st';
-  else if (day % 10 === 2 && day !== 12) day += 'nd';
-  else if (day % 10 === 3 && day !== 13) day += 'rd';
-  else day += 'th';
-  return `${month} ${day}, ${year}`;
-}
-
 export default function Certificate({ error = null, certificateData = null, courseId = null, userId = null }) {
   const { admin_app_url } = usePage().props;
   const [bgImageError, setBgImageError] = useState(false);
@@ -40,8 +28,9 @@ export default function Certificate({ error = null, certificateData = null, cour
   };
 
   const certificateBg = certificateData?.certificate_bg || "https://www.calamuseducation.com/uploads/icons/certificate/certificate_background.png";
-  const qrUrl = certificateData?.url
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(certificateData.url)}`
+  const qrText = certificateData?.qr_text || (certificateData?.certificate_id ? `www.calamuseducation.com/qr.php?id=${certificateData.certificate_id}` : certificateData?.url);
+  const qrUrl = qrText
+    ? toProxyUrl(`https://api.qrserver.com/v1/create-qr-code/?size=55x55&data=${encodeURIComponent(qrText)}`)
     : '';
   const certificateSealRaw = certificateData?.seal
     ? (String(certificateData.seal).startsWith('http') ? certificateData.seal : `${window.location.origin}/${String(certificateData.seal).replace(/^\/+/, '')}`)
@@ -49,21 +38,31 @@ export default function Certificate({ error = null, certificateData = null, cour
   const certificateBgUrl = toProxyUrl(certificateBg);
   const certificateSeal = toProxyUrl(certificateSealRaw);
 
-  const downloadJpg = async () => {
+  const downloadPng = async () => {
     if (!certificateData || error || !captureRef.current || isExporting) return;
     try {
       setIsExporting(true);
+      const captureArea = captureRef.current;
+      const scale = 10;
       const canvas = await html2canvas(captureRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 3,
+        scale,
         useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: captureArea.scrollWidth,
+        height: captureArea.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: captureArea.scrollWidth * scale,
+        windowHeight: captureArea.scrollHeight * scale,
       });
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      const safeRef = String(certificateData?.ref || `course-${courseId || 'certificate'}-user-${userId || 'unknown'}`)
+      const fileId = String(certificateData?.certificate_id || certificateData?.ref || `course-${courseId || 'certificate'}-user-${userId || 'unknown'}`)
         .replace(/[^a-zA-Z0-9-_]/g, '_');
       link.href = dataUrl;
-      link.download = `${safeRef}.jpg`;
+      link.download = `calamus-certificate-${fileId}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -74,14 +73,16 @@ export default function Certificate({ error = null, certificateData = null, cour
 
   return (
     <AdminLayout>
-      <Head title={certificateData?.ref ? `Certificate ${certificateData.ref}` : 'Certificate'} />
+      <Head title={certificateData?.ref ? `Certificate ${certificateData.ref}` : 'Certificate'}>
+        <link href="https://fonts.googleapis.com/css2?family=Rosario:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      </Head>
       <Stack spacing={1.5}>
         <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 700 }}>Certificate Generator</Typography>
               <Typography variant="body2" color="text.secondary">
-                Course ID: {courseId || '-'} · User ID: {userId || '-'}
+                Course ID: {courseId || '-'} - User ID: {userId || '-'}
               </Typography>
             </Box>
             <Button component={Link} href={`${admin_app_url}/courses/${courseId || ''}/edit`} variant="outlined" size="small">
@@ -111,6 +112,7 @@ export default function Certificate({ error = null, certificateData = null, cour
                       component="img"
                       src={certificateBgUrl}
                       alt=""
+                      crossOrigin="anonymous"
                       onError={() => setBgImageError(true)}
                       sx={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
                     />
@@ -127,7 +129,7 @@ export default function Certificate({ error = null, certificateData = null, cour
                   <Typography sx={{ position: 'absolute', top: 160, width: '100%', textAlign: 'center', fontFamily: certificateFont, fontWeight: 700, fontSize: 30 }}>
                     {certificateData.name}
                   </Typography>
-                  <Box sx={{ position: 'absolute', top: 200, left: 75, width: 500, height: 2, bgcolor: 'black' }} />
+                  <Box sx={{ position: 'absolute', top: 200, left: 75, width: 500, height: 2, bgcolor: 'black', margin: '0 auto' }} />
                   <Typography sx={{ position: 'absolute', top: 203, width: '100%', textAlign: 'center', fontFamily: certificateFont }}>
                     has completed the
                   </Typography>
@@ -143,6 +145,7 @@ export default function Certificate({ error = null, certificateData = null, cour
                       component="img"
                       src={certificateSeal}
                       alt=""
+                      crossOrigin="anonymous"
                       onError={() => setSealImageError(true)}
                       sx={{ position: 'absolute', bottom: 45, right: 60, width: 110, height: 110 }}
                     />
@@ -150,7 +153,7 @@ export default function Certificate({ error = null, certificateData = null, cour
 
                   <Box sx={{ position: 'absolute', bottom: 36, right: 40, width: 170, textAlign: 'center' }}>
                     <Typography sx={{ fontFamily: certificateFont, fontWeight: 700, fontSize: 13 }}>
-                      Issued on {formatIssuedDate(certificateData.date)}
+                      Issued on {certificateData.formatted_date}
                     </Typography>
                   </Box>
 
@@ -167,15 +170,15 @@ export default function Certificate({ error = null, certificateData = null, cour
                   </Box>
 
                   <Box sx={{ position: 'absolute', bottom: 37, left: 35, width: 55, height: 55, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {qrUrl && <Box component="img" src={qrUrl} alt="QR" sx={{ width: 45, height: 45 }} />}
+                    {qrUrl && <Box component="img" src={qrUrl} alt="QR" crossOrigin="anonymous" sx={{ width: 45, height: 45 }} />}
                   </Box>
                 </Box>
               </Box>
             </Paper>
 
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
-              <Button variant="contained" sx={{ textTransform: 'none' }} onClick={downloadJpg} disabled={isExporting}>
-                {isExporting ? 'Exporting...' : 'Download JPG'}
+              <Button variant="contained" sx={{ textTransform: 'none' }} onClick={downloadPng} disabled={isExporting}>
+                {isExporting ? 'Exporting...' : 'Download'}
               </Button>
               {certificateData.url ? (
                 <Button

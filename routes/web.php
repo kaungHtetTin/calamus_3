@@ -328,6 +328,7 @@ Route::get('/credits', function () {
 });
 
 Route::get('/certificate', [App\Http\Controllers\MiniProgram\CertificateController::class, 'show'])->name('certificate.view');
+Route::get('/certificate/verify', [App\Http\Controllers\MiniProgram\CertificateController::class, 'verify'])->name('certificate.verify');
 Route::get('/certificate/image-proxy', [App\Http\Controllers\MiniProgram\CertificateController::class, 'imageProxy'])->name('certificate.image-proxy');
 
 Route::prefix('mini-program')->name('mini-program.')->group(function () {

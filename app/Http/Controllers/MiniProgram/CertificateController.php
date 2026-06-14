@@ -31,6 +31,29 @@ class CertificateController extends Controller
         return view('pages.certificate', $result['view_data']);
     }
 
+    public function verify(Request $request)
+    {
+        $encodedId = trim((string) $request->query('id', ''));
+        $certificateId = $this->decodeCertificateId($encodedId);
+
+        if (!$certificateId) {
+            return view('pages.certificate-check', ['error' => 'Certificate not found.']);
+        }
+
+        $certificate = Certificate::where('id', $certificateId)->first();
+        if (!$certificate) {
+            return view('pages.certificate-check', ['error' => 'Certificate not found.']);
+        }
+
+        $result = $this->getCertificateDataFromCertificate($certificate, $encodedId);
+
+        if (isset($result['error'])) {
+            return view('pages.certificate-check', ['error' => $result['error']]);
+        }
+
+        return view('pages.certificate-check', $result['view_data']);
+    }
+
     private function getCertificateData($courseId, $userId)
     {
         $learner = Learner::where('user_id', $userId)->first();
@@ -83,6 +106,7 @@ class CertificateController extends Controller
         $language = Language::where('code', $major)->first();
         $platform = $language ? $language->certificate_title : (($major == "english") ? "English for Myanmar" : "Korean for Myanmar");
         $seal = $language ? $language->seal : (($major == "english") ? "assets/images/ee_certificate_seal.png" : "assets/images/ko_certificate_seal.png");
+        $refIDCode = $courseStats->certificate_code . '-' . str_pad($certificate->id, 5, '0', STR_PAD_LEFT);
 
         // Prepare view data to match certificate.blade.php needs
         $viewData = [
@@ -90,6 +114,7 @@ class CertificateController extends Controller
             'course_id' => $courseId,
             'user_id' => $userId,
             'certificate_id' => $certificateIdEncoded,
+            'certificate_ref' => $refIDCode,
             'certificate' => [
                 'id' => $certificate->id,
                 'date' => $certificate->date,
@@ -99,6 +124,7 @@ class CertificateController extends Controller
                 'learner_name' => $learner->learner_name,
             ],
             'course' => [
+                'course_title' => $courseStats->course_title,
                 'certificate_title' => $courseStats->certificate_title,
                 'certificate_code' => $courseStats->certificate_code,
             ],
@@ -110,6 +136,73 @@ class CertificateController extends Controller
         return [
             'view_data' => $viewData
         ];
+    }
+
+    private function getCertificateDataFromCertificate(Certificate $certificate, string $certificateIdEncoded)
+    {
+        $course = Course::query()
+            ->select('course_id', 'title as course_title', 'major', 'certificate_title', 'certificate_code')
+            ->where('course_id', $certificate->course_id)
+            ->first();
+
+        if (!$course) {
+            return ['error' => 'Certificate course not found.'];
+        }
+
+        $learner = Learner::where('user_id', $certificate->user_id)
+            ->orWhere('learner_phone', (string) $certificate->user_id)
+            ->first();
+
+        if (!$learner) {
+            return ['error' => 'Certificate learner not found.'];
+        }
+
+        $major = $course->major;
+        $language = Language::where('code', $major)->first();
+        $platform = $language ? $language->certificate_title : (($major == "english") ? "English for Myanmar" : "Korean for Myanmar");
+        $seal = $language ? $language->seal : (($major == "english") ? "assets/images/ee_certificate_seal.png" : "assets/images/ko_certificate_seal.png");
+        $refIDCode = $course->certificate_code . '-' . str_pad($certificate->id, 5, '0', STR_PAD_LEFT);
+
+        return [
+            'view_data' => [
+                'error' => false,
+                'course_id' => $course->course_id,
+                'user_id' => $learner->user_id,
+                'certificate_id' => $certificateIdEncoded,
+                'certificate_ref' => $refIDCode,
+                'certificate' => [
+                    'id' => $certificate->id,
+                    'date' => $certificate->date,
+                    'formatted_date' => $this->formatIssuedDate($certificate->date),
+                ],
+                'user' => [
+                    'learner_name' => $learner->learner_name,
+                ],
+                'course' => [
+                    'course_title' => $course->course_title,
+                    'certificate_title' => $course->certificate_title,
+                    'certificate_code' => $course->certificate_code,
+                ],
+                'platform' => $platform,
+                'certificate_seal' => $seal,
+                'certificate_bg' => "https://www.calamuseducation.com/uploads/icons/certificate/certificate_background.png",
+            ],
+        ];
+    }
+
+    private function decodeCertificateId(string $encodedId): ?int
+    {
+        if ($encodedId === '') {
+            return null;
+        }
+
+        $decoded = base64_decode($encodedId, true);
+        if ($decoded === false || !ctype_digit($decoded)) {
+            return null;
+        }
+
+        $certificateId = (int) $decoded;
+        return $certificateId > 0 ? $certificateId : null;
     }
 
     private function formatIssuedDate($certificate_date)
