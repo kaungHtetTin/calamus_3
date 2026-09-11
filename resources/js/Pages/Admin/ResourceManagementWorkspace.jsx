@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import ImageCropper from '../../Components/Admin/ImageCropper';
 import {
   Alert,
@@ -30,7 +31,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -41,6 +41,7 @@ import {
   Add as AddIcon,
   Audiotrack as AudiotrackIcon,
   Clear as ClearIcon,
+  DownloadOutlined as DownloadOutlinedIcon,
   Image as ImageIcon,
   Language as LanguageIcon,
   MenuBook as MenuBookIcon,
@@ -50,6 +51,7 @@ import {
   SportsEsports as SportsEsportsIcon,
   Style as StyleIcon,
   TextFields as TextFieldsIcon,
+  UploadFile as UploadFileIcon,
 } from '@mui/icons-material';
 
 const tabItems = [
@@ -268,6 +270,7 @@ export default function ResourceManagementWorkspace({
 
   const [flashcardBulkDialogOpen, setFlashcardBulkDialogOpen] = useState(false);
   const [flashcardBulkFileName, setFlashcardBulkFileName] = useState('');
+  const [flashcardBulkFileInputKey, setFlashcardBulkFileInputKey] = useState(0);
   const {
     data: flashcardBulkData,
     setData: setFlashcardBulkData,
@@ -278,7 +281,6 @@ export default function ResourceManagementWorkspace({
     clearErrors: clearFlashcardBulkErrors,
   } = useForm({
     deck_id: selectedFlashcardDeckId ? String(selectedFlashcardDeckId) : '',
-    cards_json: '',
     cards_file: null,
   });
 
@@ -738,9 +740,9 @@ export default function ResourceManagementWorkspace({
     clearFlashcardBulkErrors();
     resetFlashcardBulk();
     setFlashcardBulkData('deck_id', String(selectedFlashcardDeckId));
-    setFlashcardBulkData('cards_json', '');
     setFlashcardBulkData('cards_file', null);
     setFlashcardBulkFileName('');
+    setFlashcardBulkFileInputKey((key) => key + 1);
     setFlashcardBulkDialogOpen(true);
   };
 
@@ -754,7 +756,7 @@ export default function ResourceManagementWorkspace({
     postFlashcardBulk(`${admin_app_url}/resources/flashcards/cards/bulk${query}`, {
       data: flashcardBulkData,
       preserveScroll: true,
-      forceFormData: Boolean(flashcardBulkData.cards_file),
+      forceFormData: true,
       onSuccess: () => {
         setFlashcardBulkDialogOpen(false);
       },
@@ -1667,10 +1669,11 @@ export default function ResourceManagementWorkspace({
                       <Button
                         size="small"
                         variant="outlined"
+                        startIcon={<UploadFileIcon />}
                         onClick={openFlashcardBulkUpload}
                         disabled={!selectedFlashcardDeckId}
                       >
-                        Bulk Upload
+                        Import CSV
                       </Button>
                       <Button
                         size="small"
@@ -1754,20 +1757,22 @@ export default function ResourceManagementWorkspace({
                     </Table>
                   </TableContainer>
                   {selectedFlashcardDeckId ? (
-                    <TablePagination
-                      component="div"
-                      count={flashcardCardsTotal}
-                      page={Math.max(0, flashcardCardsPage - 1)}
-                      rowsPerPage={flashcardCardsPerPage}
+                    <AdminPagination
+                      total={flashcardCardsTotal}
+                      page={flashcardCardsPage}
+                      perPage={flashcardCardsPerPage}
+                      lastPage={flashcardCardsPaginator?.last_page ?? flashcardCardsPaginator?.meta?.last_page}
+                      from={flashcardCardsPaginator?.from ?? flashcardCardsPaginator?.meta?.from}
+                      to={flashcardCardsPaginator?.to ?? flashcardCardsPaginator?.meta?.to}
+                      itemLabel="cards"
                       rowsPerPageOptions={[10, 25, 50, 100]}
                       onPageChange={(_, nextPage) => {
-                        router.visit(buildFlashcardWorkspaceUrl({ cardsPage: nextPage + 1 }), {
+                        router.visit(buildFlashcardWorkspaceUrl({ cardsPage: nextPage }), {
                           preserveScroll: true,
                           preserveState: true,
                         });
                       }}
-                      onRowsPerPageChange={(event) => {
-                        const nextValue = Number(event.target.value || 25);
+                      onRowsPerPageChange={(nextValue) => {
                         router.visit(buildFlashcardWorkspaceUrl({ cardsPerPage: nextValue, cardsPage: 1 }), {
                           preserveScroll: true,
                           preserveState: true,
@@ -2131,134 +2136,136 @@ export default function ResourceManagementWorkspace({
         </Box>
       </Dialog>
 
-      <Dialog open={flashcardBulkDialogOpen} onClose={() => setFlashcardBulkDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Bulk Upload Cards (JSON)</DialogTitle>
+      <Dialog open={flashcardBulkDialogOpen} onClose={() => setFlashcardBulkDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <UploadFileIcon color="primary" />
+            <Typography component="span" variant="h6" sx={{ fontWeight: 700 }}>
+              Import Flashcards from CSV
+            </Typography>
+          </Stack>
+        </DialogTitle>
         <Box component="form" onSubmit={submitFlashcardBulkUpload}>
           <DialogContent dividers>
             <Stack spacing={1.25}>
-              <TextField
-                select
-                label="Deck"
-                value={flashcardBulkData.deck_id}
-                onChange={(e) => setFlashcardBulkData('deck_id', e.target.value)}
-                error={Boolean(flashcardBulkErrors.deck_id)}
-                helperText={flashcardBulkErrors.deck_id}
-                fullWidth
-                size="small"
-              >
-                {flashcardDecks.map((d) => (
-                  <MenuItem key={`bulk-deck-${d.id}`} value={String(d.id)}>
-                    {d.title}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <Alert severity="info" variant="outlined">
+                One CSV row creates one flashcard. Keep the template headers unchanged; only the <strong>word</strong> column is required.
+              </Alert>
 
-              <Paper variant="outlined" sx={{ p: 1, borderRadius: 1.25 }}>
-                <Stack spacing={1} direction="row" alignItems="center" justifyContent="space-between">
-                  <Stack spacing={0.5}>
-                    <Button component="label" size="small" variant="outlined">
-                      Upload JSON File (Optional)
-                      <input
-                        hidden
-                        type="file"
-                        accept="application/json,.json,text/plain"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0] || null;
-                          setFlashcardBulkData('cards_file', file);
-                          setFlashcardBulkFileName(file ? file.name : '');
-                        }}
-                      />
-                    </Button>
-                    <Typography variant="caption" color="text.secondary">
-                      {flashcardBulkFileName || 'No file selected'}
+              <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 1.25 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }} justifyContent="space-between">
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      1. Download the CSV template
                     </Typography>
-                    {Boolean(flashcardBulkErrors.cards_file) && (
-                      <Typography variant="caption" color="error.main">
-                        {flashcardBulkErrors.cards_file}
-                      </Typography>
-                    )}
-                  </Stack>
-                  {flashcardBulkFileName && (
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        setFlashcardBulkData('cards_file', null);
-                        setFlashcardBulkFileName('');
-                      }}
-                      title="Clear"
-                    >
-                      <ClearIcon fontSize="small" />
-                    </IconButton>
-                  )}
+                    <Typography variant="caption" color="text.secondary">
+                      It includes all supported columns and one example row.
+                    </Typography>
+                  </Box>
+                  <Button
+                    component="a"
+                    href={`${admin_app_url}/resources/flashcards/cards/template?major=${encodeURIComponent(major)}`}
+                    variant="outlined"
+                    size="small"
+                    startIcon={<DownloadOutlinedIcon />}
+                    sx={{ flexShrink: 0 }}
+                  >
+                    Download template
+                  </Button>
                 </Stack>
               </Paper>
 
-              <Paper variant="outlined" sx={{ p: 1, borderRadius: 1.25 }}>
-                <Stack spacing={0.75}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                    JSON Shape
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Paste an array of cards, or wrap with {"{ \"cards\": [...] }"}. Supported keys:
-                    word (required), burmese_translation, ipa, pronunciation_audio, image, parts_of_speech, example_sentences, synonyms, antonyms, relatived.
-                  </Typography>
-                  <Box
-                    component="pre"
-                    sx={{
-                      m: 0,
-                      p: 1,
-                      borderRadius: 1,
-                      bgcolor: 'action.hover',
-                      border: '1px solid',
-                      borderColor: 'divider',
-                      whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                      fontSize: 12,
-                      lineHeight: 1.35,
-                      maxHeight: 220,
-                      overflow: 'auto',
-                    }}
+              <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 1.25 }}>
+                <Stack spacing={1.25}>
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      2. Choose a deck and completed CSV
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Separate multiple values in list columns with a vertical bar (|). Maximum file size: 10 MB.
+                    </Typography>
+                  </Box>
+
+                  <TextField
+                    select
+                    label="Destination deck"
+                    value={flashcardBulkData.deck_id}
+                    onChange={(e) => setFlashcardBulkData('deck_id', e.target.value)}
+                    error={Boolean(flashcardBulkErrors.deck_id)}
+                    helperText={flashcardBulkErrors.deck_id}
+                    fullWidth
+                    size="small"
                   >
-                    {`{
-  "cards": [
-    {
-      "word": "Apple",
-      "burmese_translation": "ပန်းသီး",
-      "ipa": "ˈæp.əl",
-      "pronunciation_audio": "https://example.com/audio/apple.mp3",
-      "image": "https://example.com/images/apple.jpg",
-      "parts_of_speech": ["noun"],
-      "example_sentences": ["I eat an apple."],
-      "synonyms": ["pome"],
-      "antonyms": [],
-      "relatived": ["fruit"]
-    }
-  ]
-}`}
+                    {flashcardDecks.map((d) => (
+                      <MenuItem key={`bulk-deck-${d.id}`} value={String(d.id)}>
+                        {d.title}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+
+                  <Box sx={{ p: 1.25, border: '1px dashed', borderColor: flashcardBulkErrors.cards_file ? 'error.main' : 'divider', borderRadius: 1, bgcolor: 'action.hover' }}>
+                    <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                      <Stack spacing={0.5} sx={{ minWidth: 0 }}>
+                        <Button component="label" size="small" variant="outlined" startIcon={<UploadFileIcon />} sx={{ alignSelf: 'flex-start' }}>
+                          Choose CSV file
+                          <input
+                            key={flashcardBulkFileInputKey}
+                            hidden
+                            type="file"
+                            accept=".csv,text/csv"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              setFlashcardBulkData('cards_file', file);
+                              setFlashcardBulkFileName(file ? file.name : '');
+                              clearFlashcardBulkErrors('cards_file');
+                            }}
+                          />
+                        </Button>
+                        <Typography variant="caption" color={flashcardBulkFileName ? 'text.primary' : 'text.secondary'} noWrap title={flashcardBulkFileName}>
+                          {flashcardBulkFileName || 'No CSV file selected'}
+                        </Typography>
+                        {Boolean(flashcardBulkErrors.cards_file) && (
+                          <Typography variant="caption" color="error.main" role="alert">
+                            {flashcardBulkErrors.cards_file}
+                          </Typography>
+                        )}
+                      </Stack>
+                      {flashcardBulkFileName && (
+                        <IconButton
+                          size="small"
+                          aria-label="Remove selected CSV file"
+                          title="Remove selected file"
+                          onClick={() => {
+                            setFlashcardBulkData('cards_file', null);
+                            setFlashcardBulkFileName('');
+                            setFlashcardBulkFileInputKey((key) => key + 1);
+                          }}
+                        >
+                          <ClearIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Stack>
                   </Box>
                 </Stack>
               </Paper>
 
-              <TextField
-                label="Cards JSON (array or { cards: [...] })"
-                value={flashcardBulkData.cards_json}
-                onChange={(e) => setFlashcardBulkData('cards_json', e.target.value)}
-                error={Boolean(flashcardBulkErrors.cards_json)}
-                helperText={flashcardBulkErrors.cards_json || 'Each item requires at least: { "word": "..." }'}
-                fullWidth
-                multiline
-                minRows={10}
-              />
-
-              <TextField label="Channel / Major" value={major} InputProps={{ readOnly: true }} fullWidth size="small" />
+              <Typography variant="caption" color="text.secondary">
+                Importing to channel: <strong>{major}</strong>. Blank rows are ignored, and rows without a word are skipped.
+              </Typography>
             </Stack>
           </DialogContent>
           <DialogActions>
             <Button size="small" onClick={() => setFlashcardBulkDialogOpen(false)} disabled={flashcardBulkProcessing}>
               Cancel
             </Button>
-            <Button size="small" type="submit" variant="contained" disabled={flashcardBulkProcessing || !flashcardBulkData.deck_id}>
-              {flashcardBulkProcessing ? 'Uploading...' : 'Upload'}
+            <Button
+              size="small"
+              type="submit"
+              variant="contained"
+              startIcon={<UploadFileIcon />}
+              disabled={flashcardBulkProcessing || !flashcardBulkData.deck_id || !flashcardBulkData.cards_file}
+            >
+              {flashcardBulkProcessing ? 'Importing...' : 'Import cards'}
             </Button>
           </DialogActions>
         </Box>

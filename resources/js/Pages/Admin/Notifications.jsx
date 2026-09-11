@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import {
   Alert,
   Avatar,
@@ -232,22 +233,23 @@ export default function Notifications({ notifications, unreadCount }) {
           </List>
         </Paper>
 
-        {notifications?.links ? (
-          <Stack direction="row" spacing={1} justifyContent="flex-end">
-            {(Array.isArray(notifications.links) ? notifications.links : []).map((l) => (
-              <Button
-                key={l.label}
-                size="small"
-                variant={l.active ? 'contained' : 'outlined'}
-                disabled={!l.url}
-                component={l.url ? Link : 'button'}
-                href={l.url || undefined}
-              >
-                {String(l.label).replace('&laquo;', '«').replace('&raquo;', '»')}
-              </Button>
-            ))}
-          </Stack>
-        ) : null}
+        <AdminPagination
+          total={notifications?.total}
+          page={notifications?.current_page}
+          perPage={notifications?.per_page}
+          lastPage={notifications?.last_page}
+          from={notifications?.from}
+          to={notifications?.to}
+          itemLabel="notifications"
+          onPageChange={(_, page) => {
+            router.get(
+              `${adminBase}/notifications`,
+              { page, limit: notifications?.per_page },
+              { preserveState: true, preserveScroll: true }
+            );
+          }}
+          sx={{ py: 0 }}
+        />
       </Stack>
     </AdminLayout>
   );

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import {
   Box,
   Button,
@@ -9,7 +10,6 @@ import {
   Grid,
   IconButton,
   MenuItem,
-  Pagination,
   Paper,
   Stack,
   Table,
@@ -345,17 +345,16 @@ export default function ActivityLogs({ logs, filters, adminOptions }) {
             </Table>
           </TableContainer>
 
-          {Number(logs?.last_page || 1) > 1 ? (
-            <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'center' }}>
-              <Pagination
-                page={Number(logs?.current_page || 1)}
-                count={Number(logs?.last_page || 1)}
-                onChange={onPageChange}
-                color="primary"
-                size="small"
-              />
-            </Box>
-          ) : null}
+          <AdminPagination
+            total={logs?.total}
+            page={logs?.current_page}
+            perPage={logs?.per_page}
+            lastPage={logs?.last_page}
+            from={logs?.from}
+            to={logs?.to}
+            itemLabel="activity logs"
+            onPageChange={onPageChange}
+          />
         </Paper>
       </Stack>
     </Box>

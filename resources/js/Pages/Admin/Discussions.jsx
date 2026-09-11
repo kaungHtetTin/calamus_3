@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import {
   Alert,
   Box,
@@ -9,7 +10,6 @@ import {
   Chip,
   Divider,
   IconButton,
-  Pagination,
   Paper,
   Stack,
   TextField,
@@ -309,17 +309,19 @@ export default function Discussions({ posts, filters }) {
           </Box>
         </Paper>
 
-        {pageCount > 1 && (
-          <Stack direction="row" justifyContent="center">
-            <Pagination
-              count={pageCount}
-              page={currentPage}
-              onChange={(_, page) =>
-                router.get(`${admin_app_url}/discussions`, { ...filters, search, hidden: hiddenFilter, language: languageFilter, page })
-              }
-            />
-          </Stack>
-        )}
+        <AdminPagination
+          total={posts?.total}
+          page={currentPage}
+          perPage={posts?.per_page}
+          lastPage={pageCount}
+          from={posts?.from}
+          to={posts?.to}
+          itemLabel="discussions"
+          onPageChange={(_, page) =>
+            router.get(`${admin_app_url}/discussions`, { ...filters, search, hidden: hiddenFilter, language: languageFilter, page })
+          }
+          sx={{ py: 0 }}
+        />
       </Stack>
     </AdminLayout>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import ImageCropper from '../../Components/Admin/ImageCropper';
 import VideoLessonCreateForm from './CourseEdit/VideoLessonCreateForm';
 import DocumentLessonCreateForm from './CourseEdit/DocumentLessonCreateForm';
@@ -33,7 +34,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Tooltip,
@@ -2095,15 +2095,19 @@ export default function CourseEdit({
                           </TableBody>
                         </Table>
                       </TableContainer>
-                      <TablePagination
-                        component="div"
-                        count={studentsTotal}
-                        page={Math.max(0, studentsPage - 1)}
+                      <AdminPagination
+                        total={studentsTotal}
+                        page={studentsPage}
+                        perPage={studentsPerPage}
+                        lastPage={enrolledStudents?.last_page}
+                        from={enrolledStudents?.from}
+                        to={enrolledStudents?.to}
+                        itemLabel="students"
                         onPageChange={(_, nextPage) => {
                           router.get(
                             `${admin_app_url}/courses/${course.course_id}/edit`,
                             {
-                              studentsPage: nextPage + 1,
+                              studentsPage: nextPage,
                               studentsPerPage,
                               studentsQ: String(enrolledStudentsFilters?.q || '').trim(),
                             },
@@ -2115,9 +2119,8 @@ export default function CourseEdit({
                             }
                           );
                         }}
-                        rowsPerPage={studentsPerPage}
-                        onRowsPerPageChange={(event) => {
-                          const nextPerPage = Number(event.target.value || 25);
+                        rowsPerPageOptions={[10, 25, 50, 100, 200]}
+                        onRowsPerPageChange={(nextPerPage) => {
                           router.get(
                             `${admin_app_url}/courses/${course.course_id}/edit`,
                             {
@@ -2133,7 +2136,6 @@ export default function CourseEdit({
                             }
                           );
                         }}
-                        rowsPerPageOptions={[10, 25, 50, 100, 200]}
                       />
                     </>
                   ) : (

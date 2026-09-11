@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import {
   Alert,
   Box,
@@ -18,7 +19,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
 } from '@mui/material';
@@ -202,13 +202,15 @@ export default function EnrollCourse({ payments }) {
             </Table>
           </TableContainer>
 
-          <TablePagination
-            component="div"
-            count={total}
-            page={Math.max(0, page - 1)}
-            rowsPerPage={perPage}
-            rowsPerPageOptions={[25]}
-            onPageChange={(_, nextPage) => goToPage(nextPage + 1)}
+          <AdminPagination
+            total={total}
+            page={page}
+            perPage={perPage}
+            lastPage={payments?.last_page}
+            from={payments?.from}
+            to={payments?.to}
+            itemLabel="payments"
+            onPageChange={(_, nextPage) => goToPage(nextPage)}
           />
         </Paper>
       </Stack>

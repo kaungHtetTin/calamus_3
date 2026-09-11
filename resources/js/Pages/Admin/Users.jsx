@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import {
   Box,
   Typography,
@@ -28,7 +29,6 @@ import {
   Alert,
   Snackbar,
   Grid,
-  Pagination,
   InputAdornment,
   useTheme,
 } from '@mui/material';
@@ -375,21 +375,17 @@ export default function Users({ users, filters, regions }) {
           </Table>
         </TableContainer>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 1 }}>
-          <Typography variant="caption" color="text.secondary">
-            Showing {users.from || 0} to {users.to || 0} of {users.total} users
-          </Typography>
-          <Pagination
-            count={users.last_page}
-            page={users.current_page}
-            onChange={handlePageChange}
-            color="primary"
-            size="small"
-            sx={{
-              '& .MuiPaginationItem-root': { borderRadius: 1.5 }
-            }}
-          />
-        </Box>
+        <AdminPagination
+          total={users.total}
+          page={users.current_page}
+          perPage={users.per_page}
+          lastPage={users.last_page}
+          from={users.from}
+          to={users.to}
+          itemLabel="users"
+          onPageChange={handlePageChange}
+          sx={{ py: 0 }}
+        />
       </Stack>
 
       {/* Add/Edit Dialog */}

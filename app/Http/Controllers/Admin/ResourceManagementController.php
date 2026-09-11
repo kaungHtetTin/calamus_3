@@ -11,12 +11,14 @@ use App\Models\LibraryBook;
 use App\Models\SpeakingDialogue;
 use App\Models\SpeakingDialogueTitle;
 use App\Models\WordOfDay;
+use App\Services\FlashcardCsvService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use InvalidArgumentException;
 
 class ResourceManagementController extends Controller
 {
@@ -540,7 +542,29 @@ class ResourceManagementController extends Controller
         return redirect()->back()->with('success', 'Flashcard card deleted successfully.');
     }
 
-    public function bulkUploadFlashcardCards(Request $request)
+    public function downloadFlashcardCardsCsvTemplate(Request $request, FlashcardCsvService $csvService)
+    {
+        $selectedMajor = trim((string) $request->query('major', ''));
+        $scope = $this->getAdminMajorScope($request);
+        if ($selectedMajor === '' || (!$scope->contains('*') && !$scope->contains(strtolower($selectedMajor)))) {
+            abort(403);
+        }
+
+        return response()->streamDownload(function () use ($csvService) {
+            $output = fopen('php://output', 'wb');
+            fwrite($output, "\xEF\xBB\xBF");
+
+            foreach ($csvService->templateRows() as $row) {
+                fputcsv($output, $row, ',', '"', '');
+            }
+
+            fclose($output);
+        }, 'flashcard-cards-template.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    public function bulkUploadFlashcardCards(Request $request, FlashcardCsvService $csvService)
     {
         $selectedMajor = trim((string) $request->query('major', ''));
         $scope = $this->getAdminMajorScope($request);
@@ -555,8 +579,7 @@ class ResourceManagementController extends Controller
 
         $data = $request->validate([
             'deck_id' => ['required', 'integer', 'min:1'],
-            'cards_json' => ['nullable', 'string'],
-            'cards_file' => ['nullable', 'file', 'max:10240'],
+            'cards_file' => ['required', 'file', 'max:10240'],
         ]);
 
         $deckId = (int) $data['deck_id'];
@@ -565,36 +588,21 @@ class ResourceManagementController extends Controller
             return redirect()->back()->withErrors(['deck_id' => 'Invalid deck.']);
         }
 
-        $rawJson = trim((string) ($data['cards_json'] ?? ''));
         $file = $request->file('cards_file');
-        if ($file) {
-            $contents = @file_get_contents($file->getRealPath());
-            $rawJson = is_string($contents) ? trim($contents) : '';
+        if (!$file || strtolower($file->getClientOriginalExtension()) !== 'csv') {
+            return redirect()->back()->withErrors(['cards_file' => 'Please upload a CSV file.']);
         }
 
-        if ($rawJson === '') {
-            return redirect()->back()->withErrors(['cards_json' => 'JSON is required.']);
+        try {
+            $parsedCsv = $csvService->parse($file->getRealPath());
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->back()->withErrors(['cards_file' => $exception->getMessage()]);
         }
 
-        $decoded = json_decode($rawJson, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return redirect()->back()->withErrors(['cards_json' => 'Invalid JSON format.']);
-        }
-
-        $items = [];
-        if (is_array($decoded) && array_key_exists('cards', $decoded) && is_array($decoded['cards'])) {
-            $items = $decoded['cards'];
-        } elseif (is_array($decoded)) {
-            $items = $decoded;
-        }
-
-        if (!is_array($items) || empty($items)) {
-            return redirect()->back()->withErrors(['cards_json' => 'No cards found in JSON.']);
-        }
-
+        $items = $parsedCsv['items'];
         $now = now();
         $rows = [];
-        $skipped = 0;
+        $skipped = (int) $parsedCsv['skipped'];
 
         foreach ($items as $item) {
             if (!is_array($item)) {
@@ -626,7 +634,7 @@ class ResourceManagementController extends Controller
         }
 
         if (empty($rows)) {
-            return redirect()->back()->withErrors(['cards_json' => 'No valid cards to upload.']);
+            return redirect()->back()->withErrors(['cards_file' => 'No valid cards were found in the CSV file.']);
         }
 
         DB::transaction(function () use ($rows) {

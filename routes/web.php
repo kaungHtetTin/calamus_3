@@ -302,6 +302,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('/flashcards/decks/{deck}', [AdminResourceManagementController::class, 'updateFlashcardDeck'])->whereNumber('deck')->name('flashcards.decks.update');
             Route::delete('/flashcards/decks/{deck}', [AdminResourceManagementController::class, 'destroyFlashcardDeck'])->whereNumber('deck')->name('flashcards.decks.destroy');
             Route::post('/flashcards/cards', [AdminResourceManagementController::class, 'storeFlashcardCard'])->name('flashcards.cards.store');
+            Route::get('/flashcards/cards/template', [AdminResourceManagementController::class, 'downloadFlashcardCardsCsvTemplate'])->name('flashcards.cards.template');
             Route::post('/flashcards/cards/bulk', [AdminResourceManagementController::class, 'bulkUploadFlashcardCards'])->name('flashcards.cards.bulk');
             Route::patch('/flashcards/cards/{card}', [AdminResourceManagementController::class, 'updateFlashcardCard'])->whereNumber('card')->name('flashcards.cards.update');
             Route::delete('/flashcards/cards/{card}', [AdminResourceManagementController::class, 'destroyFlashcardCard'])->whereNumber('card')->name('flashcards.cards.destroy');

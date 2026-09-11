@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import AdminPagination from '../../Components/Admin/AdminPagination';
 import {
   Avatar,
   Box,
@@ -22,7 +23,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -713,22 +713,24 @@ export default function FinancialWorkspace({
                     </Table>
                   </TableContainer>
 
-                  <TablePagination
-                    component="div"
-                    count={costTotal}
-                    page={Math.max(0, costPage - 1)}
-                    rowsPerPage={costPerPage}
+                  <AdminPagination
+                    total={costTotal}
+                    page={costPage}
+                    perPage={costPerPage}
+                    lastPage={costsPaginator?.last_page}
+                    from={costsPaginator?.from}
+                    to={costsPaginator?.to}
+                    itemLabel="costs"
                     rowsPerPageOptions={[10, 25, 50, 100]}
                     onPageChange={(_, nextPage) => {
                       openWorkspace(major, 'cost', {
                         year: costSelectedYear,
                         month: costSelectedMonth,
-                        cost_page: nextPage + 1,
+                        cost_page: nextPage,
                         cost_per_page: costPerPage,
                       });
                     }}
-                    onRowsPerPageChange={(event) => {
-                      const nextValue = Number(event.target.value || 25);
+                    onRowsPerPageChange={(nextValue) => {
                       openWorkspace(major, 'cost', {
                         year: costSelectedYear,
                         month: costSelectedMonth,
@@ -886,23 +888,25 @@ export default function FinancialWorkspace({
                     </Table>
                   </TableContainer>
 
-                  <TablePagination
-                    component="div"
-                    count={paymentTotal}
-                    page={Math.max(0, paymentPage - 1)}
-                    rowsPerPage={paymentPerPage}
+                  <AdminPagination
+                    total={paymentTotal}
+                    page={paymentPage}
+                    perPage={paymentPerPage}
+                    lastPage={paymentsPaginator?.last_page}
+                    from={paymentsPaginator?.from}
+                    to={paymentsPaginator?.to}
+                    itemLabel="payments"
                     rowsPerPageOptions={[10, 25, 50, 100]}
                     onPageChange={(_, nextPage) => {
                       openWorkspace(major, 'payment', {
                         year: paymentSelectedYear,
                         month: paymentSelectedMonth,
                         search: paymentSearch,
-                        payment_page: nextPage + 1,
+                        payment_page: nextPage,
                         payment_per_page: paymentPerPage,
                       });
                     }}
-                    onRowsPerPageChange={(event) => {
-                      const nextValue = Number(event.target.value || 25);
+                    onRowsPerPageChange={(nextValue) => {
                       openWorkspace(major, 'payment', {
                         year: paymentSelectedYear,
                         month: paymentSelectedMonth,
