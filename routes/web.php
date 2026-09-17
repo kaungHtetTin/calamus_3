@@ -284,6 +284,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/', [AdminResourceManagementController::class, 'index'])->name('index');
             Route::get('/workspace', [AdminResourceManagementController::class, 'workspace'])->name('workspace');
             Route::post('/word-of-day', [AdminResourceManagementController::class, 'storeWordOfDay'])->name('word-of-day.store');
+            Route::get('/word-of-day/template', [AdminResourceManagementController::class, 'downloadWordOfDayCsvTemplate'])->name('word-of-day.template');
+            Route::post('/word-of-day/bulk', [AdminResourceManagementController::class, 'bulkUploadWordOfDays'])->name('word-of-day.bulk');
             Route::patch('/word-of-day/{wordOfDay}', [AdminResourceManagementController::class, 'updateWordOfDay'])->whereNumber('wordOfDay')->name('word-of-day.update');
             Route::delete('/word-of-day/{wordOfDay}', [AdminResourceManagementController::class, 'destroyWordOfDay'])->whereNumber('wordOfDay')->name('word-of-day.destroy');
             Route::post('/mini-library/books', [AdminResourceManagementController::class, 'storeLibraryBook'])->name('mini-library.books.store');

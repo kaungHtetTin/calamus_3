@@ -12,6 +12,7 @@ use App\Models\SpeakingDialogue;
 use App\Models\SpeakingDialogueTitle;
 use App\Models\WordOfDay;
 use App\Services\FlashcardCsvService;
+use App\Services\WordOfDayCsvService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -680,6 +681,86 @@ class ResourceManagementController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Word of the day created successfully.');
+    }
+
+    public function downloadWordOfDayCsvTemplate(Request $request, WordOfDayCsvService $csvService)
+    {
+        $selectedMajor = trim((string) $request->query('major', ''));
+        $scope = $this->getAdminMajorScope($request);
+        if ($selectedMajor === '' || (!$scope->contains('*') && !$scope->contains(strtolower($selectedMajor)))) {
+            abort(403);
+        }
+
+        return response()->streamDownload(function () use ($csvService) {
+            $output = fopen('php://output', 'wb');
+            fwrite($output, "\xEF\xBB\xBF");
+
+            foreach ($csvService->templateRows() as $row) {
+                fputcsv($output, $row, ',', '"', '');
+            }
+
+            fclose($output);
+        }, 'word-of-the-day-template.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    public function bulkUploadWordOfDays(Request $request, WordOfDayCsvService $csvService)
+    {
+        $selectedMajor = trim((string) $request->query('major', ''));
+        $scope = $this->getAdminMajorScope($request);
+        if ($selectedMajor === '' || (!$scope->contains('*') && !$scope->contains(strtolower($selectedMajor)))) {
+            abort(403);
+        }
+
+        $request->validate([
+            'words_file' => ['required', 'file', 'max:10240'],
+        ]);
+
+        $file = $request->file('words_file');
+        if (!$file || strtolower($file->getClientOriginalExtension()) !== 'csv') {
+            return redirect()->back()->withErrors(['words_file' => 'Please upload a CSV file.']);
+        }
+
+        try {
+            $parsedCsv = $csvService->parse($file->getRealPath());
+        } catch (InvalidArgumentException $exception) {
+            return redirect()->back()->withErrors(['words_file' => $exception->getMessage()]);
+        }
+
+        $now = now();
+        $rows = [];
+        foreach ($parsedCsv['items'] as $item) {
+            $rows[] = [
+                'major' => strtolower($selectedMajor),
+                'word' => $item['word'],
+                'translation' => $item['translation'],
+                'speech' => ($item['speech'] ?? '') !== '' ? $item['speech'] : null,
+                'example' => ($item['example'] ?? '') !== '' ? $item['example'] : null,
+                'thumb' => null,
+                'audio' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if (empty($rows)) {
+            return redirect()->back()->withErrors(['words_file' => 'No valid words were found in the CSV file.']);
+        }
+
+        DB::transaction(function () use ($rows) {
+            foreach (array_chunk($rows, 500) as $chunk) {
+                WordOfDay::query()->insert($chunk);
+            }
+        });
+
+        $inserted = count($rows);
+        $skipped = (int) $parsedCsv['skipped'];
+        $message = $skipped > 0
+            ? "Imported {$inserted} words. Skipped {$skipped} rows missing a word or translation."
+            : "Imported {$inserted} words.";
+
+        return redirect()->back()->with('success', $message);
     }
 
     public function updateWordOfDay(Request $request, WordOfDay $wordOfDay)

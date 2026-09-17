@@ -862,6 +862,18 @@ export default function ResourceManagementWorkspace({
     reset,
     clearErrors,
   } = useForm(defaultWordForm);
+  const [wordBulkDialogOpen, setWordBulkDialogOpen] = useState(false);
+  const [wordBulkFileName, setWordBulkFileName] = useState('');
+  const [wordBulkFileInputKey, setWordBulkFileInputKey] = useState(0);
+  const {
+    data: wordBulkData,
+    setData: setWordBulkData,
+    post: postWordBulk,
+    processing: wordBulkProcessing,
+    errors: wordBulkErrors,
+    reset: resetWordBulk,
+    clearErrors: clearWordBulkErrors,
+  } = useForm({ words_file: null });
 
   const openCreateWord = () => {
     setEditingWord(null);
@@ -874,6 +886,28 @@ export default function ResourceManagementWorkspace({
     setThumbCropperOpen(false);
     setAudioName('');
     setWordDialogOpen(true);
+  };
+
+  const openWordBulkUpload = () => {
+    clearWordBulkErrors();
+    resetWordBulk();
+    setWordBulkData('words_file', null);
+    setWordBulkFileName('');
+    setWordBulkFileInputKey((key) => key + 1);
+    setWordBulkDialogOpen(true);
+  };
+
+  const submitWordBulkUpload = (event) => {
+    event.preventDefault();
+    if (!major || !wordBulkData.words_file) return;
+
+    const query = `?major=${encodeURIComponent(major)}&tab=word-of-day`;
+    postWordBulk(`${admin_app_url}/resources/word-of-day/bulk${query}`, {
+      data: wordBulkData,
+      preserveScroll: true,
+      forceFormData: true,
+      onSuccess: () => setWordBulkDialogOpen(false),
+    });
   };
 
   const openEditWord = (row) => {
@@ -1126,9 +1160,14 @@ export default function ResourceManagementWorkspace({
                       Word of the day
                     </Typography>
                   </Stack>
-                  <Button size="small" variant="contained" startIcon={<AddIcon />} onClick={openCreateWord}>
-                    Add Word
-                  </Button>
+                  <Stack direction="row" spacing={1}>
+                    <Button size="small" variant="outlined" startIcon={<UploadFileIcon />} onClick={openWordBulkUpload}>
+                      Import CSV
+                    </Button>
+                    <Button size="small" variant="contained" startIcon={<AddIcon />} onClick={openCreateWord}>
+                      Add Word
+                    </Button>
+                  </Stack>
                 </Stack>
 
                 <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2, overflowX: 'auto' }}>
@@ -1921,7 +1960,7 @@ export default function ResourceManagementWorkspace({
                   </Box>
                   <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <Button component="label" size="small" variant="outlined">
-                      Upload & Crop Image (16:9)
+                      Upload & Crop Image (16:9) (Optional)
                       <input hidden type="file" accept="image/*" onChange={handleThumbChange} />
                     </Button>
                     {(thumbName || thumbPreview) && (
@@ -1995,6 +2034,123 @@ export default function ResourceManagementWorkspace({
             </Button>
             <Button type="submit" variant="contained" disabled={processing} size="small">
               {editingWord ? 'Update' : 'Create'}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      <Dialog open={wordBulkDialogOpen} onClose={() => setWordBulkDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <UploadFileIcon color="primary" />
+            <Typography component="span" variant="h6" sx={{ fontWeight: 700 }}>
+              Import Words from CSV
+            </Typography>
+          </Stack>
+        </DialogTitle>
+        <Box component="form" onSubmit={submitWordBulkUpload}>
+          <DialogContent dividers>
+            <Stack spacing={1.25}>
+              <Alert severity="info" variant="outlined">
+                Each row creates one word. <strong>Word</strong> and <strong>translation</strong> are required. Image and audio are not included in the CSV; add them later from Edit.
+              </Alert>
+
+              <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 1.25 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }} justifyContent="space-between">
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      1. Download the CSV template
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Columns: word, translation, speech, and example.
+                    </Typography>
+                  </Box>
+                  <Button
+                    component="a"
+                    href={`${admin_app_url}/resources/word-of-day/template?major=${encodeURIComponent(major)}`}
+                    variant="outlined"
+                    size="small"
+                    startIcon={<DownloadOutlinedIcon />}
+                    sx={{ flexShrink: 0 }}
+                  >
+                    Download template
+                  </Button>
+                </Stack>
+              </Paper>
+
+              <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 1.25 }}>
+                <Stack spacing={1}>
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      2. Upload the completed CSV
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Keep the template headers unchanged. Maximum file size: 10 MB.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ p: 1.25, border: '1px dashed', borderColor: wordBulkErrors.words_file ? 'error.main' : 'divider', borderRadius: 1, bgcolor: 'action.hover' }}>
+                    <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                      <Stack spacing={0.5} sx={{ minWidth: 0 }}>
+                        <Button component="label" size="small" variant="outlined" startIcon={<UploadFileIcon />} sx={{ alignSelf: 'flex-start' }}>
+                          Choose CSV file
+                          <input
+                            key={wordBulkFileInputKey}
+                            hidden
+                            type="file"
+                            accept=".csv,text/csv"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0] || null;
+                              setWordBulkData('words_file', file);
+                              setWordBulkFileName(file ? file.name : '');
+                              clearWordBulkErrors('words_file');
+                            }}
+                          />
+                        </Button>
+                        <Typography variant="caption" color={wordBulkFileName ? 'text.primary' : 'text.secondary'} noWrap title={wordBulkFileName}>
+                          {wordBulkFileName || 'No CSV file selected'}
+                        </Typography>
+                        {Boolean(wordBulkErrors.words_file) && (
+                          <Typography variant="caption" color="error.main" role="alert">
+                            {wordBulkErrors.words_file}
+                          </Typography>
+                        )}
+                      </Stack>
+                      {wordBulkFileName && (
+                        <IconButton
+                          size="small"
+                          aria-label="Remove selected CSV file"
+                          title="Remove selected file"
+                          onClick={() => {
+                            setWordBulkData('words_file', null);
+                            setWordBulkFileName('');
+                            setWordBulkFileInputKey((key) => key + 1);
+                          }}
+                        >
+                          <ClearIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Stack>
+                  </Box>
+                </Stack>
+              </Paper>
+
+              <Typography variant="caption" color="text.secondary">
+                Importing to channel: <strong>{major}</strong>. Blank rows are ignored; incomplete rows are skipped.
+              </Typography>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button size="small" onClick={() => setWordBulkDialogOpen(false)} disabled={wordBulkProcessing}>
+              Cancel
+            </Button>
+            <Button
+              size="small"
+              type="submit"
+              variant="contained"
+              startIcon={<UploadFileIcon />}
+              disabled={wordBulkProcessing || !wordBulkData.words_file}
+            >
+              {wordBulkProcessing ? 'Importing...' : 'Import words'}
             </Button>
           </DialogActions>
         </Box>
