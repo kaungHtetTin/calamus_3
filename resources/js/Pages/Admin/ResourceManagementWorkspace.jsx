@@ -861,6 +861,7 @@ export default function ResourceManagementWorkspace({
     errors,
     reset,
     clearErrors,
+    transform: transformWord,
   } = useForm(defaultWordForm);
   const [wordBulkDialogOpen, setWordBulkDialogOpen] = useState(false);
   const [wordBulkFileName, setWordBulkFileName] = useState('');
@@ -984,14 +985,15 @@ export default function ResourceManagementWorkspace({
 
     const query = `?major=${encodeURIComponent(major)}&tab=word-of-day`;
     if (editingWord) {
+      transformWord((data) => ({ ...data, _method: 'patch' }));
       post(`${admin_app_url}/resources/word-of-day/${editingWord.id}${query}`, {
-        data: { ...wordData, _method: 'patch' },
         preserveScroll: true,
         forceFormData: true,
         onSuccess: () => {
           setWordDialogOpen(false);
           setEditingWord(null);
         },
+        onFinish: () => transformWord((data) => data),
       });
       return;
     }
